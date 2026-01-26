@@ -9,9 +9,10 @@ interface UserProfile {
   user_id: string;
   username: string;
   numeric_id: number;
-  is_online: boolean;
-  avatar_data: Record<string, unknown>;
+  is_online: boolean | null;
+  avatar_data: unknown;
   created_at: string;
+  is_verified?: boolean;
 }
 
 interface UserRole {
