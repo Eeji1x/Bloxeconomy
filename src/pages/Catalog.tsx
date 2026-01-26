@@ -15,38 +15,61 @@ interface CatalogItem {
   price: number;
   stock: number | null;
   max_stock: number | null;
-  is_on_sale: boolean;
-  is_giftbox: boolean;
+  is_on_sale: boolean | null;
+  is_giftbox: boolean | null;
   created_at: string;
 }
 
 const Catalog = () => {
   const { user, profile, refreshProfile } = useAuth();
   const [items, setItems] = useState<CatalogItem[]>([]);
+  const [userInventory, setUserInventory] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'normal' | 'limited' | 'giftbox'>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [buyingItem, setBuyingItem] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchItems = async () => {
-      const { data, error } = await supabase
-        .from('catalog_items')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (!error && data) {
-        setItems(data);
-      }
-      setIsLoading(false);
-    };
-
     fetchItems();
-  }, []);
+    if (user) {
+      fetchUserInventory();
+    }
+  }, [user]);
+
+  const fetchItems = async () => {
+    const { data, error } = await supabase
+      .from('catalog_items')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      setItems(data as CatalogItem[]);
+    }
+    setIsLoading(false);
+  };
+
+  const fetchUserInventory = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('user_inventory')
+      .select('item_id')
+      .eq('user_id', user.id);
+
+    if (data) {
+      setUserInventory(data.map(i => i.item_id));
+    }
+  };
 
   const handleBuy = async (item: CatalogItem) => {
     if (!user || !profile) {
       toast.error('Please log in to purchase items');
+      return;
+    }
+
+    // Check if banned
+    if (profile.is_banned) {
+      toast.error('You are banned and cannot purchase items');
       return;
     }
 
@@ -65,9 +88,38 @@ const Catalog = () => {
       return;
     }
 
+    // For limited and giftbox items, check if user already owns one
+    if ((item.item_type === 'limited' || item.item_type === 'giftbox') && userInventory.includes(item.id)) {
+      toast.error('You can only own one of this item');
+      return;
+    }
+
     setBuyingItem(item.id);
 
     try {
+      // First, re-check stock from database (to prevent race conditions)
+      const { data: freshItem, error: fetchError } = await supabase
+        .from('catalog_items')
+        .select('stock, is_on_sale')
+        .eq('id', item.id)
+        .single();
+
+      if (fetchError || !freshItem) {
+        throw new Error('Failed to verify item availability');
+      }
+
+      if (!freshItem.is_on_sale) {
+        toast.error('This item is no longer for sale');
+        await fetchItems();
+        return;
+      }
+
+      if (freshItem.stock !== null && freshItem.stock <= 0) {
+        toast.error('This item is now out of stock');
+        await fetchItems();
+        return;
+      }
+
       // Deduct emeralds
       const { error: emeraldError } = await supabase
         .from('profiles')
@@ -87,10 +139,10 @@ const Catalog = () => {
 
       if (inventoryError) throw inventoryError;
 
-      // Update stock if applicable
-      if (item.stock !== null) {
-        const newStock = item.stock - 1;
-        const updates: Partial<CatalogItem> = { stock: newStock };
+      // Update stock if applicable (global stock)
+      if (freshItem.stock !== null) {
+        const newStock = freshItem.stock - 1;
+        const updates: { stock: number; is_on_sale?: boolean } = { stock: newStock };
         
         // Auto off-sale if stock reaches 0
         if (newStock <= 0) {
@@ -104,18 +156,16 @@ const Catalog = () => {
       }
 
       await refreshProfile();
-      toast.success(`Successfully purchased ${item.name}!`);
+      await fetchItems();
+      await fetchUserInventory();
       
-      // Refresh items
-      const { data } = await supabase
-        .from('catalog_items')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (data) setItems(data);
+      toast.success(`Successfully purchased ${item.name}!`);
 
     } catch (error) {
       console.error('Purchase error:', error);
       toast.error('Failed to purchase item');
+      // Refresh to show correct state
+      await fetchItems();
     } finally {
       setBuyingItem(null);
     }
@@ -180,73 +230,86 @@ const Catalog = () => {
       {/* Items Grid */}
       {filteredItems.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {filteredItems.map((item) => (
-            <div key={item.id} className="cyber-card group">
-              {/* Image */}
-              <div className="aspect-square rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 mb-3 overflow-hidden relative">
-                <img
-                  src={item.image_url}
-                  alt={item.name}
-                  className="w-full h-full object-contain p-2"
-                  onError={(e) => {
-                    e.currentTarget.src = '/placeholder.svg';
-                  }}
-                />
-                {item.item_type === 'limited' && (
-                  <div className="absolute top-2 right-2 limited-badge">
-                    <Star className="w-3 h-3" />
-                    Limited
-                  </div>
-                )}
-                {item.is_giftbox && (
-                  <div className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold uppercase rounded bg-secondary/80 text-secondary-foreground">
-                    Giftbox
-                  </div>
-                )}
-              </div>
-
-              {/* Info */}
-              <div className="space-y-2">
-                <h3 className="font-bold text-foreground truncate group-hover:text-primary transition-colors">
-                  {item.name}
-                </h3>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <Gem className="w-4 h-4 text-accent" />
-                    <span className="font-bold text-accent">{item.price.toLocaleString()}</span>
-                  </div>
-                  
-                  {item.stock !== null && (
-                    <span className="text-xs text-muted-foreground">
-                      {item.stock} left
-                    </span>
+          {filteredItems.map((item) => {
+            const alreadyOwned = userInventory.includes(item.id);
+            const isLimitedOrGiftbox = item.item_type === 'limited' || item.item_type === 'giftbox';
+            const canBuy = item.is_on_sale && (item.stock === null || item.stock > 0) && !(isLimitedOrGiftbox && alreadyOwned);
+            
+            return (
+              <div key={item.id} className="cyber-card group">
+                {/* Image */}
+                <div className="aspect-square rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 mb-3 overflow-hidden relative">
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="w-full h-full object-contain p-2"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg';
+                    }}
+                  />
+                  {item.item_type === 'limited' && (
+                    <div className="absolute top-2 right-2 limited-badge">
+                      <Star className="w-3 h-3" />
+                      Limited
+                    </div>
+                  )}
+                  {item.is_giftbox && (
+                    <div className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold uppercase rounded bg-secondary/80 text-secondary-foreground">
+                      Giftbox
+                    </div>
+                  )}
+                  {alreadyOwned && isLimitedOrGiftbox && (
+                    <div className="absolute bottom-2 left-2 px-2 py-0.5 text-xs font-bold uppercase rounded bg-accent/80 text-accent-foreground">
+                      Owned
+                    </div>
                   )}
                 </div>
 
-                {/* Buy Button */}
-                {item.is_on_sale && (item.stock === null || item.stock > 0) ? (
-                  <Button
-                    variant="emerald"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => handleBuy(item)}
-                    disabled={buyingItem === item.id || !user}
-                  >
-                    {buyingItem === item.id ? (
-                      <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" />
-                    ) : (
-                      'Buy Now'
+                {/* Info */}
+                <div className="space-y-2">
+                  <h3 className="font-bold text-foreground truncate group-hover:text-primary transition-colors">
+                    {item.name}
+                  </h3>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      <Gem className="w-4 h-4 text-accent" />
+                      <span className="font-bold text-accent">{item.price.toLocaleString()}</span>
+                    </div>
+                    
+                    {item.stock !== null && (
+                      <span className={`text-xs ${item.stock <= 5 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                        {item.stock} left
+                      </span>
                     )}
-                  </Button>
-                ) : (
-                  <Button variant="outline" size="sm" className="w-full" disabled>
-                    {item.stock === 0 ? 'Sold Out' : 'Off Sale'}
-                  </Button>
-                )}
+                  </div>
+
+                  {/* Buy Button */}
+                  {canBuy ? (
+                    <Button
+                      variant="emerald"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => handleBuy(item)}
+                      disabled={buyingItem === item.id || !user}
+                    >
+                      {buyingItem === item.id ? (
+                        <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" />
+                      ) : (
+                        'Buy Now'
+                      )}
+                    </Button>
+                  ) : (
+                    <Button variant="outline" size="sm" className="w-full" disabled>
+                      {!item.is_on_sale ? 'Off Sale' : 
+                       item.stock === 0 ? 'Sold Out' : 
+                       alreadyOwned ? 'Already Owned' : 'Unavailable'}
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-20">

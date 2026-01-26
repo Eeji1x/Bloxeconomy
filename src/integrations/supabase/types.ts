@@ -133,6 +133,8 @@ export type Database = {
           id: string
           is_banned: boolean | null
           is_online: boolean | null
+          is_verified: boolean | null
+          last_daily_claim: string | null
           last_seen: string | null
           numeric_id: number
           updated_at: string
@@ -147,6 +149,8 @@ export type Database = {
           id?: string
           is_banned?: boolean | null
           is_online?: boolean | null
+          is_verified?: boolean | null
+          last_daily_claim?: string | null
           last_seen?: string | null
           numeric_id?: number
           updated_at?: string
@@ -161,6 +165,8 @@ export type Database = {
           id?: string
           is_banned?: boolean | null
           is_online?: boolean | null
+          is_verified?: boolean | null
+          last_daily_claim?: string | null
           last_seen?: string | null
           numeric_id?: number
           updated_at?: string

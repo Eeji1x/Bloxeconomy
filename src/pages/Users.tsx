@@ -4,6 +4,8 @@ import { supabase } from '@/lib/supabase';
 import { Users as UsersIcon, Shield, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
+const DEFAULT_AVATAR = 'https://tr.rbxcdn.com/30DAY-Avatar-6E2775CACB76AA8984ECB7C3ECC9FD6E-Png/720/720/Avatar/Webp/noFilter';
+
 interface UserProfile {
   id: string;
   user_id: string;
@@ -12,7 +14,7 @@ interface UserProfile {
   is_online: boolean | null;
   avatar_data: unknown;
   created_at: string;
-  is_verified?: boolean;
+  is_verified: boolean | null;
 }
 
 interface UserRole {
@@ -36,7 +38,7 @@ const Users = () => {
         .order('last_seen', { ascending: false });
 
       if (!profilesError && profilesData) {
-        setUsers(profilesData);
+        setUsers(profilesData as UserProfile[]);
       }
 
       const { data: rolesData, error: rolesError } = await supabase
@@ -154,19 +156,29 @@ const UserCard = ({ user, isAdmin }: { user: UserProfile; isAdmin: boolean }) =>
         {/* Avatar placeholder */}
         <div className="w-20 h-20 mx-auto mb-3 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/30 flex items-center justify-center overflow-hidden">
           <img
-            src="https://static.wikia.nocookie.net/roblox/images/7/7e/R15_Noob.png"
+            src={DEFAULT_AVATAR}
             alt={user.username}
             className="w-full h-full object-cover"
             onError={(e) => {
-              e.currentTarget.style.display = 'none';
+              e.currentTarget.src = '/placeholder.svg';
             }}
           />
         </div>
 
         {/* Username */}
-        <h3 className="font-bold text-foreground group-hover:text-primary transition-colors truncate">
-          {user.username}
-        </h3>
+        <div className="flex items-center justify-center gap-1">
+          <h3 className="font-bold text-foreground group-hover:text-primary transition-colors truncate">
+            {user.username}
+          </h3>
+          {user.is_verified && (
+            <img 
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7mHpMTaGN4Tzw3V_Y35xes0BeIjFXaWZ3Kw&s" 
+              alt="Verified" 
+              className="w-4 h-4"
+              title="Verified"
+            />
+          )}
+        </div>
 
         {/* ID and badges */}
         <div className="flex items-center justify-center gap-2 mt-1">

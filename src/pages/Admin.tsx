@@ -17,7 +17,10 @@ import {
   UserCheck,
   Plus,
   Trash2,
-  Save
+  Save,
+  BadgeCheck,
+  RefreshCw,
+  RotateCcw
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -93,6 +96,8 @@ const UsersPanel = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [emeraldAmount, setEmeraldAmount] = useState('');
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [banReason, setBanReason] = useState('');
+  const [banningUser, setBanningUser] = useState<string | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -117,13 +122,17 @@ const UsersPanel = () => {
     }
   };
 
-  const handleBan = async (userId: string, ban: boolean, reason?: string) => {
+  const handleBan = async (userId: string, ban: boolean) => {
+    const reason = ban ? banReason || 'Banned by admin' : null;
+    
     await supabase
       .from('profiles')
-      .update({ is_banned: ban, ban_reason: ban ? reason || 'Banned by admin' : null })
+      .update({ is_banned: ban, ban_reason: reason })
       .eq('user_id', userId);
     
     toast.success(ban ? 'User banned' : 'User unbanned');
+    setBanningUser(null);
+    setBanReason('');
     fetchUsers();
   };
 
@@ -131,12 +140,14 @@ const UsersPanel = () => {
     const user = users.find(u => u.user_id === userId);
     if (!user) return;
 
+    const newAmount = Math.max(0, user.emeralds + amount);
+
     await supabase
       .from('profiles')
-      .update({ emeralds: user.emeralds + amount })
+      .update({ emeralds: newAmount })
       .eq('user_id', userId);
     
-    toast.success(`${amount > 0 ? 'Added' : 'Removed'} ${Math.abs(amount)} emeralds`);
+    toast.success(`${amount > 0 ? 'Added' : 'Removed'} ${Math.abs(amount)} emeralds (new total: ${newAmount})`);
     setEmeraldAmount('');
     setSelectedUser(null);
     fetchUsers();
@@ -159,6 +170,32 @@ const UsersPanel = () => {
     fetchUsers();
   };
 
+  const handleToggleVerified = async (userId: string, isCurrentlyVerified: boolean) => {
+    await supabase
+      .from('profiles')
+      .update({ is_verified: !isCurrentlyVerified })
+      .eq('user_id', userId);
+    
+    toast.success(isCurrentlyVerified ? 'Verified badge removed' : 'Verified badge granted');
+    fetchUsers();
+  };
+
+  const handleResetUser = async (userId: string) => {
+    // Reset emeralds, inventory, and avatar
+    await supabase
+      .from('profiles')
+      .update({ emeralds: 100, avatar_data: {} })
+      .eq('user_id', userId);
+    
+    await supabase
+      .from('user_inventory')
+      .delete()
+      .eq('user_id', userId);
+    
+    toast.success('User data reset to defaults');
+    fetchUsers();
+  };
+
   const filteredUsers = users.filter(u =>
     u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
     u.numeric_id.toString().includes(searchQuery)
@@ -175,81 +212,158 @@ const UsersPanel = () => {
 
       <div className="space-y-3">
         {filteredUsers.map((user) => (
-          <div key={user.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                {user.username[0].toUpperCase()}
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold">{user.username}</span>
-                  <span className="text-xs text-muted-foreground">#{user.numeric_id}</span>
-                  {user.isAdmin && <span className="admin-badge text-xs">Admin</span>}
-                  {user.is_banned && <span className="text-xs text-destructive">Banned</span>}
+          <div key={user.id} className="p-4 bg-muted/30 rounded-lg space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                  {user.username[0].toUpperCase()}
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Gem className="w-3 h-3 text-accent" />
-                  {user.emeralds.toLocaleString()}
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold">{user.username}</span>
+                    <span className="text-xs text-muted-foreground">#{user.numeric_id}</span>
+                    {user.isAdmin && <span className="admin-badge text-xs">Admin</span>}
+                    {user.is_verified && (
+                      <img 
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7mHpMTaGN4Tzw3V_Y35xes0BeIjFXaWZ3Kw&s" 
+                        alt="Verified" 
+                        className="w-4 h-4"
+                      />
+                    )}
+                    {user.is_banned && <span className="text-xs text-destructive bg-destructive/20 px-2 py-0.5 rounded">Banned</span>}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Gem className="w-3 h-3 text-accent" />
+                    {user.emeralds.toLocaleString()}
+                    {user.is_online && <span className="text-accent">• Online</span>}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-2">
-              {/* Emerald controls */}
-              {selectedUser === user.user_id ? (
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    placeholder="Amount"
-                    value={emeraldAmount}
-                    onChange={(e) => setEmeraldAmount(e.target.value)}
-                    className="w-24 h-8"
-                  />
-                  <Button
-                    size="sm"
-                    variant="emerald"
-                    onClick={() => handleGiveEmeralds(user.user_id, parseInt(emeraldAmount) || 0)}
-                  >
-                    Give
-                  </Button>
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Emerald controls */}
+                {selectedUser === user.user_id ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      placeholder="Amount (+/-)"
+                      value={emeraldAmount}
+                      onChange={(e) => setEmeraldAmount(e.target.value)}
+                      className="w-28 h-8"
+                    />
+                    <Button
+                      size="sm"
+                      variant="emerald"
+                      onClick={() => handleGiveEmeralds(user.user_id, parseInt(emeraldAmount) || 0)}
+                    >
+                      Apply
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedUser(null)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => setSelectedUser(null)}
+                    onClick={() => setSelectedUser(user.user_id)}
+                    title="Give/Remove Emeralds"
                   >
-                    Cancel
+                    <Gem className="w-4 h-4" />
                   </Button>
-                </div>
-              ) : (
+                )}
+
+                {/* Verified toggle */}
+                <Button
+                  size="sm"
+                  variant={user.is_verified ? 'default' : 'outline'}
+                  onClick={() => handleToggleVerified(user.user_id, user.is_verified)}
+                  title="Toggle Verified Badge"
+                >
+                  <BadgeCheck className="w-4 h-4" />
+                </Button>
+
+                {/* Admin toggle (only for non-ID-1 users) */}
+                {user.numeric_id !== 1 && (
+                  <Button
+                    size="sm"
+                    variant={user.isAdmin ? 'destructive' : 'outline'}
+                    onClick={() => handleToggleAdmin(user.user_id, user.isAdmin)}
+                    title="Toggle Admin"
+                  >
+                    <Shield className="w-4 h-4" />
+                  </Button>
+                )}
+
+                {/* Reset user */}
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => setSelectedUser(user.user_id)}
+                  onClick={() => {
+                    if (confirm(`Reset ${user.username}'s emeralds to 100 and clear inventory?`)) {
+                      handleResetUser(user.user_id);
+                    }
+                  }}
+                  title="Reset User Data"
                 >
-                  <Gem className="w-4 h-4" />
+                  <RotateCcw className="w-4 h-4" />
                 </Button>
-              )}
 
-              {/* Admin toggle (only for non-ID-1 users) */}
-              {user.numeric_id !== 1 && (
-                <Button
-                  size="sm"
-                  variant={user.isAdmin ? 'destructive' : 'outline'}
-                  onClick={() => handleToggleAdmin(user.user_id, user.isAdmin)}
-                >
-                  <Shield className="w-4 h-4" />
-                </Button>
-              )}
-
-              {/* Ban toggle */}
-              <Button
-                size="sm"
-                variant={user.is_banned ? 'default' : 'destructive'}
-                onClick={() => handleBan(user.user_id, !user.is_banned)}
-              >
-                {user.is_banned ? <UserCheck className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
-              </Button>
+                {/* Ban toggle */}
+                {user.is_banned ? (
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={() => handleBan(user.user_id, false)}
+                    title="Unban User"
+                  >
+                    <UserCheck className="w-4 h-4" />
+                  </Button>
+                ) : banningUser === user.user_id ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      placeholder="Ban reason..."
+                      value={banReason}
+                      onChange={(e) => setBanReason(e.target.value)}
+                      className="w-40 h-8"
+                    />
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleBan(user.user_id, true)}
+                    >
+                      Confirm
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setBanningUser(null)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => setBanningUser(user.user_id)}
+                    title="Ban User"
+                  >
+                    <Ban className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
             </div>
+
+            {user.is_banned && user.ban_reason && (
+              <div className="text-sm text-destructive bg-destructive/10 p-2 rounded">
+                <strong>Ban reason:</strong> {user.ban_reason}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -261,6 +375,8 @@ const UsersPanel = () => {
 const CatalogPanel = () => {
   const [items, setItems] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [restockingItem, setRestockingItem] = useState<string | null>(null);
+  const [restockAmount, setRestockAmount] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -290,6 +406,7 @@ const CatalogPanel = () => {
       .insert({
         ...formData,
         is_giftbox: formData.item_type === 'giftbox',
+        max_stock: formData.stock,
       });
     
     if (error) {
@@ -312,6 +429,7 @@ const CatalogPanel = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this item?')) return;
     await supabase.from('catalog_items').delete().eq('id', id);
     toast.success('Item deleted');
     fetchItems();
@@ -319,6 +437,30 @@ const CatalogPanel = () => {
 
   const toggleOnSale = async (id: string, current: boolean) => {
     await supabase.from('catalog_items').update({ is_on_sale: !current }).eq('id', id);
+    toast.success(current ? 'Item taken off sale' : 'Item put on sale');
+    fetchItems();
+  };
+
+  const handleRestock = async (id: string) => {
+    const amount = parseInt(restockAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
+
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+
+    const newStock = (item.stock || 0) + amount;
+
+    await supabase
+      .from('catalog_items')
+      .update({ stock: newStock, is_on_sale: true })
+      .eq('id', id);
+    
+    toast.success(`Added ${amount} to stock (new total: ${newStock})`);
+    setRestockingItem(null);
+    setRestockAmount('');
     fetchItems();
   };
 
@@ -405,10 +547,10 @@ const CatalogPanel = () => {
         {items.map((item) => (
           <div key={item.id} className="p-4 bg-muted/30 rounded-lg space-y-3">
             <div className="flex gap-3">
-              <div className="w-16 h-16 rounded-lg bg-primary/10 overflow-hidden">
+              <div className="w-16 h-16 rounded-lg bg-primary/10 overflow-hidden shrink-0">
                 <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <h3 className="font-bold truncate">{item.name}</h3>
                 <div className="text-sm text-muted-foreground">
                   {item.price} 💎 • {item.item_type}
@@ -418,7 +560,8 @@ const CatalogPanel = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-2">
+            
+            <div className="flex gap-2 flex-wrap">
               <Button
                 size="sm"
                 variant={item.is_on_sale ? 'outline' : 'default'}
@@ -426,6 +569,35 @@ const CatalogPanel = () => {
               >
                 {item.is_on_sale ? 'Take Off Sale' : 'Put On Sale'}
               </Button>
+              
+              {/* Restock */}
+              {restockingItem === item.id ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Amount"
+                    value={restockAmount}
+                    onChange={(e) => setRestockAmount(e.target.value)}
+                    className="w-20 h-8"
+                  />
+                  <Button size="sm" onClick={() => handleRestock(item.id)}>
+                    Add
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setRestockingItem(null)}>
+                    ✕
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setRestockingItem(item.id)}
+                >
+                  <RefreshCw className="w-4 h-4 mr-1" />
+                  Restock
+                </Button>
+              )}
+              
               <Button
                 size="sm"
                 variant="destructive"
@@ -444,15 +616,18 @@ const CatalogPanel = () => {
 // Promocodes Panel
 const PromocodesPanel = () => {
   const [codes, setCodes] = useState<any[]>([]);
+  const [items, setItems] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     code: '',
     emerald_reward: 0,
+    item_reward_id: null as string | null,
     max_uses: null as number | null,
   });
 
   useEffect(() => {
     fetchCodes();
+    fetchItems();
   }, []);
 
   const fetchCodes = async () => {
@@ -463,12 +638,21 @@ const PromocodesPanel = () => {
     if (data) setCodes(data);
   };
 
+  const fetchItems = async () => {
+    const { data } = await supabase
+      .from('catalog_items')
+      .select('id, name')
+      .order('name');
+    if (data) setItems(data);
+  };
+
   const handleSubmit = async () => {
     const { error } = await supabase
       .from('promocodes')
       .insert({
         code: formData.code.toUpperCase(),
         emerald_reward: formData.emerald_reward,
+        item_reward_id: formData.item_reward_id,
         max_uses: formData.max_uses,
       });
     
@@ -477,7 +661,7 @@ const PromocodesPanel = () => {
     } else {
       toast.success('Code created!');
       setShowForm(false);
-      setFormData({ code: '', emerald_reward: 0, max_uses: null });
+      setFormData({ code: '', emerald_reward: 0, item_reward_id: null, max_uses: null });
       fetchCodes();
     }
   };
@@ -485,6 +669,12 @@ const PromocodesPanel = () => {
   const handleDelete = async (id: string) => {
     await supabase.from('promocodes').delete().eq('id', id);
     toast.success('Code deleted');
+    fetchCodes();
+  };
+
+  const toggleActive = async (id: string, current: boolean) => {
+    await supabase.from('promocodes').update({ is_active: !current }).eq('id', id);
+    toast.success(current ? 'Code deactivated' : 'Code activated');
     fetchCodes();
   };
 
@@ -500,7 +690,7 @@ const PromocodesPanel = () => {
 
       {showForm && (
         <div className="p-6 bg-muted/30 rounded-lg space-y-4">
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label>Code</Label>
               <Input
@@ -516,6 +706,19 @@ const PromocodesPanel = () => {
                 value={formData.emerald_reward}
                 onChange={(e) => setFormData({ ...formData, emerald_reward: parseInt(e.target.value) || 0 })}
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Item Reward (optional)</Label>
+              <select
+                value={formData.item_reward_id || ''}
+                onChange={(e) => setFormData({ ...formData, item_reward_id: e.target.value || null })}
+                className="w-full h-10 rounded-md border bg-input px-3"
+              >
+                <option value="">No item</option>
+                {items.map(item => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </select>
             </div>
             <div className="space-y-2">
               <Label>Max Uses (empty = unlimited)</Label>
@@ -545,12 +748,25 @@ const PromocodesPanel = () => {
             <div>
               <div className="font-mono font-bold">{code.code}</div>
               <div className="text-sm text-muted-foreground">
-                {code.emerald_reward} 💎 • {code.current_uses}/{code.max_uses ?? '∞'} uses • {code.is_active ? 'Active' : 'Inactive'}
+                {code.emerald_reward > 0 && `${code.emerald_reward} 💎`}
+                {code.emerald_reward > 0 && code.item_reward_id && ' + '}
+                {code.item_reward_id && 'Item reward'}
+                {' • '}{code.current_uses}/{code.max_uses ?? '∞'} uses 
+                {' • '}<span className={code.is_active ? 'text-accent' : 'text-destructive'}>{code.is_active ? 'Active' : 'Inactive'}</span>
               </div>
             </div>
-            <Button size="sm" variant="destructive" onClick={() => handleDelete(code.id)}>
-              <Trash2 className="w-4 h-4" />
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                size="sm" 
+                variant={code.is_active ? 'outline' : 'default'}
+                onClick={() => toggleActive(code.id, code.is_active)}
+              >
+                {code.is_active ? 'Deactivate' : 'Activate'}
+              </Button>
+              <Button size="sm" variant="destructive" onClick={() => handleDelete(code.id)}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         ))}
       </div>

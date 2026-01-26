@@ -15,6 +15,8 @@ interface Profile {
   last_seen: string;
   created_at: string;
   updated_at: string;
+  is_verified: boolean | null;
+  last_daily_claim: string | null;
 }
 
 interface AuthContextType {
