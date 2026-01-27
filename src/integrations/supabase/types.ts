@@ -128,6 +128,8 @@ export type Database = {
         Row: {
           avatar_data: Json | null
           ban_reason: string | null
+          banned_at: string | null
+          banned_by: string | null
           created_at: string
           emeralds: number
           id: string
@@ -144,6 +146,8 @@ export type Database = {
         Insert: {
           avatar_data?: Json | null
           ban_reason?: string | null
+          banned_at?: string | null
+          banned_by?: string | null
           created_at?: string
           emeralds?: number
           id?: string
@@ -160,6 +164,8 @@ export type Database = {
         Update: {
           avatar_data?: Json | null
           ban_reason?: string | null
+          banned_at?: string | null
+          banned_by?: string | null
           created_at?: string
           emeralds?: number
           id?: string
@@ -242,6 +248,51 @@ export type Database = {
           {
             foreignKeyName: "promocodes_item_reward_id_fkey"
             columns: ["item_reward_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resale_listings: {
+        Row: {
+          created_at: string
+          id: string
+          inventory_id: string
+          is_active: boolean
+          item_id: string
+          price: number
+          seller_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inventory_id: string
+          is_active?: boolean
+          item_id: string
+          price: number
+          seller_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inventory_id?: string
+          is_active?: boolean
+          item_id?: string
+          price?: number
+          seller_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resale_listings_inventory_id_fkey"
+            columns: ["inventory_id"]
+            isOneToOne: true
+            referencedRelation: "user_inventory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resale_listings_item_id_fkey"
+            columns: ["item_id"]
             isOneToOne: false
             referencedRelation: "catalog_items"
             referencedColumns: ["id"]

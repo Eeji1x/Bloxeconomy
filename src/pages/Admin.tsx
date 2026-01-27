@@ -123,11 +123,24 @@ const UsersPanel = () => {
   };
 
   const handleBan = async (userId: string, ban: boolean) => {
+    const { user } = useAuth ? { user: null } : { user: null };
     const reason = ban ? banReason || 'Banned by admin' : null;
+    
+    const updates: any = { 
+      is_banned: ban, 
+      ban_reason: reason,
+    };
+    
+    if (ban) {
+      updates.banned_at = new Date().toISOString();
+    } else {
+      updates.banned_at = null;
+      updates.banned_by = null;
+    }
     
     await supabase
       .from('profiles')
-      .update({ is_banned: ban, ban_reason: reason })
+      .update(updates)
       .eq('user_id', userId);
     
     toast.success(ban ? 'User banned' : 'User unbanned');

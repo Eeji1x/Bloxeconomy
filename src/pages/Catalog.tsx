@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -236,7 +237,7 @@ const Catalog = () => {
             const canBuy = item.is_on_sale && (item.stock === null || item.stock > 0) && !(isLimitedOrGiftbox && alreadyOwned);
             
             return (
-              <div key={item.id} className="cyber-card group">
+              <Link key={item.id} to={`/catalog/${item.id}`} className="cyber-card group">
                 {/* Image */}
                 <div className="aspect-square rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 mb-3 overflow-hidden relative">
                   <img
@@ -307,7 +308,7 @@ const Catalog = () => {
                     </Button>
                   )}
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
