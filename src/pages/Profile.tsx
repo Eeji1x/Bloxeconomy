@@ -287,7 +287,7 @@ const Profile = () => {
                     <UserPlus className="w-4 h-4" />
                     Add Friend
                   </Button>
-                  <Link to="/trading">
+                  <Link to={`/trading?user=${profileData?.user_id}`}>
                     <Button variant="outline" size="sm">
                       <ArrowLeftRight className="w-4 h-4" />
                       Trade

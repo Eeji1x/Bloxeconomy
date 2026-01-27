@@ -13,7 +13,9 @@ import {
   X,
   Gem,
   LogOut,
-  LogIn
+  LogIn,
+  Trophy,
+  Settings
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -24,10 +26,9 @@ const navLinks = [
   { to: '/catalog', label: 'Catalog', icon: ShoppingBag },
   { to: '/avatar', label: 'Avatar', icon: User },
   { to: '/trading', label: 'Trading', icon: ArrowLeftRight },
-  { to: '/promocodes', label: 'Promocodes', icon: Gift },
+  { to: '/promocodes', label: 'Codes', icon: Gift },
   { to: '/users', label: 'Users', icon: Users },
-  { to: '/friends', label: 'Friends', icon: UserPlus },
-  { to: '/profile', label: 'Profile', icon: User },
+  { to: '/leaderboards', label: 'Top', icon: Trophy },
 ];
 
 export const Navbar = () => {

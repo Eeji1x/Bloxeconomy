@@ -12,6 +12,8 @@ interface Profile {
   is_online: boolean;
   is_banned: boolean;
   ban_reason: string | null;
+  banned_by: string | null;
+  banned_at: string | null;
   last_seen: string;
   created_at: string;
   updated_at: string;

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { AnnouncementBar } from './AnnouncementBar';
 import { Navbar } from './Navbar';
+import { BanRedirectWrapper } from '@/components/auth/BanRedirectWrapper';
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,7 +21,9 @@ export const Layout = ({ children }: LayoutProps) => {
         <AnnouncementBar />
         <Navbar />
         <main className="container mx-auto px-4 py-8">
-          {children}
+          <BanRedirectWrapper>
+            {children}
+          </BanRedirectWrapper>
         </main>
       </div>
     </div>

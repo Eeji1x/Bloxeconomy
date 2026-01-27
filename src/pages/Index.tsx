@@ -1,157 +1,62 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Users, ArrowLeftRight, Gift, Sparkles, Zap, Crown } from 'lucide-react';
+import { Zap, Crown, Sparkles } from 'lucide-react';
+import { HomeLeftPanel } from '@/components/home/HomeLeftPanel';
+import { HomeFriendsList } from '@/components/home/HomeFriendsList';
+import { HomeQuickActions } from '@/components/home/HomeQuickActions';
+import { HomeAnnouncements } from '@/components/home/HomeAnnouncements';
 
 const Index = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
-  const features = [
-    {
-      icon: ShoppingBag,
-      title: 'CATALOG',
-      description: 'Explore unique items, limiteds, and exclusive collectibles',
-      color: 'primary',
-      link: '/catalog',
-    },
-    {
-      icon: Users,
-      title: 'COMMUNITY',
-      description: 'Connect with players, make friends, and grow together',
-      color: 'secondary',
-      link: '/users',
-    },
-    {
-      icon: ArrowLeftRight,
-      title: 'TRADING',
-      description: 'Trade limited items and emeralds with other players',
-      color: 'accent',
-      link: '/trading',
-    },
-    {
-      icon: Gift,
-      title: 'PROMOCODES',
-      description: 'Redeem codes for free emeralds and exclusive items',
-      color: 'neon-purple',
-      link: '/promocodes',
-    },
-  ];
-
-  return (
-    <div className="space-y-16">
-      {/* Hero Section */}
-      <section className="relative py-20 text-center">
-        {/* Background effects */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-full blur-3xl animate-pulse" />
-          </div>
-        </div>
-
-        <div className="relative z-10 space-y-8">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
-              <Sparkles className="w-4 h-4" />
-              <span>Welcome to the future of virtual worlds</span>
+  // Logged out view
+  if (!user) {
+    return (
+      <div className="space-y-16">
+        {/* Hero Section */}
+        <section className="relative py-20 text-center">
+          {/* Background effects */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-full blur-3xl animate-pulse" />
             </div>
-            
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black tracking-tight">
-              <span className="gradient-text">SODA</span>
-              <span className="text-foreground">BLOX</span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-body">
-              A futuristic virtual world revival. Collect items, trade limiteds, and build your legacy.
-            </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {user ? (
-              <>
-                <Link to="/catalog">
-                  <Button variant="neon" size="xl" className="group">
-                    <Zap className="w-5 h-5 group-hover:animate-pulse" />
-                    Explore Catalog
-                  </Button>
-                </Link>
-                <Link to="/profile">
-                  <Button variant="outline" size="xl">
-                    <Crown className="w-5 h-5" />
-                    View Profile
-                  </Button>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link to="/signup">
-                  <Button variant="neon" size="xl" className="group">
-                    <Zap className="w-5 h-5 group-hover:animate-pulse" />
-                    Start Playing
-                  </Button>
-                </Link>
-                <Link to="/login">
-                  <Button variant="outline" size="xl">
-                    Already have an account?
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {features.map((feature) => {
-          const Icon = feature.icon;
-          return (
-            <Link
-              key={feature.title}
-              to={feature.link}
-              className="cyber-card group cursor-pointer"
-            >
-              <div className="space-y-4">
-                <div className={`w-14 h-14 rounded-xl bg-${feature.color}/20 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <Icon className={`w-7 h-7 text-${feature.color}`} />
-                </div>
-                <div>
-                  <h3 className="font-display font-bold text-lg text-foreground group-hover:text-primary transition-colors">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {feature.description}
-                  </p>
-                </div>
+          <div className="relative z-10 space-y-8">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
+                <Sparkles className="w-4 h-4" />
+                <span>Welcome to the future of virtual worlds</span>
               </div>
-            </Link>
-          );
-        })}
-      </section>
+              
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black tracking-tight">
+                <span className="gradient-text">SODA</span>
+                <span className="text-foreground">BLOX</span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-body">
+                A futuristic virtual world revival. Collect items, trade limiteds, and build your legacy.
+              </p>
+            </div>
 
-      {/* Stats Section */}
-      <section className="cyber-card p-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div className="space-y-2">
-            <div className="text-4xl font-display font-bold text-primary neon-text">0</div>
-            <div className="text-sm text-muted-foreground uppercase tracking-wider">Players Online</div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/signup">
+                <Button variant="neon" size="xl" className="group">
+                  <Zap className="w-5 h-5 group-hover:animate-pulse" />
+                  Start Playing
+                </Button>
+              </Link>
+              <Link to="/login">
+                <Button variant="outline" size="xl">
+                  Already have an account?
+                </Button>
+              </Link>
+            </div>
           </div>
-          <div className="space-y-2">
-            <div className="text-4xl font-display font-bold text-secondary neon-text-pink">0</div>
-            <div className="text-sm text-muted-foreground uppercase tracking-wider">Total Users</div>
-          </div>
-          <div className="space-y-2">
-            <div className="text-4xl font-display font-bold text-accent neon-text-green">0</div>
-            <div className="text-sm text-muted-foreground uppercase tracking-wider">Catalog Items</div>
-          </div>
-          <div className="space-y-2">
-            <div className="text-4xl font-display font-bold text-neon-purple">0</div>
-            <div className="text-sm text-muted-foreground uppercase tracking-wider">Trades Made</div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA Section */}
-      {!user && (
+        {/* CTA Section */}
         <section className="relative overflow-hidden rounded-2xl">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20" />
           <div className="absolute inset-0 cyber-grid opacity-30" />
@@ -169,7 +74,87 @@ const Index = () => {
             </Link>
           </div>
         </section>
-      )}
+      </div>
+    );
+  }
+
+  // Logged in Roblox-style home page
+  return (
+    <div className="space-y-6">
+      {/* Welcome Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-display font-bold">
+            Welcome back, <span className="gradient-text">{profile?.username}</span>!
+          </h1>
+          <p className="text-muted-foreground">What would you like to do today?</p>
+        </div>
+        <Link to="/profile">
+          <Button variant="outline" className="gap-2">
+            <Crown className="w-4 h-4" />
+            View Profile
+          </Button>
+        </Link>
+      </div>
+
+      {/* Quick Actions */}
+      <HomeQuickActions />
+
+      {/* Main Layout */}
+      <div className="grid lg:grid-cols-12 gap-6">
+        {/* Left Panel - Avatar & User Info */}
+        <div className="lg:col-span-3 space-y-6">
+          <HomeLeftPanel />
+        </div>
+
+        {/* Main Content */}
+        <div className="lg:col-span-6 space-y-6">
+          <HomeAnnouncements />
+          
+          {/* Stats Section */}
+          <div className="cyber-card p-6">
+            <h3 className="font-display font-bold mb-4">Your Stats</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-muted/30 rounded-lg text-center">
+                <p className="text-2xl font-bold text-primary">{profile?.emeralds.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Emeralds</p>
+              </div>
+              <div className="p-4 bg-muted/30 rounded-lg text-center">
+                <p className="text-2xl font-bold text-secondary">#{profile?.numeric_id}</p>
+                <p className="text-sm text-muted-foreground">User ID</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Getting Started */}
+          <div className="cyber-card p-6 space-y-4">
+            <h3 className="font-display font-bold">Getting Started</h3>
+            <div className="grid md:grid-cols-2 gap-3">
+              <Link to="/catalog" className="p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                <h4 className="font-medium mb-1">🛒 Browse the Catalog</h4>
+                <p className="text-sm text-muted-foreground">Find unique items and limiteds</p>
+              </Link>
+              <Link to="/users" className="p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                <h4 className="font-medium mb-1">👥 Meet People</h4>
+                <p className="text-sm text-muted-foreground">Connect with other players</p>
+              </Link>
+              <Link to="/promocodes" className="p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                <h4 className="font-medium mb-1">🎁 Redeem Codes</h4>
+                <p className="text-sm text-muted-foreground">Get free emeralds and items</p>
+              </Link>
+              <Link to="/avatar" className="p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                <h4 className="font-medium mb-1">🎨 Customize Avatar</h4>
+                <p className="text-sm text-muted-foreground">Express your style</p>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Panel - Friends */}
+        <div className="lg:col-span-3 space-y-6">
+          <HomeFriendsList />
+        </div>
+      </div>
     </div>
   );
 };

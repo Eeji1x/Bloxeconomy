@@ -11,11 +11,15 @@ import Signup from "./pages/Signup";
 import Users from "./pages/Users";
 import Profile from "./pages/Profile";
 import Catalog from "./pages/Catalog";
+import ItemDetail from "./pages/ItemDetail";
 import Promocodes from "./pages/Promocodes";
 import Trading from "./pages/Trading";
 import Avatar from "./pages/Avatar";
 import Friends from "./pages/Friends";
 import Admin from "./pages/Admin";
+import Settings from "./pages/Settings";
+import Leaderboards from "./pages/Leaderboards";
+import Banned from "./pages/Banned";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,11 +40,15 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/profile/:userId" element={<Profile />} />
               <Route path="/catalog" element={<Catalog />} />
+              <Route path="/catalog/:itemId" element={<ItemDetail />} />
               <Route path="/promocodes" element={<Promocodes />} />
               <Route path="/trading" element={<Trading />} />
               <Route path="/avatar" element={<Avatar />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/leaderboards" element={<Leaderboards />} />
+              <Route path="/banned" element={<Banned />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
