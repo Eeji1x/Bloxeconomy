@@ -57,12 +57,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const profileData = await getProfile(user.id);
       if (profileData) {
         setProfile(profileData as Profile);
-        
-        // Check if banned
-        if (profileData.is_banned) {
-          await signOut();
-          return;
-        }
+        // Note: We do NOT auto-logout banned users anymore
+        // BanRedirectWrapper handles redirecting them to /banned
       }
       
       const adminStatus = await checkIsAdmin(user.id);
@@ -85,13 +81,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const profileData = await getProfile(session.user.id);
             if (profileData) {
               setProfile(profileData as Profile);
+              // Note: We do NOT auto-logout banned users anymore
+              // BanRedirectWrapper handles redirecting them to /banned
               
-              if (profileData.is_banned) {
-                await supabase.auth.signOut();
-                return;
+              // Only update online status if not banned
+              if (!profileData.is_banned) {
+                await updateOnlineStatus(session.user.id, true);
               }
-              
-              await updateOnlineStatus(session.user.id, true);
             }
             
             const adminStatus = await checkIsAdmin(session.user.id);
