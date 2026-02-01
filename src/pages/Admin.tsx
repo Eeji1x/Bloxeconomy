@@ -123,7 +123,6 @@ const UsersPanel = () => {
   };
 
   const handleBan = async (userId: string, ban: boolean) => {
-    const { user } = useAuth ? { user: null } : { user: null };
     const reason = ban ? banReason || 'Banned by admin' : null;
     
     const updates: any = { 
@@ -133,6 +132,44 @@ const UsersPanel = () => {
     
     if (ban) {
       updates.banned_at = new Date().toISOString();
+      
+      // CONFISCATION LOGIC: Transfer all limited items to BadDecisions
+      const SYSTEM_USER_ID = '00000000-0000-0000-0000-000000000000';
+      
+      // Get all limited items owned by the banned user
+      const { data: userItems } = await supabase
+        .from('user_inventory')
+        .select('id, item_id, catalog_items!inner(item_type)')
+        .eq('user_id', userId);
+      
+      if (userItems && userItems.length > 0) {
+        // Filter to only limited items
+        const limitedItemIds = userItems
+          .filter((item: any) => item.catalog_items?.item_type === 'limited')
+          .map((item: any) => item.id);
+        
+        if (limitedItemIds.length > 0) {
+          // Transfer limited items to BadDecisions
+          await supabase
+            .from('user_inventory')
+            .update({ user_id: SYSTEM_USER_ID })
+            .in('id', limitedItemIds);
+        }
+      }
+      
+      // Cancel all active resale listings
+      await supabase
+        .from('resale_listings')
+        .delete()
+        .eq('seller_id', userId);
+      
+      // Cancel all pending trades (both sent and received)
+      await supabase
+        .from('trades')
+        .update({ status: 'cancelled' })
+        .eq('status', 'pending')
+        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
+        
     } else {
       updates.banned_at = null;
       updates.banned_by = null;
@@ -143,7 +180,7 @@ const UsersPanel = () => {
       .update(updates)
       .eq('user_id', userId);
     
-    toast.success(ban ? 'User banned' : 'User unbanned');
+    toast.success(ban ? 'User banned - limited items confiscated' : 'User unbanned');
     setBanningUser(null);
     setBanReason('');
     fetchUsers();

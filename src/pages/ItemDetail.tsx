@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { OwnersPanel } from '@/components/catalog/OwnersPanel';
 import { 
   ArrowLeft, 
   Gem, 
@@ -453,6 +454,11 @@ const ItemDetail = () => {
           )}
         </div>
       </div>
+
+      {/* Owners Panel - Only for limited items */}
+      {isLimited && (
+        <OwnersPanel itemId={item.id} itemType={item.item_type} />
+      )}
 
       {/* Resale Listings */}
       {isLimited && (
