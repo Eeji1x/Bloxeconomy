@@ -29,6 +29,7 @@ interface CatalogItem {
   price: number;
   stock: number | null;
   is_on_sale: boolean | null;
+  resell_enabled: boolean | null;
   created_at: string;
 }
 
@@ -152,14 +153,28 @@ const ItemDetail = () => {
         .update({ emeralds: profile.emeralds - item.price })
         .eq('user_id', user.id);
 
-      // Add to inventory
-      await supabase
+      // Add to inventory - unique constraint prevents duplicates
+      const { error: invError } = await supabase
         .from('user_inventory')
         .insert({
           user_id: user.id,
           item_id: item.id,
           quantity: 1,
         });
+      
+      if (invError) {
+        // If duplicate error, refund emeralds
+        if (invError.code === '23505') {
+          await supabase
+            .from('profiles')
+            .update({ emeralds: profile.emeralds })
+            .eq('user_id', user.id);
+          toast.error('You already own this item');
+          setBuyingItem(false);
+          return;
+        }
+        throw invError;
+      }
 
       // Update stock if applicable
       if (item.stock !== null) {
@@ -178,6 +193,7 @@ const ItemDetail = () => {
       await fetchUserInventory();
       toast.success(`Purchased ${item.name}!`);
     } catch (error) {
+      console.error('Purchase error:', error);
       toast.error('Purchase failed');
     } finally {
       setBuyingItem(false);
@@ -410,8 +426,8 @@ const ItemDetail = () => {
             </Button>
           )}
 
-          {/* User owns - Resell option */}
-          {userOwnsItem && isLimited && (
+          {/* User owns - Resell option (only if resell_enabled) */}
+          {userOwnsItem && isLimited && item.resell_enabled !== false && (
             <div className="space-y-3">
               {!showResellForm ? (
                 <Button

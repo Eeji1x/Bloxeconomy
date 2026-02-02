@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { DEFAULT_AVATAR_URL } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { User, Gem, Calendar, Shield, Package, ArrowLeftRight, Settings, BadgeCheck, UserPlus, Gift, Clock } from 'lucide-react';
 import { toast } from 'sonner';
-
-const DEFAULT_AVATAR = 'https://tr.rbxcdn.com/30DAY-Avatar-6E2775CACB76AA8984ECB7C3ECC9FD6E-Png/720/720/Avatar/Webp/noFilter';
 
 interface ProfileData {
   id: string;
@@ -201,7 +200,7 @@ const Profile = () => {
           <div className="relative">
             <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/30 flex items-center justify-center overflow-hidden">
               <img
-                src={DEFAULT_AVATAR}
+                src={DEFAULT_AVATAR_URL}
                 alt={profileData.username}
                 className="w-full h-full object-cover"
               />
