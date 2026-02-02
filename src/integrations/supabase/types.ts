@@ -55,6 +55,7 @@ export type Database = {
           max_stock: number | null
           name: string
           price: number
+          resell_enabled: boolean | null
           stock: number | null
           updated_at: string
         }
@@ -71,6 +72,7 @@ export type Database = {
           max_stock?: number | null
           name: string
           price?: number
+          resell_enabled?: boolean | null
           stock?: number | null
           updated_at?: string
         }
@@ -87,6 +89,7 @@ export type Database = {
           max_stock?: number | null
           name?: string
           price?: number
+          resell_enabled?: boolean | null
           stock?: number | null
           updated_at?: string
         }
@@ -123,6 +126,54 @@ export type Database = {
           status?: Database["public"]["Enums"]["friend_status"]
         }
         Relationships: []
+      }
+      item_serials: {
+        Row: {
+          created_at: string
+          id: string
+          inventory_id: string | null
+          is_seized: boolean | null
+          item_id: string
+          original_owner_id: string
+          owner_id: string
+          serial_number: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inventory_id?: string | null
+          is_seized?: boolean | null
+          item_id: string
+          original_owner_id: string
+          owner_id: string
+          serial_number: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inventory_id?: string | null
+          is_seized?: boolean | null
+          item_id?: string
+          original_owner_id?: string
+          owner_id?: string
+          serial_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_serials_inventory_id_fkey"
+            columns: ["inventory_id"]
+            isOneToOne: false
+            referencedRelation: "user_inventory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_serials_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -396,6 +447,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_next_serial: { Args: { p_item_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
