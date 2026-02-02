@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { DEFAULT_AVATAR_URL } from '@/lib/constants';
 import { User, Package, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-
-const DEFAULT_AVATAR = 'https://tr.rbxcdn.com/30DAY-Avatar-6E2775CACB76AA8984ECB7C3ECC9FD6E-Png/720/720/Avatar/Webp/noFilter';
 
 interface InventoryItem {
   id: string;
@@ -114,18 +113,21 @@ const Avatar = () => {
           <div className="aspect-[3/4] rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary/30 flex items-center justify-center overflow-hidden relative">
             {/* Base Avatar */}
             <img
-              src={DEFAULT_AVATAR}
+              src={DEFAULT_AVATAR_URL}
               alt="Your Avatar"
               className="w-full h-full object-contain p-4 absolute inset-0"
             />
-            {/* Equipped items overlay */}
+            {/* Equipped items overlay - fully opaque, no transparency */}
             {equippedItems.map((item) => (
               <img
                 key={item.id}
                 src={item.catalog_items?.image_url}
                 alt={item.catalog_items?.name}
                 className="w-full h-full object-contain p-4 absolute inset-0"
-                style={{ mixBlendMode: 'multiply' }}
+                style={{ 
+                  opacity: 1,
+                  mixBlendMode: 'normal'
+                }}
               />
             ))}
           </div>

@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { 
+  BAD_DECISIONS_NUMERIC_ID, 
+  PROTECTED_USER_IDS, 
+  BANNED_USERNAME_PREFIX 
+} from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,7 +25,8 @@ import {
   Save,
   BadgeCheck,
   RefreshCw,
-  RotateCcw
+  RotateCcw,
+  Edit
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -123,6 +129,15 @@ const UsersPanel = () => {
   };
 
   const handleBan = async (userId: string, ban: boolean) => {
+    // Get the user to check if they're protected
+    const targetUser = users.find(u => u.user_id === userId);
+    
+    // Check if user is protected (ID #1 or ID #5)
+    if (targetUser && PROTECTED_USER_IDS.includes(targetUser.numeric_id)) {
+      toast.error(`User ID #${targetUser.numeric_id} cannot be banned`);
+      return;
+    }
+    
     const reason = ban ? banReason || 'Banned by admin' : null;
     
     const updates: any = { 
@@ -130,11 +145,20 @@ const UsersPanel = () => {
       ban_reason: reason,
     };
     
-    if (ban) {
+    if (ban && targetUser) {
       updates.banned_at = new Date().toISOString();
       
-      // CONFISCATION LOGIC: Transfer all limited items to BadDecisions
-      const SYSTEM_USER_ID = '00000000-0000-0000-0000-000000000000';
+      // Rename user to SODABLOX_User_[ID]
+      updates.username = `${BANNED_USERNAME_PREFIX}${targetUser.numeric_id}`;
+      
+      // Get BadDecisions user_id by numeric_id
+      const { data: badDecisionsProfile } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('numeric_id', BAD_DECISIONS_NUMERIC_ID)
+        .maybeSingle();
+      
+      const systemUserId = badDecisionsProfile?.user_id || '00000000-0000-0000-0000-000000000000';
       
       // Get all limited items owned by the banned user
       const { data: userItems } = await supabase
@@ -152,8 +176,14 @@ const UsersPanel = () => {
           // Transfer limited items to BadDecisions
           await supabase
             .from('user_inventory')
-            .update({ user_id: SYSTEM_USER_ID })
+            .update({ user_id: systemUserId })
             .in('id', limitedItemIds);
+          
+          // Mark serials as seized
+          await supabase
+            .from('item_serials')
+            .update({ is_seized: true })
+            .in('inventory_id', limitedItemIds);
         }
       }
       
@@ -173,6 +203,7 @@ const UsersPanel = () => {
     } else {
       updates.banned_at = null;
       updates.banned_by = null;
+      // Note: Items are NOT returned on unban - this is intentional
     }
     
     await supabase
@@ -180,7 +211,7 @@ const UsersPanel = () => {
       .update(updates)
       .eq('user_id', userId);
     
-    toast.success(ban ? 'User banned - limited items confiscated' : 'User unbanned');
+    toast.success(ban ? 'User banned - limited items seized by BadDecisions' : 'User unbanned (items not returned)');
     setBanningUser(null);
     setBanReason('');
     fetchUsers();
@@ -363,13 +394,15 @@ const UsersPanel = () => {
                   <RotateCcw className="w-4 h-4" />
                 </Button>
 
-                {/* Ban toggle */}
-                {user.is_banned ? (
+                {/* Ban toggle - only show for non-protected users */}
+                {PROTECTED_USER_IDS.includes(user.numeric_id) ? (
+                  <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded">Protected</span>
+                ) : user.is_banned ? (
                   <Button
                     size="sm"
                     variant="default"
                     onClick={() => handleBan(user.user_id, false)}
-                    title="Unban User"
+                    title="Unban User (items NOT returned)"
                   >
                     <UserCheck className="w-4 h-4" />
                   </Button>
@@ -425,6 +458,7 @@ const UsersPanel = () => {
 const CatalogPanel = () => {
   const [items, setItems] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingItem, setEditingItem] = useState<any | null>(null);
   const [restockingItem, setRestockingItem] = useState<string | null>(null);
   const [restockAmount, setRestockAmount] = useState('');
   const [formData, setFormData] = useState({
@@ -436,6 +470,7 @@ const CatalogPanel = () => {
     stock: null as number | null,
     is_on_sale: true,
     is_giftbox: false,
+    resell_enabled: true,
   });
 
   useEffect(() => {
@@ -450,31 +485,116 @@ const CatalogPanel = () => {
     if (data) setItems(data);
   };
 
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: '',
+      image_url: '',
+      item_type: 'normal',
+      price: 1,
+      stock: null,
+      is_on_sale: true,
+      is_giftbox: false,
+      resell_enabled: true,
+    });
+    setEditingItem(null);
+    setShowForm(false);
+  };
+
+  const handleStartEdit = (item: any) => {
+    setEditingItem(item);
+    setFormData({
+      name: item.name,
+      description: item.description || '',
+      image_url: item.image_url,
+      item_type: item.item_type,
+      price: item.price,
+      stock: item.stock,
+      is_on_sale: item.is_on_sale ?? true,
+      is_giftbox: item.is_giftbox ?? false,
+      resell_enabled: item.resell_enabled ?? true,
+    });
+    setShowForm(true);
+  };
+
   const handleSubmit = async () => {
-    const { error } = await supabase
-      .from('catalog_items')
-      .insert({
-        ...formData,
-        is_giftbox: formData.item_type === 'giftbox',
-        max_stock: formData.stock,
-      });
-    
-    if (error) {
-      toast.error('Failed to create item');
+    if (editingItem) {
+      // Update existing item
+      const wasNormal = editingItem.item_type === 'normal';
+      const becomingLimited = formData.item_type === 'limited';
+      
+      const { error } = await supabase
+        .from('catalog_items')
+        .update({
+          name: formData.name,
+          description: formData.description || null,
+          image_url: formData.image_url,
+          item_type: formData.item_type,
+          price: formData.price,
+          stock: formData.stock,
+          max_stock: formData.stock,
+          is_on_sale: formData.is_on_sale,
+          is_giftbox: formData.item_type === 'giftbox',
+          resell_enabled: formData.resell_enabled,
+        })
+        .eq('id', editingItem.id);
+      
+      if (error) {
+        toast.error('Failed to update item');
+      } else {
+        // If converting from normal to limited, assign serials to existing owners
+        if (wasNormal && becomingLimited) {
+          const { data: existingInventory } = await supabase
+            .from('user_inventory')
+            .select('id, user_id')
+            .eq('item_id', editingItem.id);
+          
+          if (existingInventory && existingInventory.length > 0) {
+            // Create serial records for existing owners
+            for (let i = 0; i < existingInventory.length; i++) {
+              const inv = existingInventory[i];
+              await supabase
+                .from('item_serials')
+                .insert({
+                  item_id: editingItem.id,
+                  serial_number: i + 1,
+                  inventory_id: inv.id,
+                  owner_id: inv.user_id,
+                  original_owner_id: inv.user_id,
+                });
+            }
+            toast.success(`Assigned ${existingInventory.length} serials to existing owners`);
+          }
+        }
+        
+        toast.success('Item updated!');
+        resetForm();
+        fetchItems();
+      }
     } else {
-      toast.success('Item created!');
-      setShowForm(false);
-      setFormData({
-        name: '',
-        description: '',
-        image_url: '',
-        item_type: 'normal',
-        price: 1,
-        stock: null,
-        is_on_sale: true,
-        is_giftbox: false,
-      });
-      fetchItems();
+      // Create new item
+      const { error } = await supabase
+        .from('catalog_items')
+        .insert({
+          name: formData.name,
+          description: formData.description || null,
+          image_url: formData.image_url,
+          item_type: formData.item_type,
+          price: formData.price,
+          stock: formData.stock,
+          max_stock: formData.stock,
+          is_on_sale: formData.is_on_sale,
+          is_giftbox: formData.item_type === 'giftbox',
+          resell_enabled: formData.resell_enabled,
+        });
+      
+      if (error) {
+        toast.error('Failed to create item');
+      } else {
+        toast.success('Item created!');
+        resetForm();
+        fetchItems();
+      }
     }
   };
 
@@ -518,7 +638,7 @@ const CatalogPanel = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="font-display font-bold">Catalog Items ({items.length})</h2>
-        <Button onClick={() => setShowForm(!showForm)}>
+        <Button onClick={() => { resetForm(); setShowForm(!showForm); }}>
           <Plus className="w-4 h-4 mr-2" />
           Add Item
         </Button>
@@ -526,6 +646,7 @@ const CatalogPanel = () => {
 
       {showForm && (
         <div className="p-6 bg-muted/30 rounded-lg space-y-4">
+          <h3 className="font-bold">{editingItem ? 'Edit Item' : 'Create New Item'}</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Name</Label>
@@ -554,6 +675,9 @@ const CatalogPanel = () => {
                 <option value="limited">Limited</option>
                 <option value="giftbox">Giftbox</option>
               </select>
+              {editingItem && editingItem.item_type === 'normal' && formData.item_type === 'limited' && (
+                <p className="text-xs text-primary">⚠️ Existing owners will receive serial numbers</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Price (Emeralds)</Label>
@@ -572,6 +696,28 @@ const CatalogPanel = () => {
                 placeholder="Unlimited"
               />
             </div>
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.is_on_sale}
+                  onChange={(e) => setFormData({ ...formData, is_on_sale: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                On Sale
+              </Label>
+              {formData.item_type === 'limited' && (
+                <Label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={formData.resell_enabled}
+                    onChange={(e) => setFormData({ ...formData, resell_enabled: e.target.checked })}
+                    className="w-4 h-4"
+                  />
+                  Resell Enabled
+                </Label>
+              )}
+            </div>
           </div>
           <div className="space-y-2">
             <Label>Description</Label>
@@ -584,9 +730,9 @@ const CatalogPanel = () => {
           <div className="flex gap-2">
             <Button onClick={handleSubmit}>
               <Save className="w-4 h-4 mr-2" />
-              Create Item
+              {editingItem ? 'Update Item' : 'Create Item'}
             </Button>
-            <Button variant="outline" onClick={() => setShowForm(false)}>
+            <Button variant="outline" onClick={resetForm}>
               Cancel
             </Button>
           </div>
@@ -607,17 +753,29 @@ const CatalogPanel = () => {
                 </div>
                 <div className="text-xs text-muted-foreground">
                   Stock: {item.stock ?? '∞'} • {item.is_on_sale ? 'On Sale' : 'Off Sale'}
+                  {item.item_type === 'limited' && (
+                    <span> • {item.resell_enabled !== false ? 'Resell On' : 'Resell Off'}</span>
+                  )}
                 </div>
               </div>
             </div>
             
             <div className="flex gap-2 flex-wrap">
+              {/* Edit button */}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleStartEdit(item)}
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+              
               <Button
                 size="sm"
                 variant={item.is_on_sale ? 'outline' : 'default'}
                 onClick={() => toggleOnSale(item.id, item.is_on_sale)}
               >
-                {item.is_on_sale ? 'Take Off Sale' : 'Put On Sale'}
+                {item.is_on_sale ? 'Off Sale' : 'On Sale'}
               </Button>
               
               {/* Restock */}

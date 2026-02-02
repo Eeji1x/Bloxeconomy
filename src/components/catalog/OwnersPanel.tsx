@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { Users, Crown } from 'lucide-react';
+import { Users, Crown, AlertTriangle } from 'lucide-react';
 
-interface Owner {
-  user_id: string;
+interface SerialOwner {
+  serial_number: number;
+  owner_id: string;
   username: string;
   is_verified: boolean | null;
-  count: number;
+  is_seized: boolean;
 }
 
 interface OwnersPanelProps {
@@ -16,65 +17,56 @@ interface OwnersPanelProps {
 }
 
 export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
-  const [owners, setOwners] = useState<Owner[]>([]);
+  const [serialOwners, setSerialOwners] = useState<SerialOwner[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (itemType === 'limited') {
-      fetchOwners();
+      fetchSerialOwners();
     } else {
       setLoading(false);
     }
   }, [itemId, itemType]);
 
-  const fetchOwners = async () => {
+  const fetchSerialOwners = async () => {
     try {
-      // Get all inventory entries for this item
-      const { data: inventoryData, error: invError } = await supabase
-        .from('user_inventory')
-        .select('user_id')
-        .eq('item_id', itemId);
+      // Get all serials for this item
+      const { data: serialsData, error: serialError } = await supabase
+        .from('item_serials')
+        .select('serial_number, owner_id, is_seized')
+        .eq('item_id', itemId)
+        .order('serial_number', { ascending: true });
 
-      if (invError || !inventoryData) {
+      if (serialError || !serialsData || serialsData.length === 0) {
+        setSerialOwners([]);
         setLoading(false);
         return;
       }
 
-      // Count by user_id
-      const countMap = new Map<string, number>();
-      inventoryData.forEach((item) => {
-        const current = countMap.get(item.user_id) || 0;
-        countMap.set(item.user_id, current + 1);
-      });
-
-      // Get profiles for each unique user
-      const userIds = Array.from(countMap.keys());
+      // Get profiles for each unique owner
+      const ownerIds = [...new Set(serialsData.map(s => s.owner_id))];
       
-      if (userIds.length === 0) {
-        setOwners([]);
-        setLoading(false);
-        return;
-      }
-
       const { data: profiles } = await supabase
         .from('profiles')
         .select('user_id, username, is_verified')
-        .in('user_id', userIds);
+        .in('user_id', ownerIds);
 
-      if (profiles) {
-        const ownersData: Owner[] = profiles.map((p) => ({
-          user_id: p.user_id,
-          username: p.username,
-          is_verified: p.is_verified,
-          count: countMap.get(p.user_id) || 0,
-        }));
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
 
-        // Sort by count descending, then by username
-        ownersData.sort((a, b) => b.count - a.count || a.username.localeCompare(b.username));
-        setOwners(ownersData);
-      }
+      const ownersData: SerialOwner[] = serialsData.map((serial) => {
+        const profile = profileMap.get(serial.owner_id);
+        return {
+          serial_number: serial.serial_number,
+          owner_id: serial.owner_id,
+          username: profile?.username || 'Unknown',
+          is_verified: profile?.is_verified || false,
+          is_seized: serial.is_seized || false,
+        };
+      });
+
+      setSerialOwners(ownersData);
     } catch (error) {
-      console.error('Error fetching owners:', error);
+      console.error('Error fetching serial owners:', error);
     } finally {
       setLoading(false);
     }
@@ -99,8 +91,6 @@ export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
     );
   }
 
-  const totalOwned = owners.reduce((acc, o) => acc + o.count, 0);
-
   return (
     <div className="cyber-card p-4">
       <div className="flex items-center justify-between mb-3">
@@ -108,21 +98,24 @@ export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
           <Users className="w-5 h-5 text-primary" />
           <h3 className="font-display font-bold">Owners</h3>
         </div>
-        <span className="text-sm text-muted-foreground">{totalOwned} owned</span>
+        <span className="text-sm text-muted-foreground">{serialOwners.length} owned</span>
       </div>
 
-      {owners.length === 0 ? (
+      {serialOwners.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-2">No one owns this item yet</p>
       ) : (
         <div className="space-y-2 max-h-64 overflow-y-auto">
-          {owners.map((owner, index) => (
+          {serialOwners.map((owner, index) => (
             <Link
-              key={owner.user_id}
-              to={`/profile/${owner.user_id}`}
-              className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors group"
+              key={`${owner.serial_number}-${owner.owner_id}`}
+              to={`/profile/${owner.owner_id}`}
+              className={`flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors group ${
+                owner.is_seized ? 'bg-destructive/10' : ''
+              }`}
             >
               <div className="flex items-center gap-2">
-                {index === 0 && owners.length > 1 && (
+                <span className="text-sm font-mono text-muted-foreground">#{owner.serial_number}</span>
+                {index === 0 && serialOwners.length > 1 && (
                   <Crown className="w-4 h-4 text-yellow-500" />
                 )}
                 <span className="font-medium group-hover:text-primary transition-colors">
@@ -135,10 +128,13 @@ export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
                     className="w-4 h-4"
                   />
                 )}
+                {owner.is_seized && (
+                  <span className="flex items-center gap-1 text-xs text-destructive bg-destructive/20 px-1.5 py-0.5 rounded">
+                    <AlertTriangle className="w-3 h-3" />
+                    Seized
+                  </span>
+                )}
               </div>
-              <span className="text-sm text-accent font-medium">
-                {owner.count}x
-              </span>
             </Link>
           ))}
         </div>
