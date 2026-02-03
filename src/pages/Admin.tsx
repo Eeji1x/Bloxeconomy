@@ -465,11 +465,10 @@ const CatalogPanel = () => {
     name: '',
     description: '',
     image_url: '',
-    item_type: 'normal' as 'normal' | 'limited' | 'giftbox',
+    item_type: 'normal' as 'normal' | 'limited',
     price: 1,
     stock: null as number | null,
     is_on_sale: true,
-    is_giftbox: false,
     resell_enabled: true,
   });
 
@@ -494,7 +493,6 @@ const CatalogPanel = () => {
       price: 1,
       stock: null,
       is_on_sale: true,
-      is_giftbox: false,
       resell_enabled: true,
     });
     setEditingItem(null);
@@ -507,11 +505,10 @@ const CatalogPanel = () => {
       name: item.name,
       description: item.description || '',
       image_url: item.image_url,
-      item_type: item.item_type,
+      item_type: item.item_type === 'giftbox' ? 'normal' : item.item_type,
       price: item.price,
       stock: item.stock,
       is_on_sale: item.is_on_sale ?? true,
-      is_giftbox: item.is_giftbox ?? false,
       resell_enabled: item.resell_enabled ?? true,
     });
     setShowForm(true);
@@ -534,7 +531,7 @@ const CatalogPanel = () => {
           stock: formData.stock,
           max_stock: formData.stock,
           is_on_sale: formData.is_on_sale,
-          is_giftbox: formData.item_type === 'giftbox',
+          is_giftbox: false,
           resell_enabled: formData.resell_enabled,
         })
         .eq('id', editingItem.id);
@@ -584,7 +581,7 @@ const CatalogPanel = () => {
           stock: formData.stock,
           max_stock: formData.stock,
           is_on_sale: formData.is_on_sale,
-          is_giftbox: formData.item_type === 'giftbox',
+          is_giftbox: false,
           resell_enabled: formData.resell_enabled,
         });
       
@@ -673,7 +670,6 @@ const CatalogPanel = () => {
               >
                 <option value="normal">Normal</option>
                 <option value="limited">Limited</option>
-                <option value="giftbox">Giftbox</option>
               </select>
               {editingItem && editingItem.item_type === 'normal' && formData.item_type === 'limited' && (
                 <p className="text-xs text-primary">⚠️ Existing owners will receive serial numbers</p>
