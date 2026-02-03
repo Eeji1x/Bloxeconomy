@@ -12,12 +12,11 @@ interface CatalogItem {
   name: string;
   description: string | null;
   image_url: string;
-  item_type: 'normal' | 'limited' | 'giftbox';
+  item_type: 'normal' | 'limited';
   price: number;
   stock: number | null;
   max_stock: number | null;
   is_on_sale: boolean | null;
-  is_giftbox: boolean | null;
   created_at: string;
 }
 
@@ -26,7 +25,7 @@ const Catalog = () => {
   const [items, setItems] = useState<CatalogItem[]>([]);
   const [userInventory, setUserInventory] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState<'all' | 'normal' | 'limited' | 'giftbox'>('all');
+  const [filter, setFilter] = useState<'all' | 'normal' | 'limited'>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [buyingItem, setBuyingItem] = useState<string | null>(null);
 
@@ -89,8 +88,8 @@ const Catalog = () => {
       return;
     }
 
-    // For limited and giftbox items, check if user already owns one
-    if ((item.item_type === 'limited' || item.item_type === 'giftbox') && userInventory.includes(item.id)) {
+    // For limited items, check if user already owns one
+    if (item.item_type === 'limited' && userInventory.includes(item.id)) {
       toast.error('You can only own one of this item');
       return;
     }
@@ -212,7 +211,7 @@ const Catalog = () => {
           </div>
           
           <div className="flex gap-2">
-            {(['all', 'normal', 'limited', 'giftbox'] as const).map((f) => (
+            {(['all', 'normal', 'limited'] as const).map((f) => (
               <Button
                 key={f}
                 variant={filter === f ? 'default' : 'outline'}
@@ -233,8 +232,8 @@ const Catalog = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {filteredItems.map((item) => {
             const alreadyOwned = userInventory.includes(item.id);
-            const isLimitedOrGiftbox = item.item_type === 'limited' || item.item_type === 'giftbox';
-            const canBuy = item.is_on_sale && (item.stock === null || item.stock > 0) && !(isLimitedOrGiftbox && alreadyOwned);
+            const isLimited = item.item_type === 'limited';
+            const canBuy = item.is_on_sale && (item.stock === null || item.stock > 0) && !(isLimited && alreadyOwned);
             
             return (
               <Link key={item.id} to={`/catalog/${item.id}`} className="cyber-card group">
@@ -254,12 +253,7 @@ const Catalog = () => {
                       Limited
                     </div>
                   )}
-                  {item.is_giftbox && (
-                    <div className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold uppercase rounded bg-secondary/80 text-secondary-foreground">
-                      Giftbox
-                    </div>
-                  )}
-                  {alreadyOwned && isLimitedOrGiftbox && (
+                  {alreadyOwned && isLimited && (
                     <div className="absolute bottom-2 left-2 px-2 py-0.5 text-xs font-bold uppercase rounded bg-accent/80 text-accent-foreground">
                       Owned
                     </div>

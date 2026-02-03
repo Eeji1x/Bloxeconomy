@@ -2,23 +2,22 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Gem, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-const DEFAULT_AVATAR = 'https://tr.rbxcdn.com/30DAY-Avatar-6E2775CACB76AA8984ECB7C3ECC9FD6E-Png/720/720/Avatar/Webp/noFilter';
+import { UserAvatar } from '@/components/avatar/UserAvatar';
 
 export const HomeLeftPanel = () => {
-  const { profile, isAdmin } = useAuth();
+  const { user, profile, isAdmin } = useAuth();
 
-  if (!profile) return null;
+  if (!profile || !user) return null;
 
   return (
     <div className="cyber-card p-6 space-y-4">
       {/* Avatar */}
       <div className="relative">
         <Link to="/profile">
-          <img
-            src={DEFAULT_AVATAR}
-            alt="Your avatar"
-            className="w-full aspect-square object-contain rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10"
+          <UserAvatar 
+            userId={user.id} 
+            size="xl" 
+            className="w-full aspect-square" 
           />
         </Link>
         {profile.is_online && (

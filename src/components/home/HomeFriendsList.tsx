@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Users } from 'lucide-react';
+import { UserAvatar } from '@/components/avatar/UserAvatar';
 
 interface Friend {
   user_id: string;
@@ -93,9 +94,7 @@ export const HomeFriendsList = () => {
               className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors"
             >
               <div className="relative">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-sm font-bold">
-                  {friend.username[0].toUpperCase()}
-                </div>
+                <UserAvatar userId={friend.user_id} size="sm" />
                 <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background ${
                   friend.is_online ? 'bg-accent' : 'bg-muted-foreground'
                 }`} />

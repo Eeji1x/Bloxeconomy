@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { DEFAULT_AVATAR_URL } from '@/lib/constants';
+import { UserAvatar } from '@/components/avatar/UserAvatar';
 import { Button } from '@/components/ui/button';
-import { User, Gem, Calendar, Shield, Package, ArrowLeftRight, Settings, BadgeCheck, UserPlus, Gift, Clock } from 'lucide-react';
+import { User, Gem, Calendar, Shield, Package, ArrowLeftRight, Settings, BadgeCheck, UserPlus, UserMinus, Gift, Clock, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ProfileData {
@@ -45,6 +45,9 @@ const Profile = () => {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [claimingDaily, setClaimingDaily] = useState(false);
+  const [friendStatus, setFriendStatus] = useState<'none' | 'pending_sent' | 'pending_received' | 'accepted'>('none');
+  const [friendshipId, setFriendshipId] = useState<string | null>(null);
+  const [friendLoading, setFriendLoading] = useState(false);
 
   const isOwnProfile = !userId || userId === user?.id;
   const viewingUserId = userId || user?.id;
@@ -103,11 +106,148 @@ const Profile = () => {
         setInventory(inventoryData as InventoryItem[]);
       }
 
+      // Fetch friend status if not own profile
+      if (user && viewingUserId !== user.id) {
+        await fetchFriendStatus(viewingUserId);
+      }
+
       setIsLoading(false);
     };
 
     fetchProfileData();
-  }, [viewingUserId]);
+  }, [viewingUserId, user]);
+
+  const fetchFriendStatus = async (targetUserId: string) => {
+    if (!user) return;
+
+    const { data: friendship } = await supabase
+      .from('friends')
+      .select('id, requester_id, status')
+      .or(`and(requester_id.eq.${user.id},addressee_id.eq.${targetUserId}),and(requester_id.eq.${targetUserId},addressee_id.eq.${user.id})`)
+      .maybeSingle();
+
+    if (friendship) {
+      setFriendshipId(friendship.id);
+      if (friendship.status === 'accepted') {
+        setFriendStatus('accepted');
+      } else if (friendship.status === 'pending') {
+        if (friendship.requester_id === user.id) {
+          setFriendStatus('pending_sent');
+        } else {
+          setFriendStatus('pending_received');
+        }
+      }
+    } else {
+      setFriendStatus('none');
+      setFriendshipId(null);
+    }
+  };
+
+  const handleSendFriendRequest = async () => {
+    if (!user || !viewingUserId) return;
+    setFriendLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('friends')
+        .insert({
+          requester_id: user.id,
+          addressee_id: viewingUserId,
+          status: 'pending',
+        });
+
+      if (error) throw error;
+      toast.success('Friend request sent!');
+      await fetchFriendStatus(viewingUserId);
+    } catch (error) {
+      toast.error('Failed to send friend request');
+    } finally {
+      setFriendLoading(false);
+    }
+  };
+
+  const handleAcceptFriend = async () => {
+    if (!friendshipId) return;
+    setFriendLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('friends')
+        .update({ status: 'accepted' })
+        .eq('id', friendshipId);
+
+      if (error) throw error;
+      toast.success('Friend request accepted!');
+      setFriendStatus('accepted');
+    } catch (error) {
+      toast.error('Failed to accept friend request');
+    } finally {
+      setFriendLoading(false);
+    }
+  };
+
+  const handleDeclineFriend = async () => {
+    if (!friendshipId) return;
+    setFriendLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('friends')
+        .delete()
+        .eq('id', friendshipId);
+
+      if (error) throw error;
+      toast.success('Friend request declined');
+      setFriendStatus('none');
+      setFriendshipId(null);
+    } catch (error) {
+      toast.error('Failed to decline friend request');
+    } finally {
+      setFriendLoading(false);
+    }
+  };
+
+  const handleRemoveFriend = async () => {
+    if (!friendshipId) return;
+    setFriendLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('friends')
+        .delete()
+        .eq('id', friendshipId);
+
+      if (error) throw error;
+      toast.success('Friend removed');
+      setFriendStatus('none');
+      setFriendshipId(null);
+    } catch (error) {
+      toast.error('Failed to remove friend');
+    } finally {
+      setFriendLoading(false);
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    if (!friendshipId) return;
+    setFriendLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('friends')
+        .delete()
+        .eq('id', friendshipId);
+
+      if (error) throw error;
+      toast.success('Friend request cancelled');
+      setFriendStatus('none');
+      setFriendshipId(null);
+    } catch (error) {
+      toast.error('Failed to cancel request');
+    } finally {
+      setFriendLoading(false);
+    }
+  };
 
   const handleClaimDaily = async () => {
     if (!user || !currentUserProfile) return;
@@ -198,13 +338,11 @@ const Profile = () => {
         <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
           {/* Avatar */}
           <div className="relative">
-            <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/30 flex items-center justify-center overflow-hidden">
-              <img
-                src={DEFAULT_AVATAR_URL}
-                alt={profileData.username}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <UserAvatar 
+              userId={viewingUserId!} 
+              size="xl" 
+              className="w-32 h-32 border-2 border-primary/30" 
+            />
             <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-background ${profileData.is_online ? 'bg-accent' : 'bg-muted-foreground'}`} />
           </div>
 
@@ -282,10 +420,62 @@ const Profile = () => {
                 </>
               ) : (
                 <>
-                  <Button variant="outline" size="sm">
-                    <UserPlus className="w-4 h-4" />
-                    Add Friend
-                  </Button>
+                  {/* Friend buttons based on status */}
+                  {friendStatus === 'none' && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleSendFriendRequest}
+                      disabled={friendLoading}
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      Add Friend
+                    </Button>
+                  )}
+                  {friendStatus === 'pending_sent' && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleCancelRequest}
+                      disabled={friendLoading}
+                    >
+                      <X className="w-4 h-4" />
+                      Cancel Request
+                    </Button>
+                  )}
+                  {friendStatus === 'pending_received' && (
+                    <>
+                      <Button 
+                        variant="emerald" 
+                        size="sm" 
+                        onClick={handleAcceptFriend}
+                        disabled={friendLoading}
+                      >
+                        <Check className="w-4 h-4" />
+                        Accept
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleDeclineFriend}
+                        disabled={friendLoading}
+                      >
+                        <X className="w-4 h-4" />
+                        Decline
+                      </Button>
+                    </>
+                  )}
+                  {friendStatus === 'accepted' && (
+                    <Button 
+                      variant="destructive" 
+                      size="sm" 
+                      onClick={handleRemoveFriend}
+                      disabled={friendLoading}
+                    >
+                      <UserMinus className="w-4 h-4" />
+                      Remove Friend
+                    </Button>
+                  )}
                   <Link to={`/trading?user=${profileData?.user_id}`}>
                     <Button variant="outline" size="sm">
                       <ArrowLeftRight className="w-4 h-4" />

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { UserAvatar } from '@/components/avatar/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -524,9 +525,7 @@ const Trading = () => {
                       onClick={() => selectUser(result)}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center font-bold">
-                          {result.username[0].toUpperCase()}
-                        </div>
+                        <UserAvatar userId={result.user_id} size="md" />
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="font-bold">{result.username}</span>
@@ -554,9 +553,7 @@ const Trading = () => {
                 <div className="flex items-center gap-3">
                   <span className="text-muted-foreground">Trading with:</span>
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center font-bold text-sm">
-                      {selectedUser.username[0].toUpperCase()}
-                    </div>
+                    <UserAvatar userId={selectedUser.user_id} size="sm" />
                     <span className="font-bold">{selectedUser.username}</span>
                     {selectedUser.is_verified && (
                       <img 

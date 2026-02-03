@@ -25,7 +25,7 @@ interface CatalogItem {
   name: string;
   description: string | null;
   image_url: string;
-  item_type: 'normal' | 'limited' | 'giftbox';
+  item_type: 'normal' | 'limited';
   price: number;
   stock: number | null;
   is_on_sale: boolean | null;
