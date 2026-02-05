@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { Users, Crown, AlertTriangle } from 'lucide-react';
+import { Users, Crown } from 'lucide-react';
 
 interface SerialOwner {
   serial_number: number;
   owner_id: string;
   username: string;
   is_verified: boolean | null;
-  is_seized: boolean;
 }
 
 interface OwnersPanelProps {
   itemId: string;
-  itemType: 'normal' | 'limited' | 'giftbox';
+  itemType: 'normal' | 'limited';
 }
 
 export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
@@ -33,7 +32,7 @@ export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
       // Get all serials for this item
       const { data: serialsData, error: serialError } = await supabase
         .from('item_serials')
-        .select('serial_number, owner_id, is_seized')
+        .select('serial_number, owner_id')
         .eq('item_id', itemId)
         .order('serial_number', { ascending: true });
 
@@ -60,7 +59,6 @@ export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
           owner_id: serial.owner_id,
           username: profile?.username || 'Unknown',
           is_verified: profile?.is_verified || false,
-          is_seized: serial.is_seized || false,
         };
       });
 
@@ -109,9 +107,7 @@ export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
             <Link
               key={`${owner.serial_number}-${owner.owner_id}`}
               to={`/profile/${owner.owner_id}`}
-              className={`flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors group ${
-                owner.is_seized ? 'bg-destructive/10' : ''
-              }`}
+              className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors group"
             >
               <div className="flex items-center gap-2">
                 <span className="text-sm font-mono text-muted-foreground">#{owner.serial_number}</span>
@@ -127,12 +123,6 @@ export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
                     alt="Verified" 
                     className="w-4 h-4"
                   />
-                )}
-                {owner.is_seized && (
-                  <span className="flex items-center gap-1 text-xs text-destructive bg-destructive/20 px-1.5 py-0.5 rounded">
-                    <AlertTriangle className="w-3 h-3" />
-                    Seized
-                  </span>
                 )}
               </div>
             </Link>

@@ -434,7 +434,13 @@ const ItemDetail = () => {
                   variant="outline"
                   size="lg"
                   className="w-full"
-                  onClick={() => setShowResellForm(true)}
+                  onClick={() => {
+                    setShowResellForm(true);
+                    // Auto-select first unlisted inventory item
+                    if (unlistedInventory.length > 0) {
+                      setSelectedInventoryId(unlistedInventory[0].id);
+                    }
+                  }}
                   disabled={unlistedInventory.length === 0}
                 >
                   <Tag className="w-5 h-5 mr-2" />

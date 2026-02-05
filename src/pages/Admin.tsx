@@ -160,7 +160,7 @@ const UsersPanel = () => {
       
       const systemUserId = badDecisionsProfile?.user_id || '00000000-0000-0000-0000-000000000000';
       
-      // Get all limited items owned by the banned user
+      // Get all limited inventory items owned by the banned user
       const { data: userItems } = await supabase
         .from('user_inventory')
         .select('id, item_id, catalog_items!inner(item_type)')
@@ -179,10 +179,10 @@ const UsersPanel = () => {
             .update({ user_id: systemUserId })
             .in('id', limitedItemIds);
           
-          // Mark serials as seized
+          // Update serial ownership to BadDecisions
           await supabase
             .from('item_serials')
-            .update({ is_seized: true })
+            .update({ owner_id: systemUserId })
             .in('inventory_id', limitedItemIds);
         }
       }
@@ -262,18 +262,44 @@ const UsersPanel = () => {
   };
 
   const handleResetUser = async (userId: string) => {
-    // Reset emeralds, inventory, and avatar
+    // Get BadDecisions user_id
+    const { data: badDecisionsProfile } = await supabase
+      .from('profiles')
+      .select('user_id')
+      .eq('numeric_id', BAD_DECISIONS_NUMERIC_ID)
+      .maybeSingle();
+    
+    const systemUserId = badDecisionsProfile?.user_id || '00000000-0000-0000-0000-000000000000';
+    
+    // Get all user inventory items
+    const { data: userItems } = await supabase
+      .from('user_inventory')
+      .select('id')
+      .eq('user_id', userId);
+    
+    if (userItems && userItems.length > 0) {
+      const inventoryIds = userItems.map(i => i.id);
+      
+      // Transfer ALL items to BadDecisions
+      await supabase
+        .from('user_inventory')
+        .update({ user_id: systemUserId })
+        .in('id', inventoryIds);
+      
+      // Update serial ownership for limited items
+      await supabase
+        .from('item_serials')
+        .update({ owner_id: systemUserId })
+        .in('inventory_id', inventoryIds);
+    }
+    
+    // Reset emeralds and avatar
     await supabase
       .from('profiles')
-      .update({ emeralds: 100, avatar_data: {} })
+      .update({ emeralds: 0, avatar_data: {} })
       .eq('user_id', userId);
     
-    await supabase
-      .from('user_inventory')
-      .delete()
-      .eq('user_id', userId);
-    
-    toast.success('User data reset to defaults');
+    toast.success('User data reset - all items transferred to BadDecisions');
     fetchUsers();
   };
 
