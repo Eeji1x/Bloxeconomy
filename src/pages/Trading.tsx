@@ -382,19 +382,19 @@ const Trading = () => {
         }
 
         // Execute the trade atomically
-        // 1. Transfer items from sender to receiver
+        // 1. Transfer items from sender to receiver (unequip first)
         if (trade.sender_items.length > 0) {
           await supabase
             .from('user_inventory')
-            .update({ user_id: trade.receiver_id })
+            .update({ user_id: trade.receiver_id, is_equipped: false })
             .in('id', trade.sender_items);
         }
 
-        // 2. Transfer items from receiver to sender
+        // 2. Transfer items from receiver to sender (unequip first)
         if (trade.receiver_items.length > 0) {
           await supabase
             .from('user_inventory')
-            .update({ user_id: trade.sender_id })
+            .update({ user_id: trade.sender_id, is_equipped: false })
             .in('id', trade.receiver_items);
         }
 
