@@ -140,7 +140,8 @@ const ItemDetail = () => {
     }
 
     if (profile.emeralds < item.price) {
-      toast.error('Not enough emeralds');
+      const needed = item.price - profile.emeralds;
+      toast.error(`You need ${needed.toLocaleString()} more Emeralds`);
       return;
     }
 
@@ -209,7 +210,8 @@ const ItemDetail = () => {
     }
 
     if (profile.emeralds < listing.price) {
-      toast.error('Not enough emeralds');
+      const needed = listing.price - profile.emeralds;
+      toast.error(`You need ${needed.toLocaleString()} more Emeralds`);
       return;
     }
 
@@ -242,10 +244,10 @@ const ItemDetail = () => {
         .update({ emeralds: sellerProfile.emeralds + listing.price })
         .eq('user_id', listing.seller_id);
 
-      // Transfer item ownership
+      // Transfer item ownership (unequip it)
       await supabase
         .from('user_inventory')
-        .update({ user_id: user.id })
+        .update({ user_id: user.id, is_equipped: false })
         .eq('id', listing.inventory_id);
 
       // Delete listing
@@ -266,7 +268,12 @@ const ItemDetail = () => {
   };
 
   const handleCreateListing = async () => {
-    if (!user || !selectedInventoryId) return;
+    if (!user || !profile || !selectedInventoryId) return;
+
+    if (profile.is_banned) {
+      toast.error('Banned users cannot list items');
+      return;
+    }
 
     const price = parseInt(resellPrice);
     if (isNaN(price) || price < 1) {
@@ -274,9 +281,29 @@ const ItemDetail = () => {
       return;
     }
 
+    // Verify ownership before listing
+    const { data: ownedItem } = await supabase
+      .from('user_inventory')
+      .select('id')
+      .eq('id', selectedInventoryId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (!ownedItem) {
+      toast.error('You do not own this item');
+      await fetchUserInventory();
+      return;
+    }
+
     setCreatingListing(true);
 
     try {
+      // Unequip item before listing
+      await supabase
+        .from('user_inventory')
+        .update({ is_equipped: false })
+        .eq('id', selectedInventoryId);
+
       const { error } = await supabase
         .from('resale_listings')
         .insert({
@@ -293,6 +320,7 @@ const ItemDetail = () => {
       setResellPrice('');
       setSelectedInventoryId(null);
       await fetchResaleListings();
+      await fetchUserInventory();
     } catch (error: any) {
       if (error.code === '23505') {
         toast.error('This item is already listed');
@@ -304,15 +332,28 @@ const ItemDetail = () => {
     }
   };
 
-  const handleRemoveListing = async (listingId: string) => {
+  const handleRemoveListing = async (listing: ResaleListing) => {
+    // Only seller or admin can remove
+    if (listing.seller_id !== user?.id && !isAdmin) {
+      toast.error('Only the seller or an admin can remove this listing');
+      return;
+    }
+
     try {
+      // Return item to seller's inventory
+      await supabase
+        .from('user_inventory')
+        .update({ user_id: listing.seller_id })
+        .eq('id', listing.inventory_id);
+
       await supabase
         .from('resale_listings')
         .delete()
-        .eq('id', listingId);
+        .eq('id', listing.id);
 
-      toast.success('Listing removed');
+      toast.success('Listing removed — item returned to seller');
       await fetchResaleListings();
+      await fetchUserInventory();
     } catch (error) {
       toast.error('Failed to remove listing');
     }
@@ -525,7 +566,7 @@ const ItemDetail = () => {
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => handleRemoveListing(listing.id)}
+                        onClick={() => handleRemoveListing(listing)}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -533,7 +574,7 @@ const ItemDetail = () => {
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => handleRemoveListing(listing.id)}
+                        onClick={() => handleRemoveListing(listing)}
                       >
                         Remove
                       </Button>

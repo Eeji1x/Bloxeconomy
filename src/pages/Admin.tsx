@@ -172,14 +172,14 @@ const UsersPanel = () => {
           .filter((item: any) => item.catalog_items?.item_type === 'limited')
           .map((item: any) => item.id);
         
-        if (limitedItemIds.length > 0) {
-          // Transfer limited items to BadDecisions
+      if (limitedItemIds.length > 0) {
+          // Unequip and transfer limited items to BadDecisions
           await supabase
             .from('user_inventory')
-            .update({ user_id: systemUserId })
+            .update({ user_id: systemUserId, is_equipped: false })
             .in('id', limitedItemIds);
           
-          // Update serial ownership to BadDecisions
+          // Update serial ownership to BadDecisions (trigger also does this, but be explicit)
           await supabase
             .from('item_serials')
             .update({ owner_id: systemUserId })
@@ -280,18 +280,31 @@ const UsersPanel = () => {
     if (userItems && userItems.length > 0) {
       const inventoryIds = userItems.map(i => i.id);
       
-      // Transfer ALL items to BadDecisions
+      // Unequip and transfer ALL items to BadDecisions
       await supabase
         .from('user_inventory')
-        .update({ user_id: systemUserId })
+        .update({ user_id: systemUserId, is_equipped: false })
         .in('id', inventoryIds);
       
-      // Update serial ownership for limited items
+      // Update serial ownership for limited items (trigger also does this, but be explicit)
       await supabase
         .from('item_serials')
         .update({ owner_id: systemUserId })
         .in('inventory_id', inventoryIds);
     }
+    
+    // Delete all resale listings from this user
+    await supabase
+      .from('resale_listings')
+      .delete()
+      .eq('seller_id', userId);
+    
+    // Cancel all pending trades
+    await supabase
+      .from('trades')
+      .update({ status: 'cancelled' })
+      .eq('status', 'pending')
+      .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
     
     // Reset emeralds and avatar
     await supabase
