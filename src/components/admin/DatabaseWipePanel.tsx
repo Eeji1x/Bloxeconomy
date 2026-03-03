@@ -94,28 +94,15 @@ const DatabaseWipePanel = () => {
           .eq('user_id', uid);
       }
 
-      // 13. Delete non-protected profiles
-      // We can't delete profiles via RLS easily, so we'll delete them one by one
+      // 13. Delete ALL non-protected profiles from the database
       const { data: allProfiles } = await supabase
         .from('profiles')
         .select('user_id, numeric_id');
 
       if (allProfiles) {
         const nonProtected = allProfiles.filter(p => !PROTECTED_USER_IDS.includes(p.numeric_id));
-        // Note: profiles table doesn't have DELETE RLS, so we use admin edge function or just reset them
-        // Since we can't delete profiles (no DELETE policy), we'll reset them to a wiped state
-        // The auth.users entries remain but profiles are effectively dead
         for (const p of nonProtected) {
-          await supabase
-            .from('profiles')
-            .update({
-              emeralds: 0,
-              avatar_data: {},
-              is_banned: true,
-              ban_reason: 'Account wiped by system reset',
-              banned_at: new Date().toISOString(),
-            })
-            .eq('user_id', p.user_id);
+          await supabase.from('profiles').delete().eq('user_id', p.user_id);
         }
       }
 
