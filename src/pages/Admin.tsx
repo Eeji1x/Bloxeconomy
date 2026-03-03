@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import DatabaseWipePanel from '@/components/admin/DatabaseWipePanel';
 import { 
   Shield, 
   Users, 
@@ -26,7 +27,8 @@ import {
   BadgeCheck,
   RefreshCw,
   RotateCcw,
-  Edit
+  Edit,
+  AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -41,6 +43,7 @@ const tabs: Tab[] = [
   { id: 'catalog', label: 'Catalog', icon: <ShoppingBag className="w-4 h-4" /> },
   { id: 'promocodes', label: 'Promocodes', icon: <Gift className="w-4 h-4" /> },
   { id: 'announcements', label: 'Announcements', icon: <Megaphone className="w-4 h-4" /> },
+  { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
 const Admin = () => {
@@ -91,6 +94,7 @@ const Admin = () => {
         {activeTab === 'catalog' && <CatalogPanel />}
         {activeTab === 'promocodes' && <PromocodesPanel />}
         {activeTab === 'announcements' && <AnnouncementsPanel />}
+        {activeTab === 'wipe' && <DatabaseWipePanel />}
       </div>
     </div>
   );

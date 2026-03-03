@@ -209,14 +209,56 @@ const ItemDetail = () => {
       return;
     }
 
-    if (profile.emeralds < listing.price) {
-      const needed = listing.price - profile.emeralds;
-      toast.error(`You need ${needed.toLocaleString()} more Emeralds`);
+    if (listing.seller_id === user.id) {
+      toast.error('You cannot buy your own listing');
       return;
     }
 
-    if (listing.seller_id === user.id) {
-      toast.error('You cannot buy your own listing');
+    // Re-fetch buyer's current emeralds to prevent stale data
+    const { data: freshProfile } = await supabase
+      .from('profiles')
+      .select('emeralds')
+      .eq('user_id', user.id)
+      .single();
+
+    if (!freshProfile) {
+      toast.error('Could not verify your balance');
+      return;
+    }
+
+    if (freshProfile.emeralds < listing.price) {
+      const needed = listing.price - freshProfile.emeralds;
+      toast.error(`You need ${needed.toLocaleString()} more Emeralds to buy this item.`);
+      return;
+    }
+
+    // Verify listing is still active
+    const { data: activeListing } = await supabase
+      .from('resale_listings')
+      .select('id')
+      .eq('id', listing.id)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (!activeListing) {
+      toast.error('This listing is no longer available');
+      await fetchResaleListings();
+      return;
+    }
+
+    // Verify seller still owns the item
+    const { data: sellerOwns } = await supabase
+      .from('user_inventory')
+      .select('id')
+      .eq('id', listing.inventory_id)
+      .eq('user_id', listing.seller_id)
+      .maybeSingle();
+
+    if (!sellerOwns) {
+      toast.error('Seller no longer owns this item');
+      // Clean up stale listing
+      await supabase.from('resale_listings').delete().eq('id', listing.id);
+      await fetchResaleListings();
       return;
     }
 
@@ -232,11 +274,13 @@ const ItemDetail = () => {
 
       if (!sellerProfile) throw new Error('Seller not found');
 
-      // Deduct emeralds from buyer
-      await supabase
+      // Deduct emeralds from buyer (use fresh balance)
+      const { error: buyerError } = await supabase
         .from('profiles')
-        .update({ emeralds: profile.emeralds - listing.price })
+        .update({ emeralds: freshProfile.emeralds - listing.price })
         .eq('user_id', user.id);
+
+      if (buyerError) throw buyerError;
 
       // Add emeralds to seller
       await supabase
@@ -244,11 +288,17 @@ const ItemDetail = () => {
         .update({ emeralds: sellerProfile.emeralds + listing.price })
         .eq('user_id', listing.seller_id);
 
-      // Transfer item ownership (unequip it)
+      // Transfer item ownership and unequip
       await supabase
         .from('user_inventory')
         .update({ user_id: user.id, is_equipped: false })
         .eq('id', listing.inventory_id);
+
+      // Update serial ownership
+      await supabase
+        .from('item_serials')
+        .update({ owner_id: user.id })
+        .eq('inventory_id', listing.inventory_id);
 
       // Delete listing
       await supabase
@@ -268,16 +318,22 @@ const ItemDetail = () => {
   };
 
   const handleCreateListing = async () => {
-    if (!user || !profile || !selectedInventoryId) return;
+    if (!user || !profile || !selectedInventoryId || !item) return;
 
     if (profile.is_banned) {
       toast.error('Banned users cannot list items');
       return;
     }
 
+    // Prevent system account from listing
+    if (profile.numeric_id === 5) {
+      toast.error('System accounts cannot list items');
+      return;
+    }
+
     const price = parseInt(resellPrice);
     if (isNaN(price) || price < 1) {
-      toast.error('Please enter a valid price');
+      toast.error('Price must be greater than 0');
       return;
     }
 
@@ -292,6 +348,19 @@ const ItemDetail = () => {
     if (!ownedItem) {
       toast.error('You do not own this item');
       await fetchUserInventory();
+      return;
+    }
+
+    // Check if already listed
+    const { data: existingListing } = await supabase
+      .from('resale_listings')
+      .select('id')
+      .eq('inventory_id', selectedInventoryId)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (existingListing) {
+      toast.error('This item is already listed for sale');
       return;
     }
 
