@@ -1,7 +1,7 @@
 // System constants for SODABLOX
 
 // Default avatar URL - THE ONLY default avatar image
-export const DEFAULT_AVATAR_URL = 'https://media.discordapp.net/attachments/1459878085871665336/1467928734202986566/6f99f4a6017fa315.png?format=webp&quality=lossless';
+export const DEFAULT_AVATAR_URL = '/images/default-avatar.webp';
 
 // BadDecisions system account - receives seized items from banned users
 // HARD-SET to User ID #5 - cannot be changed

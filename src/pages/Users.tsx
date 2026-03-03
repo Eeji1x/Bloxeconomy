@@ -4,7 +4,8 @@ import { supabase } from '@/lib/supabase';
 import { Users as UsersIcon, Shield, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
-const DEFAULT_AVATAR = 'https://tr.rbxcdn.com/30DAY-Avatar-6E2775CACB76AA8984ECB7C3ECC9FD6E-Png/720/720/Avatar/Webp/noFilter';
+import { DEFAULT_AVATAR_URL } from '@/lib/constants';
+const DEFAULT_AVATAR = DEFAULT_AVATAR_URL;
 
 interface UserProfile {
   id: string;
