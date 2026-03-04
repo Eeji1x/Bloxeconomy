@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { UserPlus, User, Lock, AlertCircle, Sparkles } from 'lucide-react';
+import { validateUsername } from '@/lib/profanity';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -19,14 +20,10 @@ const Signup = () => {
     e.preventDefault();
     setError('');
 
-    // Validation
-    if (username.length < 3) {
-      setError('Username must be at least 3 characters');
-      return;
-    }
-
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      setError('Username can only contain letters, numbers, and underscores');
+    // Validate username with profanity filter
+    const validation = validateUsername(username);
+    if (!validation.valid) {
+      setError(validation.message || 'Invalid username');
       return;
     }
 
@@ -104,10 +101,11 @@ const Signup = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   className="pl-10 h-12 bg-input border-border focus:border-primary"
                   required
+                  maxLength={20}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Letters, numbers, and underscores only
+                3-20 characters, letters and numbers only
               </p>
             </div>
 
