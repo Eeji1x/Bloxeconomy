@@ -33,7 +33,7 @@ const Users = () => {
     const fetchUsers = async () => {
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, user_id, username, numeric_id, is_online, avatar_data, created_at, is_verified')
         .eq('is_banned', false)
         .order('is_online', { ascending: false })
         .order('last_seen', { ascending: false });
