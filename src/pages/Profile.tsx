@@ -63,8 +63,8 @@ const Profile = () => {
 
       // Fetch profile
       // Fetch only public-safe columns for other users; own profile gets full data
-      const publicColumns = 'id, user_id, username, numeric_id, avatar_data, is_online, is_verified, created_at, updated_at';
-      const ownColumns = 'id, user_id, username, numeric_id, emeralds, avatar_data, is_online, is_banned, ban_reason, last_seen, created_at, updated_at, is_verified, last_daily_claim';
+      const publicColumns = 'id,user_id,username,numeric_id,avatar_data,is_online,is_verified,created_at,updated_at';
+      const ownColumns = 'id,user_id,username,numeric_id,emeralds,avatar_data,is_online,is_banned,ban_reason,last_seen,created_at,updated_at,is_verified,last_daily_claim';
       const selectColumns = isOwnProfile ? ownColumns : publicColumns;
       
       const { data: profileResult, error: profileError } = await supabase
