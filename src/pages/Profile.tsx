@@ -62,9 +62,14 @@ const Profile = () => {
       setIsLoading(true);
 
       // Fetch profile
+      // Fetch only public-safe columns for other users; own profile gets full data
+      const publicColumns = 'id,user_id,username,numeric_id,avatar_data,is_online,is_verified,created_at,updated_at';
+      const ownColumns = 'id,user_id,username,numeric_id,emeralds,avatar_data,is_online,is_banned,ban_reason,last_seen,created_at,updated_at,is_verified,last_daily_claim';
+      const selectColumns = isOwnProfile ? ownColumns : publicColumns;
+      
       const { data: profileResult, error: profileError } = await supabase
         .from('profiles')
-        .select('*')
+        .select(selectColumns)
         .eq('user_id', viewingUserId)
         .maybeSingle();
 
@@ -74,7 +79,19 @@ const Profile = () => {
         return;
       }
 
-      setProfileData(profileResult as ProfileData);
+      // For other users' profiles, set defaults for fields not fetched
+      const safeProfile: ProfileData = isOwnProfile
+        ? (profileResult as unknown as ProfileData)
+        : {
+            ...(profileResult as unknown as Partial<ProfileData>),
+            emeralds: 0,
+            is_banned: null,
+            ban_reason: null,
+            last_seen: null,
+            last_daily_claim: null,
+          } as ProfileData;
+
+      setProfileData(safeProfile);
 
       // Check if profile user is admin
       const { data: roleData } = await supabase
