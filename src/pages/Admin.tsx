@@ -41,6 +41,7 @@ interface Tab {
 
 const tabs: Tab[] = [
   { id: 'users', label: 'Users', icon: <Users className="w-4 h-4" /> },
+  { id: 'create-user', label: 'Create User', icon: <Plus className="w-4 h-4" /> },
   { id: 'catalog', label: 'Catalog', icon: <ShoppingBag className="w-4 h-4" /> },
   { id: 'promocodes', label: 'Promocodes', icon: <Gift className="w-4 h-4" /> },
   { id: 'announcements', label: 'Announcements', icon: <Megaphone className="w-4 h-4" /> },
