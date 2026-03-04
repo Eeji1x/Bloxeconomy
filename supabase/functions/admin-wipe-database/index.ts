@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 Deno.serve(async (req) => {
@@ -13,13 +13,17 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const supabase = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
 
     // Verify caller is admin (ID #1)
-    const authHeader = req.headers.get("Authorization")!;
-    const anonClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!);
-    const { data: { user } } = await anonClient.auth.getUser(authHeader.replace("Bearer ", ""));
-    if (!user) throw new Error("Unauthorized");
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) throw new Error("Missing authorization header");
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) throw new Error("Unauthorized");
 
     const { data: callerProfile } = await supabase
       .from("profiles")
@@ -42,14 +46,14 @@ Deno.serve(async (req) => {
     // 1. Delete all resale listings
     await supabase.from("resale_listings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
 
-    // 2. Delete all trades
-    await supabase.from("trades").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 3. Delete all item serials
+    // 2. Delete all item serials
     await supabase.from("item_serials").delete().neq("id", "00000000-0000-0000-0000-000000000000");
 
-    // 4. Delete all inventory
+    // 3. Delete all inventory
     await supabase.from("user_inventory").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+
+    // 4. Delete all trades
+    await supabase.from("trades").delete().neq("id", "00000000-0000-0000-0000-000000000000");
 
     // 5. Delete promocode redemptions
     await supabase.from("promocode_redemptions").delete().neq("id", "00000000-0000-0000-0000-000000000000");
@@ -75,37 +79,74 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 11. Reset protected profiles
-    for (const uid of protectedUserIds) {
-      await supabase
-        .from("profiles")
-        .update({ emeralds: 0, avatar_data: {}, is_banned: false, ban_reason: null, banned_at: null, banned_by: null })
-        .eq("user_id", uid);
-    }
-
-    // 12. Get non-protected profiles and delete them + their auth users
+    // 11. Get non-protected profiles and delete them + their auth users
     const { data: allProfiles } = await supabase
       .from("profiles")
       .select("user_id, numeric_id");
 
+    const deletedUsers: string[] = [];
+    const failedUsers: string[] = [];
+
     if (allProfiles) {
-      const nonProtected = allProfiles.filter((p) => ![1, 5].includes(p.numeric_id));
+      const nonProtected = allProfiles.filter((p) => !protectedUserIds.includes(p.user_id));
       for (const p of nonProtected) {
         // Delete profile first
         await supabase.from("profiles").delete().eq("user_id", p.user_id);
         // Delete auth user (frees email/username)
-        await supabase.auth.admin.deleteUser(p.user_id);
+        const { error: deleteError } = await supabase.auth.admin.deleteUser(p.user_id);
+        if (deleteError) {
+          failedUsers.push(p.user_id);
+        } else {
+          deletedUsers.push(p.user_id);
+        }
       }
     }
 
-    // 13. Reset the numeric_id sequence to max existing + 1
-    // After wipe, only IDs 1 and 5 remain, so next should be 2
-    const { data: maxIdResult } = await supabase.rpc("get_max_numeric_id");
-    // We'll use a direct SQL approach via a new RPC - but for now, 
-    // we handle this in the handle_new_user function logic instead
+    // 12. Also clean up any orphaned auth users that don't have profiles
+    // (from previous failed wipes where profile was deleted but auth user wasn't)
+    const { data: authUsers } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+    if (authUsers?.users) {
+      for (const authUser of authUsers.users) {
+        if (!protectedUserIds.includes(authUser.id)) {
+          // Check if this user still has a profile
+          const { data: existingProfile } = await supabase
+            .from("profiles")
+            .select("user_id")
+            .eq("user_id", authUser.id)
+            .maybeSingle();
+          
+          if (!existingProfile) {
+            // Orphaned auth user - delete it
+            await supabase.auth.admin.deleteUser(authUser.id);
+            deletedUsers.push(authUser.id);
+          }
+        }
+      }
+    }
+
+    // 13. Reset protected profiles
+    for (const uid of protectedUserIds) {
+      await supabase
+        .from("profiles")
+        .update({
+          emeralds: 0,
+          avatar_data: {},
+          is_banned: false,
+          ban_reason: null,
+          banned_at: null,
+          banned_by: null,
+          last_daily_claim: null,
+        })
+        .eq("user_id", uid);
+    }
 
     return new Response(
-      JSON.stringify({ success: true, message: "Database wiped successfully. Auth users deleted. Usernames freed." }),
+      JSON.stringify({
+        success: true,
+        message: "Database wiped successfully. Auth users deleted. Usernames freed.",
+        deleted_users: deletedUsers.length,
+        failed_deletions: failedUsers.length,
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
