@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import DatabaseWipePanel from '@/components/admin/DatabaseWipePanel';
+import AdminCreateUserPanel from '@/components/admin/AdminCreateUserPanel';
 import { 
   Shield, 
   Users, 
@@ -40,6 +41,7 @@ interface Tab {
 
 const tabs: Tab[] = [
   { id: 'users', label: 'Users', icon: <Users className="w-4 h-4" /> },
+  { id: 'create-user', label: 'Create User', icon: <Plus className="w-4 h-4" /> },
   { id: 'catalog', label: 'Catalog', icon: <ShoppingBag className="w-4 h-4" /> },
   { id: 'promocodes', label: 'Promocodes', icon: <Gift className="w-4 h-4" /> },
   { id: 'announcements', label: 'Announcements', icon: <Megaphone className="w-4 h-4" /> },
@@ -91,6 +93,7 @@ const Admin = () => {
       {/* Tab Content */}
       <div className="cyber-card p-6">
         {activeTab === 'users' && <UsersPanel />}
+        {activeTab === 'create-user' && <AdminCreateUserPanel />}
         {activeTab === 'catalog' && <CatalogPanel />}
         {activeTab === 'promocodes' && <PromocodesPanel />}
         {activeTab === 'announcements' && <AnnouncementsPanel />}
