@@ -93,6 +93,7 @@ const Admin = () => {
       {/* Tab Content */}
       <div className="cyber-card p-6">
         {activeTab === 'users' && <UsersPanel />}
+        {activeTab === 'create-user' && <AdminCreateUserPanel />}
         {activeTab === 'catalog' && <CatalogPanel />}
         {activeTab === 'promocodes' && <PromocodesPanel />}
         {activeTab === 'announcements' && <AnnouncementsPanel />}
