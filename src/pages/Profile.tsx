@@ -79,7 +79,19 @@ const Profile = () => {
         return;
       }
 
-      setProfileData(profileResult as ProfileData);
+      // For other users' profiles, set defaults for fields not fetched
+      const safeProfile: ProfileData = isOwnProfile
+        ? (profileResult as unknown as ProfileData)
+        : {
+            ...(profileResult as unknown as Partial<ProfileData>),
+            emeralds: 0,
+            is_banned: null,
+            ban_reason: null,
+            last_seen: null,
+            last_daily_claim: null,
+          } as ProfileData;
+
+      setProfileData(safeProfile);
 
       // Check if profile user is admin
       const { data: roleData } = await supabase
