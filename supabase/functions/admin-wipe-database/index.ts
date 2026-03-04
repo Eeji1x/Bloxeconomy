@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
 
     // Verify caller is admin (ID #1)
     const authHeader = req.headers.get("Authorization")!;
-    const anonClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!);
+    const anonClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!);
     const { data: { user } } = await anonClient.auth.getUser(authHeader.replace("Bearer ", ""));
     if (!user) throw new Error("Unauthorized");
 
