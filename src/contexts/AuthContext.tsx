@@ -133,6 +133,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (username: string, password: string) => {
     try {
+      // Validate username server-side before creating auth user
+      const validationResponse = await supabase.functions.invoke('validate-username', {
+        body: { username },
+      });
+
+      if (validationResponse.error) {
+        throw new Error(validationResponse.error.message || 'Username validation failed');
+      }
+
+      if (!validationResponse.data?.valid) {
+        throw new Error(validationResponse.data?.message || 'Username is not allowed');
+      }
+
       // Create email from username
       const email = `${username.toLowerCase()}@sodablox.local`;
       

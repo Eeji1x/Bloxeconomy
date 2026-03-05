@@ -456,6 +456,8 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      next_profile_numeric_id: { Args: never; Returns: number }
+      reset_profiles_numeric_id_seq: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
