@@ -352,7 +352,7 @@ const UsersPanel = () => {
                     {user.isAdmin && <span className="admin-badge text-xs">Admin</span>}
                     {user.is_verified && (
                       <img 
-                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7mHpMTaGN4Tzw3V_Y35xes0BeIjFXaWZ3Kw&s" 
+                        src="/images/verified-badge.png" 
                         alt="Verified" 
                         className="w-4 h-4"
                       />

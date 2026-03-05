@@ -370,7 +370,7 @@ const Profile = () => {
                 <h1 className="text-3xl font-display font-bold">{profileData.username}</h1>
                 {profileData.is_verified && (
                   <img 
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7mHpMTaGN4Tzw3V_Y35xes0BeIjFXaWZ3Kw&s" 
+                    src="/images/verified-badge.png" 
                     alt="Verified" 
                     className="w-6 h-6"
                     title="Verified"
