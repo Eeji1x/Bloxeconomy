@@ -285,7 +285,7 @@ const Catalog = () => {
                       variant="emerald"
                       size="sm"
                       className="w-full"
-                      onClick={() => handleBuy(item)}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleBuy(item); }}
                       disabled={buyingItem === item.id || !user}
                     >
                       {buyingItem === item.id ? (
