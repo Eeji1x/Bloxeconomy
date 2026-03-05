@@ -104,7 +104,7 @@ export const HomeFriendsList = () => {
                   <span className="text-sm font-medium truncate">{friend.username}</span>
                   {friend.is_verified && (
                     <img 
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7mHpMTaGN4Tzw3V_Y35xes0BeIjFXaWZ3Kw&s" 
+                      src="/images/verified-badge.png" 
                       alt="Verified" 
                       className="w-3 h-3"
                     />

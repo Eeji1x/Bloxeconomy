@@ -289,7 +289,7 @@ const Friends = () => {
                           <span className="font-bold">{request.profile?.username}</span>
                           {request.profile?.is_verified && (
                             <img 
-                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7mHpMTaGN4Tzw3V_Y35xes0BeIjFXaWZ3Kw&s" 
+                              src="/images/verified-badge.png"
                               alt="Verified" 
                               className="w-4 h-4"
                             />
@@ -343,7 +343,7 @@ const Friends = () => {
                           <span className="font-bold">{request.profile?.username}</span>
                           {request.profile?.is_verified && (
                             <img 
-                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7mHpMTaGN4Tzw3V_Y35xes0BeIjFXaWZ3Kw&s" 
+                              src="/images/verified-badge.png"
                               alt="Verified" 
                               className="w-4 h-4"
                             />
@@ -397,7 +397,7 @@ const Friends = () => {
                           <span className="font-bold">{friend.username}</span>
                           {friend.is_verified && (
                             <img 
-                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7mHpMTaGN4Tzw3V_Y35xes0BeIjFXaWZ3Kw&s" 
+                              src="/images/verified-badge.png" 
                               alt="Verified" 
                               className="w-4 h-4"
                             />
