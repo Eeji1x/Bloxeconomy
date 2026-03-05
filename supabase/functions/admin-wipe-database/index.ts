@@ -5,130 +5,163 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+type ProfileRow = {
+  user_id: string;
+  numeric_id: number;
+  username: string;
+};
+
+const PROTECTED_NUMERIC_IDS = [1, 5];
+
+const assertNoError = (error: { message: string } | null, context: string) => {
+  if (error) {
+    throw new Error(`${context}: ${error.message}`);
+  }
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceRoleKey) {
+      throw new Error("Backend environment is misconfigured");
+    }
+
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    // Verify caller is admin (ID #1)
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("Missing authorization header");
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token);
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { data: callerProfile } = await supabase
+    const { data: callerProfile, error: callerError } = await supabase
       .from("profiles")
       .select("numeric_id")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
+    assertNoError(callerError, "Failed to verify caller");
 
     if (!callerProfile || callerProfile.numeric_id !== 1) {
       throw new Error("Only ID #1 can wipe database");
     }
 
-    // Get protected user IDs (numeric_id 1 and 5)
-    const { data: protectedProfiles } = await supabase
+    const { data: protectedProfiles, error: protectedError } = await supabase
       .from("profiles")
-      .select("user_id, numeric_id")
-      .in("numeric_id", [1, 5]);
+      .select("user_id, numeric_id, username")
+      .in("numeric_id", PROTECTED_NUMERIC_IDS);
+    assertNoError(protectedError, "Failed to load protected profiles");
 
-    const protectedUserIds = protectedProfiles?.map((p) => p.user_id) || [];
-
-    // 1. Delete all resale listings
-    await supabase.from("resale_listings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 2. Delete all item serials
-    await supabase.from("item_serials").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 3. Delete all inventory
-    await supabase.from("user_inventory").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 4. Delete all trades
-    await supabase.from("trades").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 5. Delete promocode redemptions
-    await supabase.from("promocode_redemptions").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 6. Delete friends
-    await supabase.from("friends").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 7. Delete announcements
-    await supabase.from("announcements").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 8. Delete promocodes
-    await supabase.from("promocodes").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 9. Delete catalog items
-    await supabase.from("catalog_items").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    // 10. Delete non-protected user roles
-    const { data: allRoles } = await supabase.from("user_roles").select("id, user_id");
-    if (allRoles) {
-      const toDelete = allRoles.filter((r) => !protectedUserIds.includes(r.user_id));
-      for (const role of toDelete) {
-        await supabase.from("user_roles").delete().eq("id", role.id);
-      }
+    if (!protectedProfiles || protectedProfiles.length !== 2) {
+      throw new Error("Protected accounts (ID 1 and ID 5) must exist before wipe");
     }
 
-    // 11. Get non-protected profiles and delete them + their auth users
-    const { data: allProfiles } = await supabase
-      .from("profiles")
-      .select("user_id, numeric_id");
+    const protectedUserIds = protectedProfiles.map((p) => p.user_id);
 
-    const deletedUsers: string[] = [];
-    const failedUsers: string[] = [];
+    const deleteAll = async (table: string) => {
+      const { error } = await supabase.from(table).delete().not("id", "is", null);
+      assertNoError(error, `Failed to clear ${table}`);
+    };
 
-    if (allProfiles) {
-      const nonProtected = allProfiles.filter((p) => !protectedUserIds.includes(p.user_id));
-      for (const p of nonProtected) {
-        // Delete profile first
-        await supabase.from("profiles").delete().eq("user_id", p.user_id);
-        // Delete auth user (frees email/username)
-        const { error: deleteError } = await supabase.auth.admin.deleteUser(p.user_id);
-        if (deleteError) {
-          failedUsers.push(p.user_id);
-        } else {
-          deletedUsers.push(p.user_id);
+    // Clear all related tables fully
+    await deleteAll("resale_listings");
+    await deleteAll("item_serials");
+    await deleteAll("user_inventory");
+    await deleteAll("trades");
+    await deleteAll("promocode_redemptions");
+    await deleteAll("friends");
+    await deleteAll("announcements");
+    await deleteAll("promocodes");
+    await deleteAll("catalog_items");
+
+    // Remove non-protected roles
+    const { data: allRoles, error: rolesReadError } = await supabase
+      .from("user_roles")
+      .select("id, user_id");
+    assertNoError(rolesReadError, "Failed to read user roles");
+
+    if (allRoles?.length) {
+      for (const role of allRoles) {
+        if (!protectedUserIds.includes(role.user_id)) {
+          const { error } = await supabase.from("user_roles").delete().eq("id", role.id);
+          assertNoError(error, "Failed deleting user role");
         }
       }
     }
 
-    // 12. Also clean up any orphaned auth users that don't have profiles
-    // (from previous failed wipes where profile was deleted but auth user wasn't)
-    const { data: authUsers } = await supabase.auth.admin.listUsers({ perPage: 1000 });
-    if (authUsers?.users) {
-      for (const authUser of authUsers.users) {
-        if (!protectedUserIds.includes(authUser.id)) {
-          // Check if this user still has a profile
-          const { data: existingProfile } = await supabase
-            .from("profiles")
-            .select("user_id")
-            .eq("user_id", authUser.id)
-            .maybeSingle();
-          
-          if (!existingProfile) {
-            // Orphaned auth user - delete it
-            await supabase.auth.admin.deleteUser(authUser.id);
-            deletedUsers.push(authUser.id);
-          }
-        }
+    const { data: allProfiles, error: profilesReadError } = await supabase
+      .from("profiles")
+      .select("user_id, numeric_id, username");
+    assertNoError(profilesReadError, "Failed to read profiles");
+
+    const nonProtectedProfiles = (allProfiles || []).filter(
+      (p: ProfileRow) => !protectedUserIds.includes(p.user_id)
+    );
+
+    const failedAuthDeletes: string[] = [];
+
+    // Delete auth users first so usernames/emails are actually freed
+    for (const p of nonProtectedProfiles) {
+      const { error: authDeleteError } = await supabase.auth.admin.deleteUser(p.user_id);
+      if (authDeleteError) {
+        failedAuthDeletes.push(`${p.username} (${p.user_id})`);
+        continue;
       }
+
+      const { error: profileDeleteError } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("user_id", p.user_id);
+      assertNoError(profileDeleteError, `Failed deleting profile ${p.user_id}`);
     }
 
-    // 13. Reset protected profiles
-    for (const uid of protectedUserIds) {
-      await supabase
+    // Cleanup any orphan auth users left in auth table (except IDs 1 and 5)
+    let page = 1;
+    let done = false;
+    while (!done) {
+      const { data: usersPage, error: listError } = await supabase.auth.admin.listUsers({
+        page,
+        perPage: 1000,
+      });
+      assertNoError(listError, "Failed to list auth users");
+
+      const users = usersPage?.users ?? [];
+      for (const authUser of users) {
+        if (protectedUserIds.includes(authUser.id)) continue;
+
+        const { error: authDeleteError } = await supabase.auth.admin.deleteUser(authUser.id);
+        if (authDeleteError) {
+          failedAuthDeletes.push(`orphan (${authUser.id})`);
+        }
+      }
+
+      done = users.length < 1000;
+      page += 1;
+    }
+
+    if (failedAuthDeletes.length > 0) {
+      throw new Error(
+        `Reset incomplete: failed to delete ${failedAuthDeletes.length} auth users. ${failedAuthDeletes.slice(0, 10).join(", ")}`
+      );
+    }
+
+    // Ensure protected accounts are reset and reserved IDs are correct
+    for (const p of protectedProfiles) {
+      const forcedNumericId = p.numeric_id === 1 ? 1 : 5;
+      const { error } = await supabase
         .from("profiles")
         .update({
+          numeric_id: forcedNumericId,
           emeralds: 0,
           avatar_data: {},
           is_banned: false,
@@ -136,23 +169,38 @@ Deno.serve(async (req) => {
           banned_at: null,
           banned_by: null,
           last_daily_claim: null,
+          is_online: false,
         })
-        .eq("user_id", uid);
+        .eq("user_id", p.user_id);
+      assertNoError(error, `Failed resetting protected account ${forcedNumericId}`);
+    }
+
+    // Reset sequence baseline (legacy/compatibility)
+    const { error: seqError } = await supabase.rpc("reset_profiles_numeric_id_seq");
+    assertNoError(seqError, "Failed to reset profile ID sequence");
+
+    // Final integrity checks
+    const { count: profileCount, error: profileCountError } = await supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true });
+    assertNoError(profileCountError, "Failed to verify profile count");
+
+    if (profileCount !== 2) {
+      throw new Error(`Reset incomplete: expected 2 profiles, found ${profileCount ?? 0}`);
     }
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Database wiped successfully. Auth users deleted. Usernames freed.",
-        deleted_users: deletedUsers.length,
-        failed_deletions: failedUsers.length,
+        message: "Full clean reset complete. Only ID 1 and ID 5 remain.",
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return new Response(JSON.stringify({ error: message }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
