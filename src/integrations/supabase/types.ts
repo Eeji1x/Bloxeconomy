@@ -207,7 +207,7 @@ export type Database = {
           is_verified?: boolean | null
           last_daily_claim?: string | null
           last_seen?: string | null
-          numeric_id?: number
+          numeric_id: number
           updated_at?: string
           user_id: string
           username: string
@@ -456,6 +456,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      reset_profiles_numeric_id_seq: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
