@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import DatabaseWipePanel from '@/components/admin/DatabaseWipePanel';
 import AdminCreateUserPanel from '@/components/admin/AdminCreateUserPanel';
+import InviteKeysPanel from '@/components/admin/InviteKeysPanel';
 import { 
   Shield, 
   Users, 
