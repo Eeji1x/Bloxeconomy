@@ -159,8 +159,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error(validationResponse.data?.message || 'Username is not allowed');
       }
 
+      // If profanity was detected, use the server-generated random name
+      const finalUsername = validationResponse.data?.replaced
+        ? validationResponse.data.username
+        : username;
+
       // Create email from username
-      const email = `${username.toLowerCase()}@sodablox.local`;
+      const email = `${finalUsername.toLowerCase()}@sodablox.local`;
       
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -178,7 +183,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .from('profiles')
           .insert({
             user_id: data.user.id,
-            username,
+            username: finalUsername,
           });
 
         if (profileError) throw profileError;

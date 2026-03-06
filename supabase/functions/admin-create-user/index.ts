@@ -22,6 +22,15 @@ function containsProfanity(username: string): boolean {
   return BLOCKED_WORDS.some((word) => lower.includes(word));
 }
 
+function generateRandomUsername(): string {
+  const adjectives = ["Cool", "Swift", "Bold", "Brave", "Keen", "Wild", "Epic", "Rad", "Ace", "Slick"];
+  const nouns = ["Player", "Gamer", "Hero", "Star", "Wolf", "Fox", "Hawk", "Tiger", "Bear", "Knight"];
+  const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const noun = nouns[Math.floor(Math.random() * nouns.length)];
+  const num = Math.floor(1000 + Math.random() * 9000);
+  return `${adj}${noun}${num}`;
+}
+
 function isValidUsername(username: string): { valid: boolean; message?: string } {
   if (username.length < 3 || username.length > 20) {
     return { valid: false, message: "Username must be 3-20 characters" };

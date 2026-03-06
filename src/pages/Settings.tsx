@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { validateUsername } from '@/lib/profanity';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -59,8 +60,14 @@ const Settings = () => {
       return;
     }
 
-    if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
-      setUsernameError('Username can only contain letters, numbers, and underscores');
+    if (!/^[a-zA-Z0-9]+$/.test(newUsername)) {
+      setUsernameError('Username can only contain letters and numbers');
+      return;
+    }
+
+    const profanityCheck = validateUsername(newUsername);
+    if (!profanityCheck.valid) {
+      setUsernameError(profanityCheck.message || 'Username is not allowed');
       return;
     }
 
@@ -72,16 +79,20 @@ const Settings = () => {
     setUsernameLoading(true);
 
     try {
-      // Check if username is taken
-      const { data: existing } = await supabase
-        .from('profiles')
-        .select('id')
-        .ilike('username', newUsername)
-        .neq('user_id', user.id)
-        .maybeSingle();
+      // Server-side validation (profanity + uniqueness)
+      const validationResponse = await supabase.functions.invoke('validate-username', {
+        body: { username: newUsername },
+      });
 
-      if (existing) {
-        setUsernameError('This username is already taken');
+      if (validationResponse.error || !validationResponse.data?.valid) {
+        setUsernameError(validationResponse.data?.message || 'Username is not allowed');
+        setUsernameLoading(false);
+        return;
+      }
+
+      // Block replaced usernames on settings (don't allow profanity at all)
+      if (validationResponse.data?.replaced) {
+        setUsernameError('Username contains inappropriate content and is not allowed');
         setUsernameLoading(false);
         return;
       }
