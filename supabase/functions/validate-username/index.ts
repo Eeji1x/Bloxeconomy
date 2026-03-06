@@ -60,8 +60,9 @@ Deno.serve(async (req) => {
     }
 
     if (containsProfanity(username)) {
+      const randomName = generateRandomUsername();
       return new Response(
-        JSON.stringify({ valid: false, message: "Username is not allowed." }),
+        JSON.stringify({ valid: true, replaced: true, username: randomName, message: "Username contained inappropriate content and was replaced." }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
