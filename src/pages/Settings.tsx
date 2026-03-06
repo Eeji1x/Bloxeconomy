@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { validateUsername } from '@/lib/profanity';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
