@@ -79,16 +79,20 @@ const Settings = () => {
     setUsernameLoading(true);
 
     try {
-      // Check if username is taken
-      const { data: existing } = await supabase
-        .from('profiles')
-        .select('id')
-        .ilike('username', newUsername)
-        .neq('user_id', user.id)
-        .maybeSingle();
+      // Server-side validation (profanity + uniqueness)
+      const validationResponse = await supabase.functions.invoke('validate-username', {
+        body: { username: newUsername },
+      });
 
-      if (existing) {
-        setUsernameError('This username is already taken');
+      if (validationResponse.error || !validationResponse.data?.valid) {
+        setUsernameError(validationResponse.data?.message || 'Username is not allowed');
+        setUsernameLoading(false);
+        return;
+      }
+
+      // Block replaced usernames on settings (don't allow profanity at all)
+      if (validationResponse.data?.replaced) {
+        setUsernameError('Username contains inappropriate content and is not allowed');
         setUsernameLoading(false);
         return;
       }
