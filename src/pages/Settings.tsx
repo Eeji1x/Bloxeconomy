@@ -60,8 +60,14 @@ const Settings = () => {
       return;
     }
 
-    if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
-      setUsernameError('Username can only contain letters, numbers, and underscores');
+    if (!/^[a-zA-Z0-9]+$/.test(newUsername)) {
+      setUsernameError('Username can only contain letters and numbers');
+      return;
+    }
+
+    const profanityCheck = validateUsername(newUsername);
+    if (!profanityCheck.valid) {
+      setUsernameError(profanityCheck.message || 'Username is not allowed');
       return;
     }
 
