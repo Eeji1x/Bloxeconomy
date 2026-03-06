@@ -39,7 +39,7 @@ function isValidUsername(username: string): { valid: boolean; message?: string }
     return { valid: false, message: "Username can only contain letters and numbers" };
   }
   if (containsProfanity(username)) {
-    return { valid: false, message: "Username is not allowed." };
+    return { valid: false, message: "Username is not allowed.", replacement: generateRandomUsername() };
   }
   return { valid: true };
 }
