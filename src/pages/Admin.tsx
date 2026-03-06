@@ -99,6 +99,7 @@ const Admin = () => {
         {activeTab === 'catalog' && <CatalogPanel />}
         {activeTab === 'promocodes' && <PromocodesPanel />}
         {activeTab === 'announcements' && <AnnouncementsPanel />}
+        {activeTab === 'invite-keys' && <InviteKeysPanel />}
         {activeTab === 'wipe' && <DatabaseWipePanel />}
       </div>
     </div>

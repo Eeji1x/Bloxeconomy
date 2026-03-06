@@ -4,13 +4,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { UserPlus, User, Lock, AlertCircle, Sparkles } from 'lucide-react';
+import { UserPlus, User, Lock, AlertCircle, Sparkles, Key } from 'lucide-react';
 import { validateUsername } from '@/lib/profanity';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [inviteKey, setInviteKey] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signUp } = useAuth();
@@ -19,6 +20,11 @@ const Signup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!inviteKey.trim()) {
+      setError('Invite key is required');
+      return;
+    }
 
     // Validate username with profanity filter
     const validation = validateUsername(username);
@@ -40,7 +46,7 @@ const Signup = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await signUp(username, password);
+      const { error } = await signUp(username, password, inviteKey.trim().toUpperCase());
       if (error) {
         if (error.message.includes('duplicate')) {
           setError('Username already taken');
@@ -66,7 +72,7 @@ const Signup = () => {
             <UserPlus className="w-8 h-8 text-primary-foreground" />
           </div>
           <h1 className="text-3xl font-display font-bold">Join SODABLOX</h1>
-          <p className="text-muted-foreground">Create your account and start playing</p>
+          <p className="text-muted-foreground">Create your account with an invite key</p>
         </div>
 
         {/* Bonus Banner */}
@@ -87,6 +93,27 @@ const Signup = () => {
           )}
 
           <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="inviteKey" className="text-sm font-medium">
+                Invite Key
+              </Label>
+              <div className="relative">
+                <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  id="inviteKey"
+                  type="text"
+                  placeholder="INV-XXXXX-XXXXX"
+                  value={inviteKey}
+                  onChange={(e) => setInviteKey(e.target.value.toUpperCase())}
+                  className="pl-10 h-12 bg-input border-border focus:border-primary font-mono"
+                  required
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                You need a valid invite key to create an account
+              </p>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="username" className="text-sm font-medium">
                 Username
