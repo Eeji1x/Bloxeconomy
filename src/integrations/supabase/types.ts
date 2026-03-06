@@ -127,6 +127,36 @@ export type Database = {
         }
         Relationships: []
       }
+      invite_keys: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          is_used: boolean
+          key: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          is_used?: boolean
+          key: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_used?: boolean
+          key?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       item_serials: {
         Row: {
           created_at: string

@@ -83,6 +83,7 @@ Deno.serve(async (req) => {
     await deleteAll("announcements");
     await deleteAll("promocodes");
     await deleteAll("catalog_items");
+    await deleteAll("invite_keys");
 
     // Remove non-protected roles
     const { data: allRoles, error: rolesReadError } = await supabase

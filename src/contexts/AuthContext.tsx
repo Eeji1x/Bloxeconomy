@@ -27,7 +27,7 @@ interface AuthContextType {
   profile: Profile | null;
   isAdmin: boolean;
   isLoading: boolean;
-  signUp: (username: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (username: string, password: string, inviteKey: string) => Promise<{ error: Error | null }>;
   signIn: (username: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -131,8 +131,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const signUp = async (username: string, password: string) => {
+  const signUp = async (username: string, password: string, inviteKey: string) => {
     try {
+      // Validate invite key first
+      const inviteResponse = await supabase.functions.invoke('validate-invite-key', {
+        body: { invite_key: inviteKey },
+      });
+
+      if (inviteResponse.error) {
+        throw new Error('Invite key validation failed');
+      }
+
+      if (!inviteResponse.data?.valid) {
+        throw new Error(inviteResponse.data?.message || 'Invalid or already used invite key.');
+      }
+
       // Validate username server-side before creating auth user
       const validationResponse = await supabase.functions.invoke('validate-username', {
         body: { username },
@@ -169,6 +182,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
 
         if (profileError) throw profileError;
+
+        // Mark invite key as used
+        await supabase.functions.invoke('validate-invite-key', {
+          body: { invite_key: inviteKey, user_id: data.user.id },
+        });
       }
 
       return { error: null };
