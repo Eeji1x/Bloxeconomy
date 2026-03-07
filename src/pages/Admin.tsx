@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { 
   BAD_DECISIONS_NUMERIC_ID, 
@@ -50,6 +50,15 @@ const tabs: Tab[] = [
   { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
+const AdminPlayersLink = () => (
+  <Link to="/admin/players">
+    <Button variant="outline" className="gap-2 border-primary/30 hover:border-primary">
+      <Users className="w-4 h-4" />
+      Player Management
+    </Button>
+  </Link>
+);
+
 const Admin = () => {
   const { user, isAdmin, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('users');
@@ -69,12 +78,15 @@ const Admin = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="space-y-1">
-        <h1 className="text-3xl font-display font-bold flex items-center gap-3">
-          <Shield className="w-8 h-8 text-destructive" />
-          Admin Panel
-        </h1>
-        <p className="text-muted-foreground">Manage users, catalog, promocodes, and announcements</p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-display font-bold flex items-center gap-3">
+            <Shield className="w-8 h-8 text-destructive" />
+            Admin Panel
+          </h1>
+          <p className="text-muted-foreground">Manage users, catalog, promocodes, and announcements</p>
+        </div>
+        <AdminPlayersLink />
       </div>
 
       {/* Tabs */}
