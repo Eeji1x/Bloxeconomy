@@ -48,6 +48,8 @@ const App = () => (
               <Route path="/avatar" element={<Avatar />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/players" element={<AdminPlayers />} />
+              <Route path="/admin/players/:userId" element={<AdminUserManagement />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/leaderboards" element={<Leaderboards />} />
               <Route path="/banned" element={<Banned />} />
