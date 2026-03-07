@@ -76,12 +76,12 @@ const AdminUserManagement = () => {
   };
 
   const logAction = async (action: string, details?: Record<string, unknown>) => {
-    await supabase.from('admin_logs').insert({
+    await supabase.from('admin_logs').insert([{
       admin_id: authUser!.id,
       action,
       target_user_id: userId!,
-      details: details || {},
-    });
+      details: (details || {}) as any,
+    }]);
   };
 
   // --- Action handlers ---
