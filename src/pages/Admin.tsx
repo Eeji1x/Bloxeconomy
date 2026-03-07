@@ -78,12 +78,15 @@ const Admin = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="space-y-1">
-        <h1 className="text-3xl font-display font-bold flex items-center gap-3">
-          <Shield className="w-8 h-8 text-destructive" />
-          Admin Panel
-        </h1>
-        <p className="text-muted-foreground">Manage users, catalog, promocodes, and announcements</p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-display font-bold flex items-center gap-3">
+            <Shield className="w-8 h-8 text-destructive" />
+            Admin Panel
+          </h1>
+          <p className="text-muted-foreground">Manage users, catalog, promocodes, and announcements</p>
+        </div>
+        <AdminPlayersLink />
       </div>
 
       {/* Tabs */}
