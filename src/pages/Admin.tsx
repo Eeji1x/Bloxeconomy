@@ -50,6 +50,15 @@ const tabs: Tab[] = [
   { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
+const AdminPlayersLink = () => (
+  <Link to="/admin/players">
+    <Button variant="outline" className="gap-2 border-primary/30 hover:border-primary">
+      <Users className="w-4 h-4" />
+      Player Management
+    </Button>
+  </Link>
+);
+
 const Admin = () => {
   const { user, isAdmin, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('users');
