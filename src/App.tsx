@@ -17,6 +17,8 @@ import Trading from "./pages/Trading";
 import Avatar from "./pages/Avatar";
 import Friends from "./pages/Friends";
 import Admin from "./pages/Admin";
+import AdminPlayers from "./pages/AdminPlayers";
+import AdminUserManagement from "./pages/AdminUserManagement";
 import Settings from "./pages/Settings";
 import Leaderboards from "./pages/Leaderboards";
 import Banned from "./pages/Banned";
