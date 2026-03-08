@@ -236,7 +236,10 @@ export const SodabloxSidebar = () => {
       </nav>
 
       {/* ─── Sidebar - Desktop ─── */}
-      <aside className="sodablox-sidebar hidden lg:flex fixed left-0 top-[60px] bottom-0 w-[200px] z-40 flex-col overflow-y-auto bg-card border-r border-border">
+      <aside
+        className="sodablox-sidebar hidden lg:flex fixed left-0 bottom-0 w-[200px] z-40 flex-col overflow-y-auto bg-card border-r border-border"
+        style={{ top: `${headerOffset}px` }}
+      >
         <SidebarContent />
       </aside>
 
