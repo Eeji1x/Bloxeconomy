@@ -161,11 +161,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Cleanup: Set offline when leaving
     const handleBeforeUnload = () => {
       if (user) {
-        // Use beacon API for reliable offline status
-        navigator.sendBeacon(
-          `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/profiles?user_id=eq.${user.id}`,
-          JSON.stringify({ is_online: false })
-        );
+        // Use the authenticated supabase client instead of raw sendBeacon
+        supabase
+          .from('profiles')
+          .update({ is_online: false, last_seen: new Date().toISOString() })
+          .eq('user_id', user.id)
+          .then(() => {});
       }
     };
 
