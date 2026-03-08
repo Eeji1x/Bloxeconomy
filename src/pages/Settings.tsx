@@ -13,13 +13,16 @@ import {
   Gem,
   Save,
   AlertCircle,
-  Check
+  Check,
+  Palette
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme, THEMES, ThemeId } from '@/contexts/ThemeContext';
 
 const Settings = () => {
   const { user, profile, isLoading, refreshProfile } = useAuth();
-  const [activeSection, setActiveSection] = useState<'username' | 'password'>('username');
+  const { theme, setTheme } = useTheme();
+  const [activeSection, setActiveSection] = useState<'username' | 'password' | 'themes'>('username');
   
   // Username change state
   const [newUsername, setNewUsername] = useState('');
@@ -79,7 +82,6 @@ const Settings = () => {
     setUsernameLoading(true);
 
     try {
-      // Server-side validation (profanity + uniqueness)
       const validationResponse = await supabase.functions.invoke('validate-username', {
         body: { username: newUsername },
       });
@@ -90,14 +92,12 @@ const Settings = () => {
         return;
       }
 
-      // Block replaced usernames on settings (don't allow profanity at all)
       if (validationResponse.data?.replaced) {
         setUsernameError('Username contains inappropriate content and is not allowed');
         setUsernameLoading(false);
         return;
       }
 
-      // Update username and deduct emeralds
       const { error } = await supabase
         .from('profiles')
         .update({ 
@@ -108,7 +108,6 @@ const Settings = () => {
 
       if (error) throw error;
 
-      // Update auth email to match new username
       const newEmail = `${newUsername.toLowerCase()}@sodablox.local`;
       await supabase.auth.updateUser({ email: newEmail });
 
@@ -144,7 +143,6 @@ const Settings = () => {
     setPasswordLoading(true);
 
     try {
-      // Verify current password by re-authenticating
       const email = `${profile.username.toLowerCase()}@sodablox.local`;
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
@@ -157,7 +155,6 @@ const Settings = () => {
         return;
       }
 
-      // Update password
       const { error } = await supabase.auth.updateUser({ 
         password: newPassword 
       });
@@ -174,6 +171,11 @@ const Settings = () => {
     } finally {
       setPasswordLoading(false);
     }
+  };
+
+  const handleSelectTheme = (id: ThemeId) => {
+    setTheme(id);
+    toast.success(`Theme changed to ${THEMES.find(t => t.id === id)?.name}`);
   };
 
   return (
@@ -204,6 +206,14 @@ const Settings = () => {
         >
           <Lock className="w-4 h-4" />
           Password
+        </Button>
+        <Button
+          variant={activeSection === 'themes' ? 'default' : 'ghost'}
+          onClick={() => setActiveSection('themes')}
+          className="gap-2"
+        >
+          <Palette className="w-4 h-4" />
+          Themes
         </Button>
       </div>
 
@@ -333,6 +343,110 @@ const Settings = () => {
                 </>
               )}
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Themes Section */}
+      {activeSection === 'themes' && (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h2 className="text-xl font-display font-bold">Themes</h2>
+            <p className="text-sm text-muted-foreground">
+              Choose how SODABLOX looks for you
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {THEMES.map((t) => {
+              const isActive = theme === t.id;
+              return (
+                <div
+                  key={t.id}
+                  className={`cyber-card p-4 space-y-3 transition-all ${
+                    isActive ? 'ring-2 ring-primary' : ''
+                  }`}
+                >
+                  {/* Theme Preview */}
+                  <div
+                    className="rounded-lg overflow-hidden border border-border h-28 relative"
+                    style={{ background: t.preview.bg }}
+                  >
+                    {/* Mini navbar */}
+                    <div
+                      className="h-7 flex items-center px-3 gap-2"
+                      style={{ background: t.id === 'roblox2020' ? '#2d3436' : '#0a0a1a' }}
+                    >
+                      <div
+                        className="w-4 h-4 rounded"
+                        style={{ background: t.preview.accent }}
+                      />
+                      <div
+                        className="h-2 w-12 rounded"
+                        style={{ background: t.preview.text, opacity: 0.3 }}
+                      />
+                      <div
+                        className="h-2 w-8 rounded ml-auto"
+                        style={{ background: t.preview.text, opacity: 0.2 }}
+                      />
+                    </div>
+                    {/* Mini content */}
+                    <div className="p-2 flex gap-2">
+                      <div
+                        className="rounded w-1/2 h-14 p-2"
+                        style={{ background: t.preview.card, border: `1px solid ${t.preview.accent}22` }}
+                      >
+                        <div
+                          className="h-2 w-10 rounded mb-1.5"
+                          style={{ background: t.preview.text, opacity: 0.5 }}
+                        />
+                        <div
+                          className="h-2 w-14 rounded"
+                          style={{ background: t.preview.text, opacity: 0.2 }}
+                        />
+                      </div>
+                      <div
+                        className="rounded w-1/2 h-14 p-2"
+                        style={{ background: t.preview.card, border: `1px solid ${t.preview.accent}22` }}
+                      >
+                        <div
+                          className="h-2 w-8 rounded mb-1.5"
+                          style={{ background: t.preview.accent, opacity: 0.7 }}
+                        />
+                        <div
+                          className="h-2 w-12 rounded"
+                          style={{ background: t.preview.text, opacity: 0.2 }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Theme Info */}
+                  <div>
+                    <h3 className="font-display font-bold text-sm">{t.name}</h3>
+                    <p className="text-xs text-muted-foreground">{t.description}</p>
+                  </div>
+
+                  {/* Select Button */}
+                  <Button
+                    variant={isActive ? 'default' : 'outline'}
+                    size="sm"
+                    className="w-full gap-2"
+                    onClick={() => handleSelectTheme(t.id)}
+                    disabled={isActive}
+                  >
+                    {isActive ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Selected
+                      </>
+                    ) : (
+                      'Select'
+                    )}
+                  </Button>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
