@@ -35,7 +35,7 @@ interface CatalogItem {
   is_on_sale: boolean | null;
   resell_enabled: boolean | null;
   created_at: string;
-  model_url: string | null;
+  
 }
 
 interface ResaleListing {
@@ -290,18 +290,16 @@ const ItemDetail = () => {
           {/* Left — Image */}
           <div className="rbx16-item-image-col">
             <div className="rbx16-panel">
-              {item.model_url && (
-                <div className="rbx16-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Preview</span>
-                  <button onClick={() => setView3D(!view3D)} style={{ fontSize: 11, color: '#00a2ff', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
-                    {view3D ? '2D View' : '3D View'}
-                  </button>
-                </div>
-              )}
+              <div className="rbx16-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Preview</span>
+                <button onClick={() => setView3D(!view3D)} style={{ fontSize: 11, color: '#00a2ff', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                  {view3D ? '2D View' : '3D View'}
+                </button>
+              </div>
               <div className="rbx16-item-image-container">
-                {view3D && item.model_url ? (
+                {view3D ? (
                   <div style={{ width: '100%', height: 300 }}>
-                    <ItemModel3DViewer modelUrl={item.model_url} height={300} />
+                    <ItemModel3DViewer imageUrl={item.image_url} height={300} />
                   </div>
                 ) : (
                   <>
@@ -489,18 +487,16 @@ const ItemDetail = () => {
 
       <div className="grid md:grid-cols-2 gap-8">
         <div className="relative">
-          {item.model_url && (
-            <button
-              onClick={() => setView3D(!view3D)}
-              className="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-lg bg-background/80 backdrop-blur-sm border border-border text-xs font-semibold hover:bg-background transition-colors flex items-center gap-1.5"
-            >
-              <Box className="w-3.5 h-3.5" />
-              {view3D ? '2D View' : '3D View'}
-            </button>
-          )}
-          {view3D && item.model_url ? (
+          <button
+            onClick={() => setView3D(!view3D)}
+            className="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-lg bg-background/80 backdrop-blur-sm border border-border text-xs font-semibold hover:bg-background transition-colors flex items-center gap-1.5"
+          >
+            <Box className="w-3.5 h-3.5" />
+            {view3D ? '2D View' : '3D View'}
+          </button>
+          {view3D ? (
             <div className="rounded-2xl overflow-hidden" style={{ aspectRatio: '1', minHeight: 350 }}>
-              <ItemModel3DViewer modelUrl={item.model_url} height={400} />
+              <ItemModel3DViewer imageUrl={item.image_url} height={400} />
             </div>
           ) : (
             <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 overflow-hidden relative">

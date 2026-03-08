@@ -21,7 +21,7 @@ interface CatalogItem {
   sale_start_time: string | null;
   sale_end_time: string | null;
   created_at: string;
-  model_url: string | null;
+  
 }
 
 type SaleState = 'on_sale' | 'off_sale' | 'sold_out';
@@ -278,9 +278,6 @@ const Catalog = () => {
                       {saleState === 'sold_out' && (
                         <span className="rbx16-soldout-tag">SOLD OUT</span>
                       )}
-                      {item.model_url && (
-                        <span style={{ position: 'absolute', bottom: 2, right: 2, background: '#00a2ff', color: '#fff', fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 2, textTransform: 'uppercase' }}>3D</span>
-                      )}
                     </div>
                     {/* Info */}
                     <div className="rbx16-catalog-item-info">
@@ -379,12 +376,6 @@ const Catalog = () => {
                     <div className="absolute top-2 right-2 limited-badge">
                       <Star className="w-3 h-3" />
                       Limited
-                    </div>
-                  )}
-                  {item.model_url && (
-                    <div className="absolute bottom-2 right-2 px-1.5 py-0.5 text-[10px] font-bold uppercase rounded bg-primary/80 text-primary-foreground flex items-center gap-1">
-                      <Box className="w-3 h-3" />
-                      3D
                     </div>
                   )}
                   {alreadyOwned && isLimited && (
