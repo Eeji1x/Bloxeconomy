@@ -4,22 +4,24 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 /* ═══════════════════════════════════════════════════
-   SODABLOX 2016 Theme — Based on ECS economy-simulator
-   Topbar: #0074BD blue, sidebar: #f2f2f2, 175px
-   Nav links: white on blue, sidebar icons
+   SODABLOX 2016 Theme — 1:1 ECS economy-simulator replica
+   Topbar: #0074BD, Sidebar: #f2f2f2 175px
+   Icons: navigation_02012016.svg sprite
    ═══════════════════════════════════════════════════ */
 
+// Sidebar links with ECS icon classes
 const sidebarLinks = [
-  { to: '/', label: 'Home', icon: 'icon-nav-home' },
-  { to: '/profile', label: 'Profile', icon: 'icon-nav-profile', needsAuth: true },
-  { to: '/inbox', label: 'Messages', icon: 'icon-nav-message', needsAuth: true },
-  { to: '/friends', label: 'Friends', icon: 'icon-nav-friends', needsAuth: true },
-  { to: '/avatar', label: 'Character', icon: 'icon-nav-character' },
-  { to: '/trading', label: 'Trade', icon: 'icon-nav-trade' },
-  { to: '/leaderboards', label: 'Leaderboards', icon: 'icon-nav-leaderboard' },
-  { to: '/users', label: 'Players', icon: 'icon-nav-players' },
-  { to: '/promocodes', label: 'Promo Codes', icon: 'icon-nav-codes' },
-  { to: '/settings', label: 'Settings', icon: 'icon-nav-settings' },
+  { to: '/', label: 'Home', icon: 'icon-nav-home', hoverClass: 'hover-icon-nav-home' },
+  { to: '/profile', label: 'Profile', icon: 'icon-nav-profile', hoverClass: 'hover-icon-nav-profile', needsAuth: true },
+  { to: '/inbox', label: 'Messages', icon: 'icon-nav-message', hoverClass: '', needsAuth: true },
+  { to: '/friends', label: 'Friends', icon: 'icon-nav-friends', hoverClass: '', needsAuth: true },
+  { to: '/avatar', label: 'Character', icon: 'icon-nav-charactercustomizer', hoverClass: 'hover-icon-nav-charactercustomizer' },
+  { to: '/catalog', label: 'Inventory', icon: 'icon-nav-inventory', hoverClass: 'hover-icon-nav-inventory' },
+  { to: '/trading', label: 'Trade', icon: 'icon-nav-trade', hoverClass: '' },
+  { to: '/users', label: 'Players', icon: 'icon-nav-group', hoverClass: '' },
+  { to: '/leaderboards', label: 'Leaderboards', icon: 'icon-nav-forum', hoverClass: '' },
+  { to: '/promocodes', label: 'Promo Codes', icon: 'icon-nav-shop', hoverClass: '' },
+  { to: '/settings', label: 'Settings', icon: 'icon-nav-settings', hoverClass: '' },
 ];
 
 export const Roblox2016Navbar = () => {
@@ -27,6 +29,7 @@ export const Roblox2016Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -35,9 +38,9 @@ export const Roblox2016Navbar = () => {
 
   const profileLink = profile ? `/profile/${profile.user_id}` : '/profile';
 
-  /* ── Sidebar link entry (matches ECS linkEntry.js) ── */
+  /* ── Sidebar link (matching ECS linkEntry.js exactly) ── */
   const SideLink = ({ link, mobile = false }: { link: typeof sidebarLinks[0]; mobile?: boolean }) => {
-    if ('needsAuth' in link && (link as any).needsAuth && !user) return null;
+    if (link.needsAuth && !user) return null;
     const to = link.label === 'Profile' ? profileLink : link.to;
     const isActive = location.pathname === to || (link.to === '/' && location.pathname === '/');
 
@@ -47,34 +50,30 @@ export const Roblox2016Navbar = () => {
         onClick={mobile ? () => setSidebarOpen(false) : undefined}
         className={cn(
           'rbx16-sidebar-link',
+          link.hoverClass,
           isActive && 'rbx16-sidebar-link-active'
         )}
       >
-        <span className={`rbx16-sidebar-icon ${link.icon}`} />
+        <span className={link.icon} />
         <span className="rbx16-sidebar-label">{link.label}</span>
       </Link>
     );
   };
 
-  /* ── Sidebar content ── */
+  /* ── Sidebar (matching ECS navSidebar/index.js) ── */
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="rbx16-sidebar-inner">
-      {/* Username */}
       {user && profile && (
         <>
           <p className="rbx16-sidebar-username">{profile.username}</p>
           <div className="rbx16-sidebar-divider" />
         </>
       )}
-
-      {/* Links */}
       <nav className="rbx16-sidebar-nav">
         {sidebarLinks.map(l => (
           <SideLink key={l.label} link={l} mobile={mobile} />
         ))}
       </nav>
-
-      {/* Admin */}
       {(isAdmin || isOwner) && (
         <>
           <div className="rbx16-sidebar-divider" />
@@ -86,35 +85,37 @@ export const Roblox2016Navbar = () => {
               location.pathname.startsWith('/admin') && 'rbx16-sidebar-link-active'
             )}
           >
-            <span className="rbx16-sidebar-icon icon-nav-admin" />
+            <span className="icon-nav-settings" />
             <span className="rbx16-sidebar-label">Admin Panel</span>
           </Link>
         </>
       )}
+      {/* Upgrade Now button (matching ECS) */}
+      <Link to="/catalog" className="rbx16-upgrade-btn">
+        Avatar Shop
+      </Link>
     </div>
   );
 
   return (
     <>
-      {/* ─── Top Navbar ─── Blue #0074BD (matching ECS navbar) */}
+      {/* ─── Top Navbar ─── #0074BD (matching ECS navbar/index.js: backgroundColor: '#0074BD') */}
       <nav className="rbx16-topbar">
         <div className="rbx16-topbar-container">
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger (matching ECS logo.js openSideNavMobile) */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="rbx16-hamburger"
           >
-            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-            </svg>
+            <span className="icon-nav-menu" />
           </button>
 
-          {/* Logo */}
+          {/* Logo (matching ECS logo.js — text version since we can't use roblox_logo.svg) */}
           <Link to="/" className="rbx16-logo">
             <span className="rbx16-logo-text">SODABLOX</span>
           </Link>
 
-          {/* Nav links (Games/Catalog/Develop/Emeralds — matching ECS navigationLinks.js) */}
+          {/* Nav links (matching ECS navigationLinks.js: Games/Catalog/Develop/ROBUX) */}
           <div className="rbx16-nav-links">
             <Link to="/catalog" className="rbx16-nav-link">Catalog</Link>
             <Link to="/trading" className="rbx16-nav-link">Trade</Link>
@@ -124,7 +125,7 @@ export const Roblox2016Navbar = () => {
 
           <div className="flex-1" />
 
-          {/* Search */}
+          {/* Search (matching ECS search.js) */}
           <div className="rbx16-search-wrapper">
             <input
               type="text"
@@ -132,32 +133,57 @@ export const Roblox2016Navbar = () => {
               className="rbx16-search-input"
             />
             <span className="rbx16-search-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-              </svg>
+              <span className="icon-nav-search" style={{ width: 16, height: 16, backgroundSize: '16px auto' }} />
             </span>
           </div>
 
-          {/* Right area — matches ECS loggedinArea.js / loginArea.js */}
+          {/* Right area (matching ECS loggedinArea.js / loginArea.js) */}
           <div className="rbx16-right-area">
             {user && profile ? (
               <>
-                {/* Emerald count */}
+                {/* Currency display (matching ECS: icon-nav-robux + amount) */}
                 <Link to="/settings" className="rbx16-currency">
-                  <span className="rbx16-currency-icon">💎</span>
-                  <span className="rbx16-currency-amount">{profile.emeralds.toLocaleString()}</span>
+                  <span className="icon-nav-robux" style={{ width: 20, height: 20, backgroundSize: '20px auto' }} />
+                  <span>{profile.emeralds.toLocaleString()}</span>
                 </Link>
-                {/* Settings dropdown trigger */}
-                <button
-                  onClick={handleSignOut}
-                  className="rbx16-nav-link"
-                  title="Logout"
-                >
-                  Logout
-                </button>
+
+                {/* Settings gear (matching ECS: icon-nav-settings with dropdown) */}
+                <div className="relative">
+                  <button
+                    onClick={() => setSettingsOpen(!settingsOpen)}
+                    className="rbx16-nav-link"
+                    style={{ padding: '4px' }}
+                  >
+                    <span className="icon-nav-settings" style={{ width: 20, height: 20, backgroundSize: '20px auto' }} />
+                  </button>
+                  {/* Settings dropdown (matching ECS SettingsDropdown) */}
+                  {settingsOpen && (
+                    <div className="rbx16-settings-dropdown">
+                      <p>
+                        <Link to="/settings" onClick={() => setSettingsOpen(false)} className="text-dark" style={{ color: '#1e1e1f' }}>
+                          Settings
+                        </Link>
+                      </p>
+                      <p>
+                        <a
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setSettingsOpen(false);
+                            handleSignOut();
+                          }}
+                          className="text-dark"
+                          style={{ color: '#1e1e1f', cursor: 'pointer' }}
+                        >
+                          Logout
+                        </a>
+                      </p>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <>
+                {/* Login/Signup (matching ECS loginArea.js) */}
                 <Link to="/signup" className="rbx16-nav-link">Sign Up</Link>
                 <Link to="/login" className="rbx16-nav-link">Login</Link>
               </>
@@ -166,12 +192,12 @@ export const Roblox2016Navbar = () => {
         </div>
       </nav>
 
-      {/* ─── Sidebar Desktop ─── #f2f2f2, 175px (matching ECS navSidebar) */}
+      {/* ─── Sidebar Desktop (matching ECS navSidebar: 175px, #f2f2f2) ─── */}
       <aside className="rbx16-sidebar hidden lg:flex">
         <Sidebar />
       </aside>
 
-      {/* ─── Sidebar Mobile ─── */}
+      {/* ─── Sidebar Mobile (matching ECS: overlay) ─── */}
       {sidebarOpen && (
         <>
           <div className="lg:hidden fixed inset-0 bg-black/40 z-40" onClick={() => setSidebarOpen(false)} />
@@ -179,6 +205,11 @@ export const Roblox2016Navbar = () => {
             <Sidebar mobile />
           </aside>
         </>
+      )}
+
+      {/* Close settings dropdown when clicking outside */}
+      {settingsOpen && (
+        <div className="fixed inset-0 z-40" onClick={() => setSettingsOpen(false)} />
       )}
     </>
   );
