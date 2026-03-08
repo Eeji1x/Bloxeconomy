@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTheme } from '@/contexts/ThemeContext';
 import { AnnouncementBar } from './AnnouncementBar';
 import { Navbar } from './Navbar';
 import { BanRedirectWrapper } from '@/components/auth/BanRedirectWrapper';
