@@ -79,6 +79,18 @@ export const THEMES: ThemeOption[] = [
       text: '#000000',
     },
   },
+  {
+    id: 'mercury',
+    name: 'Mercury',
+    description: 'Dark purple theme inspired by MercuryCore — deep blacks with violet accents',
+    preview: {
+      bg: '#101010',
+      navbar: '#0d0d0d',
+      accent: '#7733FF',
+      card: '#1a1a1a',
+      text: '#e0e0e0',
+    },
+  },
 ];
 
 interface ThemeContextType {
