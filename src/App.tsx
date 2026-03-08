@@ -34,49 +34,80 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <ThemeProvider>
-          <AuthProvider>
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<AuthHome />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/users" element={<Users />} />
-                <Route path="/users/:username" element={<UserRedirect />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/profile/:userId" element={<Profile />} />
-                <Route path="/catalog" element={<Catalog />} />
-                <Route path="/catalog/:itemSlug" element={<ItemDetail />} />
-                <Route path="/promocodes" element={<Promocodes />} />
-                <Route path="/trading" element={<Trading />} />
-                <Route path="/avatar" element={<Avatar />} />
-                <Route path="/friends" element={<Friends />} />
-                <Route path="/inbox" element={<Inbox />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/admin/players" element={<AdminPlayers />} />
-                <Route path="/admin/players/:userId" element={<AdminUserManagement />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/leaderboards" element={<Leaderboards />} />
-                <Route path="/sodamons" element={<Sodamons />} />
-                <Route path="/sodamons/item/:itemId" element={<SodamonsItem />} />
-                <Route path="/sodamons/top" element={<SodamonsTop />} />
-                <Route path="/emeralds" element={<EmeraldShop />} />
-                <Route path="/banned" element={<Banned />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          </AuthProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+const SITE_LOCKED = true; // Set to false to reopen the site
+
+const LockdownScreen = () => (
+  <div style={{
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#0a0a0a',
+    color: '#ffffff',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    textAlign: 'center',
+    padding: '2rem',
+  }}>
+    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔧</div>
+    <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+      Fixing Stuff
+    </h1>
+    <p style={{ fontSize: '1.1rem', color: '#888', maxWidth: '400px' }}>
+      We're working on some important updates. The site will be back soon.
+    </p>
+  </div>
 );
+
+const App = () => {
+  if (SITE_LOCKED) {
+    return <LockdownScreen />;
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <ThemeProvider>
+            <AuthProvider>
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<AuthHome />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/users" element={<Users />} />
+                  <Route path="/users/:username" element={<UserRedirect />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/profile/:userId" element={<Profile />} />
+                  <Route path="/catalog" element={<Catalog />} />
+                  <Route path="/catalog/:itemSlug" element={<ItemDetail />} />
+                  <Route path="/promocodes" element={<Promocodes />} />
+                  <Route path="/trading" element={<Trading />} />
+                  <Route path="/avatar" element={<Avatar />} />
+                  <Route path="/friends" element={<Friends />} />
+                  <Route path="/inbox" element={<Inbox />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/admin/players" element={<AdminPlayers />} />
+                  <Route path="/admin/players/:userId" element={<AdminUserManagement />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/leaderboards" element={<Leaderboards />} />
+                  <Route path="/sodamons" element={<Sodamons />} />
+                  <Route path="/sodamons/item/:itemId" element={<SodamonsItem />} />
+                  <Route path="/sodamons/top" element={<SodamonsTop />} />
+                  <Route path="/emeralds" element={<EmeraldShop />} />
+                  <Route path="/banned" element={<Banned />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Layout>
+            </AuthProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
