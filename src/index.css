@@ -455,7 +455,7 @@
     color: white !important;
   }
 
-  /* ═══ SIDEBAR ═══ 175px, #f2f2f2 (real 2016 roblox sidebar) */
+  /* ═══ SIDEBAR ═══ 175px, white bg (real 2016 .rbx-left-col was #ffffff) */
   [data-theme="roblox2016"] .rbx16-sidebar {
     position: fixed;
     left: 0;
@@ -463,10 +463,10 @@
     bottom: 0;
     width: 175px;
     z-index: 40;
-    background: #f2f2f2;
+    background: #ffffff;
     overflow-y: auto;
     flex-direction: column;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid #c3c3c3;
   }
   [data-theme="roblox2016"] .rbx16-sidebar-mobile {
     display: flex !important;
