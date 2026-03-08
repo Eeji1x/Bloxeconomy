@@ -509,13 +509,23 @@ const AdminUserManagement = () => {
             {/* Add Item Panel */}
             {showAddItem && (
               <div className="mt-3 space-y-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <div className="grid grid-cols-[1fr_110px] gap-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search catalog items..."
+                      value={itemSearchQuery}
+                      onChange={(e) => setItemSearchQuery(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
                   <Input
-                    placeholder="Search catalog items..."
-                    value={itemSearchQuery}
-                    onChange={(e) => setItemSearchQuery(e.target.value)}
-                    className="pl-9"
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={addItemAmount}
+                    onChange={(e) => setAddItemAmount(e.target.value)}
+                    placeholder="Qty"
                   />
                 </div>
                 <div className="max-h-60 overflow-y-auto space-y-1">
@@ -530,7 +540,7 @@ const AdminUserManagement = () => {
                         <p className="text-sm font-semibold truncate">{item.name}</p>
                         <p className="text-xs text-muted-foreground">💎 {item.price} • {item.item_type}</p>
                       </div>
-                      <Button size="sm" variant="emerald" onClick={() => handleAddItem(item)}>
+                      <Button size="sm" variant="emerald" onClick={() => handleAddItem(item, parseInt(addItemAmount) || 1)}>
                         <Plus className="w-3 h-3" />
                       </Button>
                     </div>
