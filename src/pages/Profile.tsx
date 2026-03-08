@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { UserAvatar } from '@/components/avatar/UserAvatar';
-import { User, Package, UserPlus, UserMinus, Check, X, ArrowLeftRight, MoreHorizontal } from 'lucide-react';
+import { User, Package, UserPlus, UserMinus, Check, X, ArrowLeftRight, MoreHorizontal, Box } from 'lucide-react';
 import { toast } from 'sonner';
+
+const Avatar3DViewer = lazy(() => import('@/components/avatar/Avatar3DViewer').then(m => ({ default: m.Avatar3DViewer })));
 
 interface ProfileData {
   id: string;
@@ -51,6 +53,8 @@ const Profile = () => {
   const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
   const [friendCount, setFriendCount] = useState(0);
   const [activeTab, setActiveTab] = useState<'about' | 'inventory'>('about');
+  const [show3D, setShow3D] = useState(false);
+  const [equippedItems, setEquippedItems] = useState<{ image_url: string; name?: string }[]>([]);
 
   const isOwnProfile = !userId || userId === user?.id || (currentUserProfile && userId === String(currentUserProfile.numeric_id));
 
@@ -94,8 +98,12 @@ const Profile = () => {
       const { data: roleData } = await supabase.from('user_roles').select('role').eq('user_id', viewingUserId).eq('role', 'admin').maybeSingle();
       setIsProfileAdmin(!!roleData);
 
-      const { data: inventoryData } = await supabase.from('user_inventory').select(`id, item_id, quantity, catalog_items (id, name, image_url, item_type)`).eq('user_id', viewingUserId);
-      if (inventoryData) setInventory(inventoryData as InventoryItem[]);
+      const { data: inventoryData } = await supabase.from('user_inventory').select(`id, item_id, quantity, is_equipped, catalog_items (id, name, image_url, item_type)`).eq('user_id', viewingUserId);
+      if (inventoryData) {
+        setInventory(inventoryData as InventoryItem[]);
+        const equipped = (inventoryData as any[]).filter(i => i.is_equipped && i.catalog_items).map(i => ({ image_url: i.catalog_items.image_url, name: i.catalog_items.name }));
+        setEquippedItems(equipped);
+      }
 
       const { count } = await supabase.from('friends').select('id', { count: 'exact', head: true }).eq('status', 'accepted').or(`requester_id.eq.${viewingUserId},addressee_id.eq.${viewingUserId}`);
       setFriendCount(count || 0);
@@ -204,10 +212,23 @@ const Profile = () => {
     <div className="w-full">
       {/* ══════════ BANNER AREA ══════════ */}
       <div className="relative w-full h-[200px] md:h-[280px] bg-gradient-to-b from-muted/80 to-muted/40 overflow-hidden flex items-center justify-center">
-        {/* Large avatar render in center of banner */}
-        <div className="w-[160px] h-[200px] md:w-[220px] md:h-[270px]">
-          <UserAvatar userId={viewingUserId!} size="xl" className="w-full h-full object-contain" />
-        </div>
+        {show3D ? (
+          <Suspense fallback={<div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />}>
+            <Avatar3DViewer equippedItems={equippedItems} />
+          </Suspense>
+        ) : (
+          <div className="w-[160px] h-[200px] md:w-[220px] md:h-[270px]">
+            <UserAvatar userId={viewingUserId!} size="xl" className="w-full h-full object-contain" />
+          </div>
+        )}
+        {/* 3D toggle button */}
+        <button
+          onClick={() => setShow3D(!show3D)}
+          className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md bg-card/80 backdrop-blur border border-border text-foreground hover:bg-card transition-colors shadow-sm"
+        >
+          <Box className="w-3.5 h-3.5" />
+          {show3D ? '2D' : '3D'}
+        </button>
       </div>
 
       {/* ══════════ PROFILE INFO SECTION ══════════ */}
