@@ -157,8 +157,8 @@ export const SodabloxSidebar = () => {
           </span>
         </Link>
 
-        {/* Top tabs */}
-        <div className="hidden md:flex items-center gap-0 h-full">
+        {/* Top tabs - scrollable on mobile */}
+        <div className="flex items-center gap-0 h-full overflow-x-auto no-scrollbar">
           {topTabs.map((tab) => {
             const isActive = location.pathname === tab.to;
             return (
@@ -166,7 +166,7 @@ export const SodabloxSidebar = () => {
                 key={tab.to}
                 to={tab.to}
                 className={cn(
-                  'flex items-center h-full px-4 text-[14px] font-semibold transition-colors border-b-[3px]',
+                  'flex items-center h-full px-3 md:px-4 text-[13px] md:text-[14px] font-semibold transition-colors border-b-[3px] whitespace-nowrap shrink-0',
                   isActive
                     ? 'text-primary border-primary'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 border-transparent'
