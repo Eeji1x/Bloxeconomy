@@ -16,6 +16,7 @@ interface LimitedItem {
     value: number;
     demand: string;
     trend: string;
+    rap: number;
   } | null;
   owner_count: number;
   tags: string[];
