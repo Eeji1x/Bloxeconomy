@@ -281,9 +281,40 @@
     background: #232527;
   }
 
-  /* ── Roblox 2020 sidebar: #232527 ── */
+  /* ── Roblox 2020 sidebar: #393b3d ── */
   [data-theme="roblox2020"] .roblox-sidebar {
-    background: #232527;
+    background: #393b3d;
+  }
+
+  /* ── Roblox 2020 Panel (white card with header bar) ── */
+  [data-theme="roblox2020"] .rbx-panel {
+    background: #ffffff;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  [data-theme="roblox2020"] .rbx-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid #E5E7EB;
+    background: #f9fafb;
+  }
+
+  /* Flatten all cards in roblox2020 */
+  [data-theme="roblox2020"] .rounded-lg.border {
+    border-color: #E5E7EB;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  /* Buttons in roblox2020 */
+  [data-theme="roblox2020"] .bg-primary {
+    background: #335FFF !important;
+  }
+  [data-theme="roblox2020"] .bg-primary:hover {
+    background: #2749d8 !important;
   }
 }
 
