@@ -16,6 +16,7 @@ import Promocodes from "./pages/Promocodes";
 import Trading from "./pages/Trading";
 import Avatar from "./pages/Avatar";
 import Friends from "./pages/Friends";
+import Inbox from "./pages/Inbox";
 import Admin from "./pages/Admin";
 import AdminPlayers from "./pages/AdminPlayers";
 import AdminUserManagement from "./pages/AdminUserManagement";
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/trading" element={<Trading />} />
               <Route path="/avatar" element={<Avatar />} />
               <Route path="/friends" element={<Friends />} />
+              <Route path="/inbox" element={<Inbox />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/players" element={<AdminPlayers />} />
               <Route path="/admin/players/:userId" element={<AdminUserManagement />} />

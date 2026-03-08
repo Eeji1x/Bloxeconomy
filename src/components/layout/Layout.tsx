@@ -2,12 +2,20 @@ import { ReactNode } from 'react';
 import { AnnouncementBar } from './AnnouncementBar';
 import { Navbar } from './Navbar';
 import { BanRedirectWrapper } from '@/components/auth/BanRedirectWrapper';
+import { useMaintenanceMode } from '@/hooks/useMaintenanceMode';
+import Maintenance from '@/pages/Maintenance';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export const Layout = ({ children }: LayoutProps) => {
+  const { isMaintenanceMode, isLoading } = useMaintenanceMode();
+
+  if (isMaintenanceMode && !isLoading) {
+    return <Maintenance />;
+  }
+
   return (
     <div className="min-h-screen bg-background cyber-grid relative">
       {/* Ambient glow effects */}

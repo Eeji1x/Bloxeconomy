@@ -83,6 +83,8 @@ export type Database = {
           name: string
           price: number
           resell_enabled: boolean | null
+          sale_end_time: string | null
+          sale_start_time: string | null
           stock: number | null
           updated_at: string
         }
@@ -100,6 +102,8 @@ export type Database = {
           name: string
           price?: number
           resell_enabled?: boolean | null
+          sale_end_time?: string | null
+          sale_start_time?: string | null
           stock?: number | null
           updated_at?: string
         }
@@ -117,6 +121,8 @@ export type Database = {
           name?: string
           price?: number
           resell_enabled?: boolean | null
+          sale_end_time?: string | null
+          sale_start_time?: string | null
           stock?: number | null
           updated_at?: string
         }
@@ -231,6 +237,115 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      lotteries: {
+        Row: {
+          created_at: string
+          created_by: string
+          duration_hours: number
+          ends_at: string
+          id: string
+          starts_at: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          duration_hours?: number
+          ends_at: string
+          id?: string
+          starts_at?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          duration_hours?: number
+          ends_at?: string
+          id?: string
+          starts_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      lottery_prizes: {
+        Row: {
+          created_at: string
+          id: string
+          inventory_id: string
+          item_id: string
+          lottery_id: string
+          winner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inventory_id: string
+          item_id: string
+          lottery_id: string
+          winner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inventory_id?: string
+          item_id?: string
+          lottery_id?: string
+          winner_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lottery_prizes_inventory_id_fkey"
+            columns: ["inventory_id"]
+            isOneToOne: false
+            referencedRelation: "user_inventory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lottery_prizes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lottery_prizes_lottery_id_fkey"
+            columns: ["lottery_id"]
+            isOneToOne: false
+            referencedRelation: "lotteries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          is_system: boolean
+          message: string
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          is_system?: boolean
+          message: string
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          is_system?: boolean
+          message?: string
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -406,6 +521,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
       }
       trades: {
         Row: {

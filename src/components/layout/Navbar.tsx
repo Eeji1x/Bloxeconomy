@@ -15,7 +15,8 @@ import {
   LogOut,
   LogIn,
   Trophy,
-  Settings
+  Settings,
+  Mail
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,7 @@ const navLinks = [
   { to: '/avatar', label: 'Avatar', icon: User },
   { to: '/trading', label: 'Trading', icon: ArrowLeftRight },
   { to: '/promocodes', label: 'Codes', icon: Gift },
+  { to: '/inbox', label: 'Inbox', icon: Mail },
   { to: '/users', label: 'Users', icon: Users },
   { to: '/leaderboards', label: 'Top', icon: Trophy },
 ];

@@ -14,6 +14,9 @@ import { Textarea } from '@/components/ui/textarea';
 import DatabaseWipePanel from '@/components/admin/DatabaseWipePanel';
 import AdminCreateUserPanel from '@/components/admin/AdminCreateUserPanel';
 import InviteKeysPanel from '@/components/admin/InviteKeysPanel';
+import MaintenancePanel from '@/components/admin/MaintenancePanel';
+import GlobalMessagePanel from '@/components/admin/GlobalMessagePanel';
+import LotteryPanel from '@/components/admin/LotteryPanel';
 import { 
   Shield, 
   Users, 
@@ -30,7 +33,11 @@ import {
   RefreshCw,
   RotateCcw,
   Edit,
-  AlertTriangle
+  AlertTriangle,
+  Wrench,
+  Trophy,
+  Mail,
+  Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -47,6 +54,9 @@ const tabs: Tab[] = [
   { id: 'promocodes', label: 'Promocodes', icon: <Gift className="w-4 h-4" /> },
   { id: 'announcements', label: 'Announcements', icon: <Megaphone className="w-4 h-4" /> },
   { id: 'invite-keys', label: 'Invite Keys', icon: <Shield className="w-4 h-4" /> },
+  { id: 'maintenance', label: 'Maintenance', icon: <Wrench className="w-4 h-4" /> },
+  { id: 'messaging', label: 'Messaging', icon: <Mail className="w-4 h-4" /> },
+  { id: 'lottery', label: 'Lottery', icon: <Trophy className="w-4 h-4" /> },
   { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
@@ -112,6 +122,9 @@ const Admin = () => {
         {activeTab === 'promocodes' && <PromocodesPanel />}
         {activeTab === 'announcements' && <AnnouncementsPanel />}
         {activeTab === 'invite-keys' && <InviteKeysPanel />}
+        {activeTab === 'maintenance' && <MaintenancePanel />}
+        {activeTab === 'messaging' && <GlobalMessagePanel />}
+        {activeTab === 'lottery' && <LotteryPanel />}
         {activeTab === 'wipe' && <DatabaseWipePanel />}
       </div>
     </div>
@@ -531,6 +544,8 @@ const CatalogPanel = () => {
     stock: null as number | null,
     is_on_sale: true,
     resell_enabled: true,
+    sale_start_time: '',
+    sale_end_time: '',
   });
 
   useEffect(() => {
@@ -555,6 +570,8 @@ const CatalogPanel = () => {
       stock: null,
       is_on_sale: true,
       resell_enabled: true,
+      sale_start_time: '',
+      sale_end_time: '',
     });
     setEditingItem(null);
     setShowForm(false);
@@ -571,6 +588,8 @@ const CatalogPanel = () => {
       stock: item.stock,
       is_on_sale: item.is_on_sale ?? true,
       resell_enabled: item.resell_enabled ?? true,
+      sale_start_time: item.sale_start_time ? new Date(item.sale_start_time).toISOString().slice(0, 16) : '',
+      sale_end_time: item.sale_end_time ? new Date(item.sale_end_time).toISOString().slice(0, 16) : '',
     });
     setShowForm(true);
   };
@@ -594,6 +613,8 @@ const CatalogPanel = () => {
           is_on_sale: formData.is_on_sale,
           is_giftbox: false,
           resell_enabled: formData.resell_enabled,
+          sale_start_time: formData.sale_start_time ? new Date(formData.sale_start_time).toISOString() : null,
+          sale_end_time: formData.sale_end_time ? new Date(formData.sale_end_time).toISOString() : null,
         })
         .eq('id', editingItem.id);
       
@@ -644,6 +665,8 @@ const CatalogPanel = () => {
           is_on_sale: formData.is_on_sale,
           is_giftbox: false,
           resell_enabled: formData.resell_enabled,
+          sale_start_time: formData.sale_start_time ? new Date(formData.sale_start_time).toISOString() : null,
+          sale_end_time: formData.sale_end_time ? new Date(formData.sale_end_time).toISOString() : null,
         });
       
       if (error) {
@@ -774,6 +797,24 @@ const CatalogPanel = () => {
                   Resell Enabled
                 </Label>
               )}
+            </div>
+            <div className="space-y-2">
+              <Label>Sale Start Time (optional)</Label>
+              <input
+                type="datetime-local"
+                value={formData.sale_start_time}
+                onChange={(e) => setFormData({ ...formData, sale_start_time: e.target.value })}
+                className="w-full h-10 rounded-md border bg-input px-3 text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Sale End Time (optional)</Label>
+              <input
+                type="datetime-local"
+                value={formData.sale_end_time}
+                onChange={(e) => setFormData({ ...formData, sale_end_time: e.target.value })}
+                className="w-full h-10 rounded-md border bg-input px-3 text-sm"
+              />
             </div>
           </div>
           <div className="space-y-2">
