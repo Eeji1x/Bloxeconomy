@@ -1221,7 +1221,7 @@
   [data-theme="roblox2016"] .rbx16-limited-overlay {
     position: absolute;
     left: 50%;
-    bottom: -10px;
+    bottom: 20%;
     transform: translateX(-50%);
     width: 82%;
     height: auto !important;
