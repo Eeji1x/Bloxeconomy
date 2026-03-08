@@ -2,6 +2,16 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase, checkIsAdmin, getProfile, updateOnlineStatus } from '@/lib/supabase';
 
+const checkIsEconomyManager = async (userId: string): Promise<boolean> => {
+  const { data, error } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userId)
+    .eq('role', 'economy_manager')
+    .maybeSingle();
+  return !error && data !== null;
+};
+
 interface Profile {
   id: string;
   user_id: string;
