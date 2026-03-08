@@ -187,23 +187,25 @@ const AuthHome = () => {
       </section>
 
       {/* CTA */}
-      <section className="relative py-16 px-4">
-        <div className="max-w-3xl mx-auto relative overflow-hidden rounded-2xl">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20" />
-          <div className="absolute inset-0 cyber-grid opacity-30" />
-          <div className="relative p-12 text-center space-y-6">
-            <h2 className="text-3xl md:text-4xl font-display font-bold">
-              Ready to join the <span className="gradient-text">revolution</span>?
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Create your account now and receive 100 free emeralds to start your journey.
-            </p>
-            <Link to="/signup">
-              <Button variant="neon" size="xl">Create Account</Button>
-            </Link>
+      {!user && (
+        <section className="relative py-16 px-4">
+          <div className="max-w-3xl mx-auto relative overflow-hidden rounded-2xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20" />
+            <div className="absolute inset-0 cyber-grid opacity-30" />
+            <div className="relative p-12 text-center space-y-6">
+              <h2 className="text-3xl md:text-4xl font-display font-bold">
+                Ready to join the <span className="gradient-text">revolution</span>?
+              </h2>
+              <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+                Create your account now and receive 100 free emeralds to start your journey.
+              </p>
+              <Link to="/signup">
+                <Button variant="neon" size="xl">Create Account</Button>
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground space-y-2">
