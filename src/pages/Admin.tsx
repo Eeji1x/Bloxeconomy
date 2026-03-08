@@ -33,7 +33,11 @@ import {
   RefreshCw,
   RotateCcw,
   Edit,
-  AlertTriangle
+  AlertTriangle,
+  Wrench,
+  Trophy,
+  Mail,
+  Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
 
