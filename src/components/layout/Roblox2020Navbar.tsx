@@ -189,10 +189,7 @@ export const Roblox2020Navbar = () => {
 
         {/* Logo */}
         <Link to="/" className="flex items-center shrink-0 mr-6">
-          <span
-            className="font-extrabold text-white text-[18px] tracking-tight"
-            style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif" }}
-          >
+          <span className="font-extrabold text-white text-[20px] tracking-tight">
             SODABLOX
           </span>
         </Link>
