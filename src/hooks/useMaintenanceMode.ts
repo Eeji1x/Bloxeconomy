@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const useMaintenanceMode = () => {
   const { profile } = useAuth();
-  const [isMaintenanceMode, setIsMaintenanceMode] = useState(false);
+  // Default to TRUE — assume maintenance until server confirms otherwise
+  const [isMaintenanceMode, setIsMaintenanceMode] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const failCount = useRef(0);
 
   // Protected numeric IDs that can bypass maintenance
   const BYPASS_IDS = [1, 5];
@@ -14,14 +16,36 @@ export const useMaintenanceMode = () => {
 
   useEffect(() => {
     const fetchStatus = async () => {
-      const { data } = await supabase
-        .from('site_settings')
-        .select('value')
-        .eq('key', 'maintenance_mode')
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('value')
+          .eq('key', 'maintenance_mode')
+          .single();
 
-      if (data) {
-        setIsMaintenanceMode((data.value as any)?.enabled === true);
+        if (error || !data || typeof data.value !== 'object') {
+          // If fetch fails or data is malformed, assume maintenance ON
+          failCount.current++;
+          if (failCount.current >= 2) {
+            setIsMaintenanceMode(true);
+          }
+          setIsLoading(false);
+          return;
+        }
+
+        const value = data.value as Record<string, unknown>;
+        // Strict validation: must have enabled as a boolean
+        if (typeof value.enabled === 'boolean') {
+          setIsMaintenanceMode(value.enabled);
+          failCount.current = 0;
+        } else {
+          setIsMaintenanceMode(true);
+        }
+      } catch {
+        failCount.current++;
+        if (failCount.current >= 2) {
+          setIsMaintenanceMode(true);
+        }
       }
       setIsLoading(false);
     };
