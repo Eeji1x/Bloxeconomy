@@ -4,9 +4,10 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Navigate, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { DEFAULT_AVATAR_URL } from '@/lib/constants';
-import { User, Package, Check } from 'lucide-react';
+import { User, Package, Check, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { Avatar3DViewer } from '@/components/avatar/Avatar3DViewer';
 
 interface InventoryItem {
   id: string;
@@ -28,6 +29,7 @@ const Avatar = () => {
   const { theme } = useTheme();
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loadingInventory, setLoadingInventory] = useState(true);
+  const [view3D, setView3D] = useState(true);
 
   const is2016 = theme === 'roblox2016';
   const is2015 = theme === 'roblox2015';
@@ -74,18 +76,38 @@ const Avatar = () => {
     return (
       <div style={{ display: 'flex', gap: 16 }}>
         {/* Preview */}
-        <div style={{ width: 250, flexShrink: 0 }}>
+        <div style={{ width: 280, flexShrink: 0 }}>
           <div className="rbx16-panel">
-            <div className="rbx16-panel-header">Preview</div>
-            <div className="rbx16-panel-body" style={{ padding: 8 }}>
-              <div style={{ aspectRatio: '3/4', border: '1px solid #e8e8e8', background: '#fff', position: 'relative', overflow: 'hidden' }}>
-                <img src={DEFAULT_AVATAR_URL} alt="Your Avatar" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8, position: 'absolute', inset: 0 }} />
-                {equippedItems.map((item) => (
-                  <img key={item.id} src={item.catalog_items?.image_url} alt={item.catalog_items?.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8, position: 'absolute', inset: 0, opacity: 1 }} />
-                ))}
-              </div>
-              <div style={{ textAlign: 'center', fontSize: 12, color: '#666', marginTop: 6 }}>
+            <div className="rbx16-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Preview</span>
+              <button
+                onClick={() => setView3D(!view3D)}
+                style={{ fontSize: 11, color: '#00a2ff', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+              >
+                {view3D ? '2D View' : '3D View'}
+              </button>
+            </div>
+            <div className="rbx16-panel-body" style={{ padding: 0 }}>
+              {view3D ? (
+                <div style={{ height: 350 }}>
+                  <Avatar3DViewer
+                    equippedItems={equippedItems.filter(i => i.catalog_items).map(i => ({
+                      image_url: i.catalog_items!.image_url,
+                      name: i.catalog_items!.name,
+                    }))}
+                  />
+                </div>
+              ) : (
+                <div style={{ aspectRatio: '3/4', border: '1px solid #e8e8e8', background: '#fff', position: 'relative', overflow: 'hidden', margin: 8 }}>
+                  <img src={DEFAULT_AVATAR_URL} alt="Your Avatar" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8, position: 'absolute', inset: 0 }} />
+                  {equippedItems.map((item) => (
+                    <img key={item.id} src={item.catalog_items?.image_url} alt={item.catalog_items?.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8, position: 'absolute', inset: 0, opacity: 1 }} />
+                  ))}
+                </div>
+              )}
+              <div style={{ textAlign: 'center', fontSize: 12, color: '#666', padding: '6px 0' }}>
                 {equippedItems.length > 0 ? `${equippedItems.length} item(s) equipped` : 'Default Avatar'}
+                {view3D && <div style={{ fontSize: 10, color: '#999', marginTop: 2 }}>Drag to rotate • Scroll to zoom</div>}
               </div>
             </div>
           </div>
@@ -154,15 +176,35 @@ const Avatar = () => {
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="cyber-card p-8">
-          <h2 className="font-display font-bold mb-4">Preview</h2>
-          <div className="aspect-[3/4] rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary/30 flex items-center justify-center overflow-hidden relative">
-            <img src={DEFAULT_AVATAR_URL} alt="Your Avatar" className="w-full h-full object-contain p-4 absolute inset-0" />
-            {equippedItems.map((item) => (
-              <img key={item.id} src={item.catalog_items?.image_url} alt={item.catalog_items?.name} className="w-full h-full object-contain p-4 absolute inset-0" style={{ opacity: 1, mixBlendMode: 'normal' }} />
-            ))}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-bold">Preview</h2>
+            <button
+              onClick={() => setView3D(!view3D)}
+              className="text-xs text-primary font-semibold hover:underline"
+            >
+              {view3D ? 'Switch to 2D' : 'Switch to 3D'}
+            </button>
           </div>
+          {view3D ? (
+            <div className="rounded-xl overflow-hidden" style={{ height: 400 }}>
+              <Avatar3DViewer
+                equippedItems={equippedItems.filter(i => i.catalog_items).map(i => ({
+                  image_url: i.catalog_items!.image_url,
+                  name: i.catalog_items!.name,
+                }))}
+              />
+            </div>
+          ) : (
+            <div className="aspect-[3/4] rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary/30 flex items-center justify-center overflow-hidden relative">
+              <img src={DEFAULT_AVATAR_URL} alt="Your Avatar" className="w-full h-full object-contain p-4 absolute inset-0" />
+              {equippedItems.map((item) => (
+                <img key={item.id} src={item.catalog_items?.image_url} alt={item.catalog_items?.name} className="w-full h-full object-contain p-4 absolute inset-0" style={{ opacity: 1, mixBlendMode: 'normal' }} />
+              ))}
+            </div>
+          )}
           <p className="text-center text-sm text-muted-foreground mt-4">
             {equippedItems.length > 0 ? `${equippedItems.length} item(s) equipped` : 'Default Avatar'}
+            {view3D && <span className="block text-xs mt-1 opacity-60">Drag to rotate • Scroll to zoom</span>}
           </p>
         </div>
 
