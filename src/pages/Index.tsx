@@ -10,6 +10,7 @@ import { HomeAnnouncements } from '@/components/home/HomeAnnouncements';
 import { Roblox2016Home } from '@/components/home/Roblox2016Home';
 import { Roblox2015Home } from '@/components/home/Roblox2015Home';
 import { Roblox2008Home } from '@/components/home/Roblox2008Home';
+import { VaporHome } from '@/components/home/VaporHome';
 
 const Index = () => {
   const { user, profile } = useAuth();
@@ -33,6 +34,11 @@ const Index = () => {
   // SODABLOX 2016 themed home
   if (theme === 'roblox2016') {
     return <Roblox2016Home />;
+  }
+
+  // Vapor / Test Theme home
+  if (theme === 'vapor') {
+    return <VaporHome />;
   }
 
   // Default SODABLOX home
