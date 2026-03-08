@@ -20,7 +20,7 @@ import ApplicationsPanel from '@/components/admin/ApplicationsPanel';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
   Plus, Trash2, Save, BadgeCheck, RefreshCw, RotateCcw, Edit,
-  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye
+  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { forceDeleteItem } from '@/lib/forceDeleteItem';
