@@ -112,6 +112,23 @@ export const Layout = ({ children }: LayoutProps) => {
     );
   }
 
+  // Mercury theme layout — dark purple, Inter font, 220px sidebar
+  if (theme === 'mercury') {
+    return (
+      <div className="min-h-screen" style={{ background: '#0f0e11' }}>
+        <AnnouncementBar />
+        <MercuryNavbar />
+        <main className="lg:ml-[220px] min-h-[calc(100vh-56px)]">
+          <div className="max-w-[1100px] mx-auto px-4 py-5">
+            <BanRedirectWrapper>
+              {children}
+            </BanRedirectWrapper>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   // Default SODABLOX layout
   return (
     <div className="min-h-screen bg-background">
