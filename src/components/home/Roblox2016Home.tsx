@@ -157,7 +157,7 @@ export const Roblox2016Home = () => {
         <div className="rbx16-panel">
           <div style={{ padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 14, color: '#393b3d', fontWeight: 600 }}>Friends</span>
-            <span style={{ fontSize: 14, color: '#0074BD', fontWeight: 700 }}>{friends.length}</span>
+            <span style={{ fontSize: 14, color: '#00a2ff', fontWeight: 700 }}>{friends.length}</span>
           </div>
         </div>
       </div>
