@@ -193,6 +193,12 @@ const ItemDetail = () => {
       await refreshProfile();
       await fetchItem();
       await fetchUserInventory();
+      
+      // Update RAP for limited items
+      if (item.item_type === 'limited') {
+        await updateItemRAP(item.id, item.price);
+      }
+      
       toast.success(`Purchased ${item.name}!`);
     } catch (error) {
       console.error('Purchase error:', error);
