@@ -24,7 +24,7 @@ const allNavLinks = [
 ];
 
 export const Roblox2008Navbar = () => {
-  const { user, profile, isAdmin, isEconomyManager, signOut } = useAuth();
+  const { user, profile, isAdmin, isOwner, isEconomyManager, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -119,7 +119,7 @@ export const Roblox2008Navbar = () => {
               );
             })}
 
-            {(isAdmin || isEconomyManager) && (
+            {(isAdmin || isOwner || isEconomyManager) && (
               <>
                 <span className="rbx08-separator">&nbsp;|&nbsp;</span>
                 <Link
@@ -170,7 +170,7 @@ export const Roblox2008Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            {(isAdmin || isEconomyManager) && (
+            {(isAdmin || isOwner || isEconomyManager) && (
               <Link
                 to="/admin"
                 onClick={() => setMobileMenuOpen(false)}
@@ -186,7 +186,7 @@ export const Roblox2008Navbar = () => {
                   paddingTop: 10,
                 }}
               >
-                ⚡ {isAdmin ? 'Admin Panel' : 'Economy Panel'}
+                ⚡ {isAdmin ? 'Admin Panel' : isOwner ? 'Owner Panel' : 'Economy Panel'}
               </Link>
             )}
           </div>

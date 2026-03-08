@@ -770,11 +770,12 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_economy_manager: { Args: { _user_id: string }; Returns: boolean }
+      is_owner: { Args: { _user_id: string }; Returns: boolean }
       next_profile_numeric_id: { Args: never; Returns: number }
       reset_profiles_numeric_id_seq: { Args: never; Returns: undefined }
     }
     Enums: {
-      app_role: "admin" | "user" | "economy_manager"
+      app_role: "admin" | "user" | "economy_manager" | "owner"
       friend_status: "pending" | "accepted" | "declined"
       item_type: "normal" | "limited" | "giftbox"
       trade_status: "pending" | "accepted" | "declined" | "cancelled"
@@ -905,7 +906,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user", "economy_manager"],
+      app_role: ["admin", "user", "economy_manager", "owner"],
       friend_status: ["pending", "accepted", "declined"],
       item_type: ["normal", "limited", "giftbox"],
       trade_status: ["pending", "accepted", "declined", "cancelled"],

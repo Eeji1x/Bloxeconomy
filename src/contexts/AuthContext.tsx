@@ -12,6 +12,16 @@ const checkIsEconomyManager = async (userId: string): Promise<boolean> => {
   return !error && data !== null;
 };
 
+const checkIsOwner = async (userId: string): Promise<boolean> => {
+  const { data, error } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userId)
+    .eq('role', 'owner')
+    .maybeSingle();
+  return !error && data !== null;
+};
+
 interface Profile {
   id: string;
   user_id: string;
@@ -36,6 +46,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   isAdmin: boolean;
+  isOwner: boolean;
   isEconomyManager: boolean;
   isLoading: boolean;
   signUp: (username: string, password: string, inviteKey: string) => Promise<{ error: Error | null }>;
@@ -59,6 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
   const [isEconomyManager, setIsEconomyManager] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -75,6 +87,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       const adminStatus = await checkIsAdmin(user.id);
       setIsAdmin(adminStatus);
+      const ownerStatus = await checkIsOwner(user.id);
+      setIsOwner(ownerStatus);
       const econStatus = await checkIsEconomyManager(user.id);
       setIsEconomyManager(econStatus);
     } catch (error) {
@@ -106,6 +120,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             const adminStatus = await checkIsAdmin(session.user.id);
             setIsAdmin(adminStatus);
+            const ownerStatus = await checkIsOwner(session.user.id);
+            setIsOwner(ownerStatus);
             const econStatus = await checkIsEconomyManager(session.user.id);
             setIsEconomyManager(econStatus);
           } catch (error) {
@@ -116,6 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setProfile(null);
         setIsAdmin(false);
+        setIsOwner(false);
         setIsEconomyManager(false);
         setIsLoading(false);
       }
@@ -243,6 +260,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
     setProfile(null);
     setIsAdmin(false);
+    setIsOwner(false);
     setIsEconomyManager(false);
   };
 
@@ -253,6 +271,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         session,
         profile,
         isAdmin,
+        isOwner,
         isEconomyManager,
         isLoading,
         signUp,

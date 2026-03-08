@@ -35,7 +35,7 @@ const navLinks = [
 ];
 
 export const Navbar = () => {
-  const { user, profile, isAdmin, signOut } = useAuth();
+  const { user, profile, isAdmin, isOwner, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -85,7 +85,7 @@ export const Navbar = () => {
               );
             })}
             
-            {isAdmin && (
+            {(isAdmin || isOwner) && (
               <Link
                 to="/admin"
                 className={cn(
@@ -174,7 +174,7 @@ export const Navbar = () => {
                 );
               })}
               
-              {isAdmin && (
+              {(isAdmin || isOwner) && (
                 <Link
                   to="/admin"
                   onClick={() => setIsMobileMenuOpen(false)}

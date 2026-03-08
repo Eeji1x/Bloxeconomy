@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
-export type AppRole = 'admin' | 'economy_manager' | 'user';
+export type AppRole = 'admin' | 'owner' | 'economy_manager' | 'user';
 
 export interface UserRoleInfo {
   isAdmin: boolean;
+  isOwner: boolean;
   isEconomyManager: boolean;
   roles: AppRole[];
 }
@@ -12,6 +13,7 @@ export interface UserRoleInfo {
 export const useUserRoles = (userId?: string) => {
   const [roleInfo, setRoleInfo] = useState<UserRoleInfo>({
     isAdmin: false,
+    isOwner: false,
     isEconomyManager: false,
     roles: [],
   });
@@ -34,6 +36,7 @@ export const useUserRoles = (userId?: string) => {
     const roles = (data?.map(r => r.role) || []) as AppRole[];
     setRoleInfo({
       isAdmin: roles.includes('admin'),
+      isOwner: roles.includes('owner'),
       isEconomyManager: roles.includes('economy_manager'),
       roles,
     });

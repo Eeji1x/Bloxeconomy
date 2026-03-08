@@ -13,11 +13,12 @@ import MaintenancePanel from '@/components/admin/MaintenancePanel';
 import GlobalMessagePanel from '@/components/admin/GlobalMessagePanel';
 import LotteryPanel from '@/components/admin/LotteryPanel';
 import SodamonsValueManager from '@/components/admin/SodamonsValueManager';
+import AdminCMD from '@/components/admin/AdminCMD';
 import AdminPlayers from '@/pages/AdminPlayers';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
   Plus, Trash2, Save, BadgeCheck, RefreshCw, RotateCcw, Edit,
-  AlertTriangle, Wrench, Trophy, Mail, Clock
+  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -28,6 +29,7 @@ interface Tab {
 }
 
 const tabs: Tab[] = [
+  { id: 'cmd', label: 'CMD', icon: <Terminal className="w-4 h-4" /> },
   { id: 'players', label: 'Player Management', icon: <Users className="w-4 h-4" /> },
   { id: 'catalog', label: 'Catalog', icon: <ShoppingBag className="w-4 h-4" /> },
   { id: 'create-user', label: 'Create User', icon: <Plus className="w-4 h-4" /> },
@@ -42,22 +44,27 @@ const tabs: Tab[] = [
 ];
 
 const Admin = () => {
-  const { user, isAdmin, isEconomyManager, isLoading } = useAuth();
+  const { user, isAdmin, isOwner, isEconomyManager, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('');
 
-  const isStaff = isAdmin || isEconomyManager;
+  const isStaff = isAdmin || isOwner || isEconomyManager;
 
-  // Economy managers see catalog, promocodes, and sodamons
-  const visibleTabs = isAdmin
-    ? tabs
-    : tabs.filter((t) => ['catalog', 'promocodes', 'sodamons'].includes(t.id));
+  // Determine visible tabs based on role
+  const getVisibleTabs = () => {
+    if (isAdmin) return tabs;
+    if (isOwner) return tabs; // Owners see everything
+    // Economy managers see catalog, promocodes, sodamons
+    return tabs.filter((t) => ['catalog', 'promocodes', 'sodamons'].includes(t.id));
+  };
+  
+  const visibleTabs = getVisibleTabs();
 
   // Set default tab based on role
   useEffect(() => {
     if (!activeTab && visibleTabs.length > 0) {
-      setActiveTab(isAdmin ? 'players' : 'catalog');
+      setActiveTab((isAdmin || isOwner) ? 'cmd' : 'catalog');
     }
-  }, [isAdmin, isEconomyManager]);
+  }, [isAdmin, isOwner, isEconomyManager]);
 
   if (isLoading) {
     return (
@@ -77,10 +84,10 @@ const Admin = () => {
       <div className="space-y-1">
         <h1 className="text-3xl font-display font-bold flex items-center gap-3">
           <Shield className="w-8 h-8 text-destructive" />
-          {isAdmin ? 'Admin Panel' : 'Economy Panel'}
+          {isAdmin ? 'Admin Panel' : isOwner ? 'Owner Panel' : 'Economy Panel'}
         </h1>
         <p className="text-muted-foreground">
-          {isAdmin ? 'Manage players, catalog, site settings' : 'Manage catalog items and promocodes'}
+          {isAdmin ? 'Manage players, catalog, site settings' : isOwner ? 'Full access — manage everything' : 'Manage catalog items and promocodes'}
         </p>
       </div>
 
@@ -101,17 +108,18 @@ const Admin = () => {
 
       {/* Tab Content */}
       <div>
-        {activeTab === 'players' && isAdmin && <AdminPlayers embedded />}
+        {activeTab === 'cmd' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AdminCMD /></div>}
+        {activeTab === 'players' && (isAdmin || isOwner) && <AdminPlayers embedded />}
         {activeTab === 'catalog' && <div className="cyber-card p-6"><CatalogPanel /></div>}
-        {activeTab === 'create-user' && isAdmin && <div className="cyber-card p-6"><AdminCreateUserPanel /></div>}
+        {activeTab === 'create-user' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AdminCreateUserPanel /></div>}
         {activeTab === 'promocodes' && <div className="cyber-card p-6"><PromocodesPanel /></div>}
-        {activeTab === 'announcements' && isAdmin && <div className="cyber-card p-6"><AnnouncementsPanel /></div>}
-        {activeTab === 'invite-keys' && isAdmin && <div className="cyber-card p-6"><InviteKeysPanel /></div>}
-        {activeTab === 'maintenance' && isAdmin && <div className="cyber-card p-6"><MaintenancePanel /></div>}
-        {activeTab === 'messaging' && isAdmin && <div className="cyber-card p-6"><GlobalMessagePanel /></div>}
-        {activeTab === 'lottery' && isAdmin && <div className="cyber-card p-6"><LotteryPanel /></div>}
-        {activeTab === 'sodamons' && isAdmin && <div className="cyber-card p-6"><SodamonsValueManager /></div>}
-        {activeTab === 'wipe' && isAdmin && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
+        {activeTab === 'announcements' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AnnouncementsPanel /></div>}
+        {activeTab === 'invite-keys' && (isAdmin || isOwner) && <div className="cyber-card p-6"><InviteKeysPanel /></div>}
+        {activeTab === 'maintenance' && (isAdmin || isOwner) && <div className="cyber-card p-6"><MaintenancePanel /></div>}
+        {activeTab === 'messaging' && (isAdmin || isOwner) && <div className="cyber-card p-6"><GlobalMessagePanel /></div>}
+        {activeTab === 'lottery' && (isAdmin || isOwner) && <div className="cyber-card p-6"><LotteryPanel /></div>}
+        {activeTab === 'sodamons' && (isAdmin || isOwner || isEconomyManager) && <div className="cyber-card p-6"><SodamonsValueManager /></div>}
+        {activeTab === 'wipe' && (isAdmin || isOwner) && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
       </div>
     </div>
   );
