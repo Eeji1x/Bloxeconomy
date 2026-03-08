@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils';
    2016 ROBLOX Navbar — Pixel-perfect replica
    Reference: roblox.com circa 2016 (Source Sans Pro era)
    
-   Structure (from real 2016 source):
+   Structure:
    ┌─────────────────────────────────────────────────────────┐
-   │ [☰] [ROBLOX logo]  Games Catalog Develop Robux  [🔍] [R$] [⚙] │
+   │ [☰] [SODABLOX logo]  Catalog Trade Leaderboards  [🔍] [R$] [⚙] │
    └─────────────────────────────────────────────────────────┘
    Sidebar: 175px, #f2f2f2, left-fixed
    ═══════════════════════════════════════════════════════════════ */
