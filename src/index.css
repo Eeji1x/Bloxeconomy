@@ -961,13 +961,12 @@
   [data-theme="roblox2016"] .cyber-card {
     background: #fff;
     border: none;
-    box-shadow: none;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
     border-radius: 0;
     padding: 2px 8px;
   }
   [data-theme="roblox2016"] .cyber-card:hover {
-    border-color: transparent;
-    box-shadow: none;
+    box-shadow: 0 1px 6px 0 rgba(25,25,25,0.45);
     transform: none;
   }
   [data-theme="roblox2016"] .neon-border,
