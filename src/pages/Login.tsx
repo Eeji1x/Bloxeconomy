@@ -41,7 +41,7 @@ const Login = () => {
       <div className="max-w-[320px] mx-auto py-6">
         <div className="rbx08-panel">
           <div className="rbx08-panel-header">Member Login</div>
-          <div className="p-4">
+          <div className="rbx08-panel-body">
             {error && (
               <div className="bg-[#fee] border border-[#c00] rounded p-2 mb-3">
                 <span className="text-[11px] text-[#c00] font-bold">{error}</span>
