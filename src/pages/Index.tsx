@@ -7,7 +7,7 @@ import { HomeLeftPanel } from '@/components/home/HomeLeftPanel';
 import { HomeFriendsList } from '@/components/home/HomeFriendsList';
 import { HomeQuickActions } from '@/components/home/HomeQuickActions';
 import { HomeAnnouncements } from '@/components/home/HomeAnnouncements';
-import { Roblox2020Home } from '@/components/home/Roblox2020Home';
+import { Roblox2016Home } from '@/components/home/Roblox2016Home';
 import { Roblox2008Home } from '@/components/home/Roblox2008Home';
 
 const Index = () => {
@@ -77,9 +77,9 @@ const Index = () => {
     return <Roblox2008Home />;
   }
 
-  // Roblox 2020 themed home
-  if (theme === 'roblox2020') {
-    return <Roblox2020Home />;
+  // SODABLOX 2016 themed home
+  if (theme === 'roblox2016') {
+    return <Roblox2016Home />;
   }
 
   // Default SODABLOX home

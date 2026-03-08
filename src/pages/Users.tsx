@@ -30,7 +30,7 @@ const Users = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const { theme } = useTheme();
-  const isRoblox = theme === 'roblox2020';
+  const isRoblox = theme === 'roblox2016';
 
   useEffect(() => {
     const fetchUsers = async () => {
