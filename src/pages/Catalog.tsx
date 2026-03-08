@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ShoppingBag, Search, Gem, Star, Filter } from 'lucide-react';
+import { ShoppingBag, Search, Gem, Star, Filter, Box } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface CatalogItem {
