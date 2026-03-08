@@ -63,7 +63,6 @@ const AdminUserManagement = () => {
   const isSuperOwner = authProfile?.numeric_id === SUPER_OWNER_NUMERIC_ID;
   const isProtected = profile && PROTECTED_USER_IDS.includes(profile.numeric_id) && !isSuperOwner;
   const isOwnerAccount = profile && (profile.numeric_id === SUPER_OWNER_NUMERIC_ID);
-  const isOwnerAccount = profile && (profile.numeric_id === SUPER_OWNER_NUMERIC_ID);
 
   useEffect(() => {
     if (userId && authUser && isAdmin) fetchAll();
