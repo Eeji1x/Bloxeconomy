@@ -239,6 +239,15 @@ const AdminUserManagement = () => {
     await logAction('remove_listings'); toast.success('Marketplace listings removed');
   };
 
+  const handleToggleVerify = async () => {
+    if (!profile) return;
+    const newVerified = !profile.is_verified;
+    await supabase.from('profiles').update({ is_verified: newVerified }).eq('user_id', userId!);
+    await logAction(newVerified ? 'verify_user' : 'unverify_user');
+    toast.success(newVerified ? 'User verified' : 'Verification removed');
+    fetchAll();
+  };
+
   const handleRemoveItem = async (invId: string, itemName: string) => {
     const { data: bdProfile } = await supabase.from('profiles').select('user_id').eq('numeric_id', BAD_DECISIONS_NUMERIC_ID).maybeSingle();
     const systemUserId = bdProfile?.user_id || '00000000-0000-0000-0000-000000000000';
