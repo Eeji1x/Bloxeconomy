@@ -82,6 +82,7 @@ const AdminUserManagement = () => {
     const roles = rolesRes.data || [];
     setTargetRoles({
       isAdmin: roles.some((r: any) => r.role === 'admin'),
+      isOwner: roles.some((r: any) => r.role === 'owner'),
       isEconomyManager: roles.some((r: any) => r.role === 'economy_manager'),
     });
     
