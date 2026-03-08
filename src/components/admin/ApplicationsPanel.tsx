@@ -6,15 +6,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { CheckCircle, XCircle, Clock, RefreshCw, Copy, Link as LinkIcon } from 'lucide-react';
 
-const generateToken = () => {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-  let token = '';
-  for (let i = 0; i < 32; i++) {
-    token += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return token;
-};
-
 const ApplicationsPanel = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [filter, setFilter] = useState<'pending' | 'accepted' | 'rejected' | 'all'>('pending');
