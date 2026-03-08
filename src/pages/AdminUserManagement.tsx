@@ -82,11 +82,12 @@ const AdminUserManagement = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [profileRes, rolesRes, invRes, invKeyRes] = await Promise.all([
+    const [profileRes, rolesRes, invRes, invKeyRes, catalogRes] = await Promise.all([
       supabase.from('profiles').select('*').eq('user_id', userId!).maybeSingle(),
       supabase.from('user_roles').select('role').eq('user_id', userId!),
       supabase.from('user_inventory').select('id, item_id, quantity, is_equipped, catalog_items!inner(name, price, item_type, image_url)').eq('user_id', userId!),
       supabase.from('invite_keys').select('key').eq('used_by', userId!).maybeSingle(),
+      supabase.from('catalog_items').select('id, name, price, item_type, image_url').order('name'),
     ]);
     if (profileRes.data) setProfile(profileRes.data as UserProfile);
     
@@ -99,6 +100,7 @@ const AdminUserManagement = () => {
     
     if (invRes.data) setInventory(invRes.data as unknown as InventoryItem[]);
     setInviteKey(invKeyRes.data?.key || null);
+    if (catalogRes.data) setCatalogItems(catalogRes.data as CatalogItem[]);
     setLoading(false);
   };
 
