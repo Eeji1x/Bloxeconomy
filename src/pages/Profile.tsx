@@ -44,7 +44,7 @@ const Profile = () => {
   const [isProfileAdmin, setIsProfileAdmin] = useState(false);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [claimingDaily, setClaimingDaily] = useState(false);
+  
   const [friendStatus, setFriendStatus] = useState<'none' | 'pending_sent' | 'pending_received' | 'accepted'>('none');
   const [friendshipId, setFriendshipId] = useState<string | null>(null);
   const [friendLoading, setFriendLoading] = useState(false);
