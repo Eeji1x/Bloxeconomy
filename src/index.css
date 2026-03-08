@@ -520,6 +520,7 @@
   }
   [data-theme="roblox2016"] .rbx16-sidebar-link:hover {
     color: #00a2ff;
+    text-decoration: none !important;
   }
   [data-theme="roblox2016"] .rbx16-sidebar-link-active {
     color: #00a2ff;
