@@ -362,19 +362,28 @@ const LotteryPanel = () => {
             Available limited items from BadDecisions: <strong className="text-accent">{bdItems.length}</strong>
           </p>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-2 col-span-2">
               <Label>Duration</Label>
-              <select
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full h-10 rounded-md border bg-input px-3"
-              >
-                <option value={1}>1 hour</option>
-                <option value={6}>6 hours</option>
-                <option value={12}>12 hours</option>
-                <option value={24}>24 hours</option>
-              </select>
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  min={1}
+                  max={9999}
+                  value={durationValue}
+                  onChange={(e) => setDurationValue(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="flex-1"
+                  placeholder="e.g. 10"
+                />
+                <select
+                  value={durationUnit}
+                  onChange={(e) => setDurationUnit(e.target.value as 'minutes' | 'hours')}
+                  className="w-28 h-10 rounded-md border bg-input px-3"
+                >
+                  <option value="minutes">Minutes</option>
+                  <option value="hours">Hours</option>
+                </select>
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Number of Prizes</Label>
