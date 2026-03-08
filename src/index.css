@@ -1278,7 +1278,8 @@
   [data-theme="roblox2016"] .grid.grid-cols-2.sm\:grid-cols-3 .cyber-card,
   [data-theme="roblox2016"] .grid.grid-cols-2.sm\:grid-cols-4 .cyber-card {
     background: #fff !important;
-    border: 1px solid #c3c3c3 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
     padding: 8px !important;
   }
 
