@@ -69,7 +69,7 @@ const Sodamons = () => {
 
     // Fetch values, tags, and owner counts in parallel
     const [valuesRes, tagsRes, ownersRes] = await Promise.all([
-      supabase.from('item_values').select('item_id, value, demand, trend').in('item_id', itemIds),
+      supabase.from('item_values').select('item_id, value, demand, trend, rap').in('item_id', itemIds),
       supabase.from('item_tags').select('item_id, tag').in('item_id', itemIds),
       supabase.from('user_inventory').select('item_id').in('item_id', itemIds),
     ]);
