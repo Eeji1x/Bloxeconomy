@@ -294,52 +294,6 @@ const Profile = () => {
     }
   };
 
-  const handleClaimDaily = async () => {
-    if (!user || !currentUserProfile) return;
-
-    // Check if can claim
-    const lastClaim = currentUserProfile.last_daily_claim ? new Date(currentUserProfile.last_daily_claim) : null;
-    const now = new Date();
-    
-    if (lastClaim) {
-      const hoursSinceLastClaim = (now.getTime() - lastClaim.getTime()) / (1000 * 60 * 60);
-      if (hoursSinceLastClaim < 24) {
-        const hoursRemaining = Math.ceil(24 - hoursSinceLastClaim);
-        toast.error(`You can claim again in ${hoursRemaining} hours`);
-        return;
-      }
-    }
-
-    setClaimingDaily(true);
-
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          emeralds: currentUserProfile.emeralds + 50,
-          last_daily_claim: now.toISOString()
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      await refreshProfile();
-      toast.success('Claimed 50 daily Emeralds! 💎');
-    } catch (error) {
-      console.error('Error claiming daily:', error);
-      toast.error('Failed to claim daily reward');
-    } finally {
-      setClaimingDaily(false);
-    }
-  };
-
-  const canClaimDaily = () => {
-    if (!currentUserProfile?.last_daily_claim) return true;
-    const lastClaim = new Date(currentUserProfile.last_daily_claim);
-    const now = new Date();
-    const hoursSinceLastClaim = (now.getTime() - lastClaim.getTime()) / (1000 * 60 * 60);
-    return hoursSinceLastClaim >= 24;
-  };
 
   if (authLoading || isLoading) {
     return (
