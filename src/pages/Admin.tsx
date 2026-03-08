@@ -47,10 +47,10 @@ const Admin = () => {
 
   const isStaff = isAdmin || isEconomyManager;
 
-  // Economy managers only see catalog + promocodes
+  // Economy managers see catalog, promocodes, and sodamons
   const visibleTabs = isAdmin
     ? tabs
-    : tabs.filter((t) => t.id === 'catalog' || t.id === 'promocodes');
+    : tabs.filter((t) => ['catalog', 'promocodes', 'sodamons'].includes(t.id));
 
   // Set default tab based on role
   useEffect(() => {
