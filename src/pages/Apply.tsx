@@ -38,7 +38,7 @@ const Apply = () => {
   // Status checker state
   const [showStatusChecker, setShowStatusChecker] = useState(false);
   const [statusInput, setStatusInput] = useState('');
-  const [statusResult, setStatusResult] = useState<{ status: string; reject_reason?: string; username?: string } | null>(null);
+  const [statusResult, setStatusResult] = useState<{ status: string; reject_reason?: string; username?: string; registration_token?: string; token_used?: boolean } | null>(null);
   const [statusLoading, setStatusLoading] = useState(false);
   const [statusError, setStatusError] = useState('');
 
@@ -51,15 +51,13 @@ const Apply = () => {
     setStatusError('');
     setStatusResult(null);
     try {
-      const { data, error } = await supabase
-        .from('applications')
-        .select('status, reject_reason, username')
-        .eq('short_id', statusInput.trim().toUpperCase())
-        .maybeSingle();
-      if (error || !data) {
-        setStatusError('Application not found. Check your ID and try again.');
+      const res = await supabase.functions.invoke('register-with-token', {
+        body: { action: 'lookup-status', short_id: statusInput.trim() },
+      });
+      if (!res.data?.success) {
+        setStatusError(res.data?.message || 'Application not found. Check your ID and try again.');
       } else {
-        setStatusResult(data);
+        setStatusResult(res.data);
       }
     } catch {
       setStatusError('Something went wrong.');
