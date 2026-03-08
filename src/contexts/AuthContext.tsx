@@ -106,6 +106,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             const adminStatus = await checkIsAdmin(session.user.id);
             setIsAdmin(adminStatus);
+            const econStatus = await checkIsEconomyManager(session.user.id);
+            setIsEconomyManager(econStatus);
           } catch (error) {
             console.error('Error in auth state change:', error);
           }
