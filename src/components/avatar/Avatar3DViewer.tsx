@@ -30,7 +30,7 @@ const AvatarModel = () => {
 
   return (
     <group ref={groupRef}>
-      <primitive object={model} scale={1} />
+      <primitive object={model} scale={0.4} />
     </group>
   );
 };
@@ -53,11 +53,11 @@ const Scene = () => (
     <AvatarModel />
 
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-      <circleGeometry args={[1.6, 64]} />
+      <circleGeometry args={[0.8, 64]} />
       <meshStandardMaterial color="#b8b8b8" roughness={0.85} />
     </mesh>
 
-    <gridHelper args={[4, 20, '#cccccc', '#e0e0e0']} position={[0, 0.01, 0]} />
+    <gridHelper args={[2, 12, '#cccccc', '#e0e0e0']} position={[0, 0.01, 0]} />
 
     <OrbitControls
       enablePan={false}
@@ -66,7 +66,7 @@ const Scene = () => (
       maxDistance={8}
       minPolarAngle={Math.PI / 8}
       maxPolarAngle={Math.PI / 2}
-      target={[0, 0.9, 0]}
+      target={[0, 0.4, 0]}
       autoRotate
       autoRotateSpeed={1.2}
     />
@@ -86,7 +86,7 @@ export const Avatar3DViewer = ({ equippedItems }: Avatar3DViewerProps) => {
       }}
     >
       <Canvas
-        camera={{ position: [0, 1.2, 12], fov: 28 }}
+        camera={{ position: [0, 0.5, 5], fov: 28 }}
         shadows
         gl={{ antialias: true, alpha: false }}
         style={{ width: '100%', height: '100%' }}
