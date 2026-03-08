@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils';
    2016 ROBLOX Navbar — Pixel-perfect replica
    Reference: roblox.com circa 2016 (Source Sans Pro era)
    
-   Structure (from real 2016 source):
+   Structure:
    ┌─────────────────────────────────────────────────────────┐
-   │ [☰] [ROBLOX logo]  Games Catalog Develop Robux  [🔍] [R$] [⚙] │
+   │ [☰] [SODABLOX logo]  Catalog Trade Leaderboards  [🔍] [R$] [⚙] │
    └─────────────────────────────────────────────────────────┘
    Sidebar: 175px, #f2f2f2, left-fixed
    ═══════════════════════════════════════════════════════════════ */
@@ -134,7 +134,7 @@ export const Roblox2016Navbar = () => {
             <span className="rbx16-logo-text">SODABLOX</span>
           </Link>
 
-          {/* Nav links — Real 2016: Games, Catalog, Develop, ROBUX */}
+          {/* Nav links — Catalog, Trade, Leaderboards, Sodamons */}
           <div className="rbx16-nav-links">
             <Link to="/catalog" className={cn('rbx16-nav-link', location.pathname === '/catalog' && 'rbx16-nav-link-active')}>Catalog</Link>
             <Link to="/trading" className={cn('rbx16-nav-link', location.pathname === '/trading' && 'rbx16-nav-link-active')}>Trade</Link>
