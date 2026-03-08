@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ShoppingBag, Search, Gem, Star, Filter } from 'lucide-react';
@@ -26,28 +27,26 @@ type SaleState = 'on_sale' | 'off_sale' | 'sold_out';
 
 const getSaleState = (item: CatalogItem): SaleState => {
   const now = Date.now();
-
-  // Check stock first
   if (item.stock !== null && item.stock <= 0) return 'sold_out';
-
-  // Check sale timers
   if (item.sale_start_time && new Date(item.sale_start_time).getTime() > now) return 'off_sale';
   if (item.sale_end_time && new Date(item.sale_end_time).getTime() < now) return 'off_sale';
-
-  // Check manual sale flag
   if (!item.is_on_sale) return 'off_sale';
-
   return 'on_sale';
 };
 
+const toSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
 const Catalog = () => {
   const { user, profile, refreshProfile } = useAuth();
+  const { theme } = useTheme();
   const [items, setItems] = useState<CatalogItem[]>([]);
   const [userInventory, setUserInventory] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'normal' | 'limited'>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [buyingItem, setBuyingItem] = useState<string | null>(null);
+
+  const is2016 = theme === 'roblox2016';
 
   useEffect(() => {
     fetchItems();
@@ -56,10 +55,9 @@ const Catalog = () => {
     }
   }, [user]);
 
-  // Refresh sale states every 30 seconds for timer-based items
   useEffect(() => {
     const interval = setInterval(() => {
-      setItems(prev => [...prev]); // force re-render to recalculate sale states
+      setItems(prev => [...prev]);
     }, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -115,7 +113,6 @@ const Catalog = () => {
     setBuyingItem(item.id);
 
     try {
-      // Re-check stock from database
       const { data: freshItem, error: fetchError } = await supabase
         .from('catalog_items')
         .select('stock, is_on_sale, sale_start_time, sale_end_time')
@@ -124,7 +121,6 @@ const Catalog = () => {
 
       if (fetchError || !freshItem) throw new Error('Failed to verify item availability');
 
-      // Validate sale state server-side
       const now = Date.now();
       if (!freshItem.is_on_sale) {
         toast.error('This item is no longer for sale');
@@ -147,20 +143,17 @@ const Catalog = () => {
         return;
       }
 
-      // Deduct emeralds
       const { error: emeraldError } = await supabase
         .from('profiles')
         .update({ emeralds: profile.emeralds - item.price })
         .eq('user_id', user.id);
       if (emeraldError) throw emeraldError;
 
-      // Add to inventory
       const { error: inventoryError } = await supabase
         .from('user_inventory')
         .insert({ user_id: user.id, item_id: item.id, quantity: 1 });
       if (inventoryError) throw inventoryError;
 
-      // Update stock if applicable (global stock)
       if (freshItem.stock !== null) {
         const newStock = freshItem.stock - 1;
         const updates: { stock: number; is_on_sale?: boolean } = { stock: newStock };
@@ -195,11 +188,126 @@ const Catalog = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+        <div className={is2016 ? "rbx16-spinner" : "w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"} />
       </div>
     );
   }
 
+  /* ═══════════════════════════════════════════
+     ROBLOX 2016 CATALOG LAYOUT
+     ═══════════════════════════════════════════ */
+  if (is2016) {
+    const CATEGORIES = [
+      { label: 'All Items', value: 'all' as const },
+      { label: 'Normal', value: 'normal' as const },
+      { label: 'Limited', value: 'limited' as const },
+    ];
+
+    return (
+      <div className="rbx16-catalog-page">
+        {/* Category sidebar */}
+        <div className="rbx16-catalog-sidebar">
+          <div className="rbx16-panel">
+            <div className="rbx16-panel-header">Categories</div>
+            <div className="rbx16-panel-body" style={{ padding: 0 }}>
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.value}
+                  onClick={() => setFilter(cat.value)}
+                  className={`rbx16-cat-link ${filter === cat.value ? 'rbx16-cat-link-active' : ''}`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Main content */}
+        <div className="rbx16-catalog-main">
+          {/* Header bar */}
+          <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+            <div className="rbx16-panel-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Catalog ({filteredItems.length} items)</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="rbx16-search-catalog"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Items grid */}
+          {filteredItems.length > 0 ? (
+            <div className="rbx16-catalog-grid">
+              {filteredItems.map((item) => {
+                const saleState = getSaleState(item);
+                const isLimited = item.item_type === 'limited';
+
+                return (
+                  <Link
+                    key={item.id}
+                    to={`/catalog/${toSlug(item.name)}`}
+                    className="rbx16-catalog-item"
+                  >
+                    {/* Image */}
+                    <div className="rbx16-catalog-item-img">
+                      <img
+                        src={item.image_url}
+                        alt={item.name}
+                        onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
+                      />
+                      {isLimited && (
+                        <img
+                          src="/images/2016/limitedOverlay_small.png"
+                          alt="Limited"
+                          className="rbx16-limited-overlay"
+                        />
+                      )}
+                      {saleState === 'off_sale' && (
+                        <span className="rbx16-offsale-tag">OFF SALE</span>
+                      )}
+                      {saleState === 'sold_out' && (
+                        <span className="rbx16-soldout-tag">SOLD OUT</span>
+                      )}
+                    </div>
+                    {/* Info */}
+                    <div className="rbx16-catalog-item-info">
+                      <span className="rbx16-catalog-item-name">{item.name}</span>
+                      <span className="rbx16-catalog-item-price">
+                        💎 {item.price.toLocaleString()}
+                      </span>
+                      {item.stock !== null && (
+                        <span className="rbx16-catalog-item-stock">
+                          {item.stock} remaining
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="rbx16-panel">
+              <div className="rbx16-panel-body" style={{ textAlign: 'center', padding: 40 }}>
+                <p className="rbx16-text-muted">
+                  {items.length === 0 ? 'Catalog is empty — check back later!' : 'No items found'}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════════
+     DEFAULT SODABLOX LAYOUT
+     ═══════════════════════════════════════════ */
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -251,7 +359,7 @@ const Catalog = () => {
             const canBuy = saleState === 'on_sale' && !(isLimited && alreadyOwned);
 
             return (
-              <Link key={item.id} to={`/catalog/${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`} className="cyber-card group">
+              <Link key={item.id} to={`/catalog/${toSlug(item.name)}`} className="cyber-card group">
                 {/* Image */}
                 <div className="aspect-square rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 mb-3 overflow-hidden relative">
                   <img
@@ -271,7 +379,6 @@ const Catalog = () => {
                       Owned
                     </div>
                   )}
-                  {/* Sale State Badge */}
                   {saleState === 'off_sale' && (
                     <div className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold uppercase rounded bg-muted text-muted-foreground border border-border">
                       OFFSALE
@@ -302,7 +409,6 @@ const Catalog = () => {
                     )}
                   </div>
 
-                  {/* Buy Button */}
                   {canBuy ? (
                     <Button
                       variant="emerald"
