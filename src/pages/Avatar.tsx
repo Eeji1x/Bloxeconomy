@@ -156,35 +156,15 @@ const Avatar = () => {
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="cyber-card p-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-bold">Preview</h2>
-            <button
-              onClick={() => setView3D(!view3D)}
-              className="text-xs text-primary font-semibold hover:underline"
-            >
-              {view3D ? 'Switch to 2D' : 'Switch to 3D'}
-            </button>
+          <h2 className="font-display font-bold mb-4">Preview</h2>
+          <div className="aspect-[3/4] rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary/30 flex items-center justify-center overflow-hidden relative">
+            <img src={DEFAULT_AVATAR_URL} alt="Your Avatar" className="w-full h-full object-contain p-4 absolute inset-0" />
+            {equippedItems.map((item) => (
+              <img key={item.id} src={item.catalog_items?.image_url} alt={item.catalog_items?.name} className="w-full h-full object-contain p-4 absolute inset-0" style={{ opacity: 1, mixBlendMode: 'normal' }} />
+            ))}
           </div>
-          {view3D ? (
-            <div className="rounded-xl overflow-hidden" style={{ height: 400 }}>
-              <Avatar3DViewer
-                equippedItems={equippedItems.filter(i => i.catalog_items).map(i => ({
-                  image_url: i.catalog_items!.image_url,
-                  name: i.catalog_items!.name,
-                }))}
-              />
-            </div>
-          ) : (
-            <div className="aspect-[3/4] rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary/30 flex items-center justify-center overflow-hidden relative">
-              <img src={DEFAULT_AVATAR_URL} alt="Your Avatar" className="w-full h-full object-contain p-4 absolute inset-0" />
-              {equippedItems.map((item) => (
-                <img key={item.id} src={item.catalog_items?.image_url} alt={item.catalog_items?.name} className="w-full h-full object-contain p-4 absolute inset-0" style={{ opacity: 1, mixBlendMode: 'normal' }} />
-              ))}
-            </div>
-          )}
           <p className="text-center text-sm text-muted-foreground mt-4">
             {equippedItems.length > 0 ? `${equippedItems.length} item(s) equipped` : 'Default Avatar'}
-            {view3D && <span className="block text-xs mt-1 opacity-60">Drag to rotate • Scroll to zoom</span>}
           </p>
         </div>
 
