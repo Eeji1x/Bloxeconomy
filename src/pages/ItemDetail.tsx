@@ -569,14 +569,6 @@ const ItemDetail = () => {
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
-                    ) : isAdmin ? (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleRemoveListing(listing)}
-                      >
-                        Remove
-                      </Button>
                     ) : (
                       <Button
                         variant="emerald"
