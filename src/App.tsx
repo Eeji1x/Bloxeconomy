@@ -75,48 +75,50 @@ const ForceLogoutWrapper = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ThemeProvider>
-            <AuthProvider>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<AuthHome />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/users" element={<Users />} />
-                  <Route path="/users/:username" element={<UserRedirect />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/profile/:userId" element={<Profile />} />
-                  <Route path="/catalog" element={<Catalog />} />
-                  <Route path="/catalog/:itemSlug" element={<ItemDetail />} />
-                  <Route path="/promocodes" element={<Promocodes />} />
-                  <Route path="/trading" element={<Trading />} />
-                  <Route path="/avatar" element={<Avatar />} />
-                  <Route path="/friends" element={<Friends />} />
-                  <Route path="/inbox" element={<Inbox />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/admin/players" element={<AdminPlayers />} />
-                  <Route path="/admin/players/:userId" element={<AdminUserManagement />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/leaderboards" element={<Leaderboards />} />
-                  <Route path="/sodamons" element={<Sodamons />} />
-                  <Route path="/sodamons/item/:itemId" element={<SodamonsItem />} />
-                  <Route path="/sodamons/top" element={<SodamonsTop />} />
-                  <Route path="/emeralds" element={<EmeraldShop />} />
-                  <Route path="/banned" element={<Banned />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Layout>
-            </AuthProvider>
-          </ThemeProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ForceLogoutWrapper>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ThemeProvider>
+              <AuthProvider>
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/auth" element={<AuthHome />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/users" element={<Users />} />
+                    <Route path="/users/:username" element={<UserRedirect />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/profile/:userId" element={<Profile />} />
+                    <Route path="/catalog" element={<Catalog />} />
+                    <Route path="/catalog/:itemSlug" element={<ItemDetail />} />
+                    <Route path="/promocodes" element={<Promocodes />} />
+                    <Route path="/trading" element={<Trading />} />
+                    <Route path="/avatar" element={<Avatar />} />
+                    <Route path="/friends" element={<Friends />} />
+                    <Route path="/inbox" element={<Inbox />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin/players" element={<AdminPlayers />} />
+                    <Route path="/admin/players/:userId" element={<AdminUserManagement />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/leaderboards" element={<Leaderboards />} />
+                    <Route path="/sodamons" element={<Sodamons />} />
+                    <Route path="/sodamons/item/:itemId" element={<SodamonsItem />} />
+                    <Route path="/sodamons/top" element={<SodamonsTop />} />
+                    <Route path="/emeralds" element={<EmeraldShop />} />
+                    <Route path="/banned" element={<Banned />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Layout>
+              </AuthProvider>
+            </ThemeProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ForceLogoutWrapper>
   );
 };
 
