@@ -44,20 +44,25 @@ export const SodabloxSidebar = () => {
 
   useEffect(() => {
     const computeOffset = () => {
-      const announcement = document.querySelector('[data-announcement-bar="true"]') as HTMLElement | null;
-      const announcementHeight = announcement?.offsetHeight ?? 0;
-      setHeaderOffset(60 + announcementHeight);
+      const topbar = document.querySelector('.sodablox-topbar') as HTMLElement | null;
+      if (!topbar) {
+        setHeaderOffset(60);
+        return;
+      }
+
+      const rect = topbar.getBoundingClientRect();
+      // Sidebar starts right below the *visible* topbar position.
+      const nextOffset = Math.max(0, Math.round(rect.top + rect.height));
+      setHeaderOffset(nextOffset);
     };
 
     computeOffset();
     window.addEventListener('resize', computeOffset);
-
-    const observer = new MutationObserver(computeOffset);
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    window.addEventListener('scroll', computeOffset, { passive: true });
 
     return () => {
       window.removeEventListener('resize', computeOffset);
-      observer.disconnect();
+      window.removeEventListener('scroll', computeOffset);
     };
   }, []);
 
