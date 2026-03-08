@@ -8,11 +8,15 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
+const topTabs = [
+  { to: '/catalog', label: 'Catalog' },
+  { to: '/trading', label: 'Trade' },
+  { to: '/leaderboards', label: 'Leaderboard' },
+];
+
 const sidebarLinks = [
   { to: '/', label: 'Home', icon: Home },
-  { to: '/catalog', label: 'Catalog', icon: ShoppingBag },
-  { to: '/avatar', label: 'Create', icon: User },
-  { to: '/catalog', label: 'Inventory', icon: Package, authOnly: true },
+  { to: '/avatar', label: 'Avatar Editor', icon: User },
   { to: '/trading', label: 'Trade', icon: ArrowLeftRight },
   { to: '/leaderboards', label: 'Leaderboard', icon: Trophy },
   { to: '/settings', label: 'Settings', icon: Settings },
@@ -126,6 +130,27 @@ export const SodabloxSidebar = () => {
             SODABLOX
           </span>
         </Link>
+
+        {/* Top tabs */}
+        <div className="hidden md:flex items-center gap-0 h-full">
+          {topTabs.map((tab) => {
+            const isActive = location.pathname === tab.to;
+            return (
+              <Link
+                key={tab.to}
+                to={tab.to}
+                className={cn(
+                  'flex items-center h-full px-4 text-[14px] font-semibold transition-colors border-b-[3px]',
+                  isActive
+                    ? 'text-primary border-primary'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 border-transparent'
+                )}
+              >
+                {tab.label}
+              </Link>
+            );
+          })}
+        </div>
 
         {/* Spacer */}
         <div className="flex-1" />
