@@ -2978,11 +2978,12 @@
 .vapor-navbar-toggle {
   display: none;
   background: none;
-  border: 1px solid #ccc;
+  border: 1px solid #555;
   border-radius: 4px;
   padding: 4px 8px;
   cursor: pointer;
   margin-left: auto;
+  color: #ccc;
 }
 .vapor-navbar-collapse {
   display: flex;
