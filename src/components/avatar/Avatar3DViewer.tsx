@@ -1,5 +1,5 @@
-import { Suspense, useRef, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Suspense, useRef } from 'react';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -7,149 +7,207 @@ interface Avatar3DViewerProps {
   equippedItems: { image_url: string; name?: string }[];
 }
 
-/* ═══════════════════════════════════════════════════════════
-   Blocky Roblox-style humanoid built from box geometries.
-   Proportions match classic R6 avatar:
-   - Head:  1×1×1
-   - Torso: 2×2×1
-   - Arms:  1×2×1
-   - Legs:  1×2×1
-   ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   Accurate Roblox R6 Character — Proper proportions
+   
+   Real R6 dimensions (in studs):
+   - Head:      1.2 × 1.2 × 1.2  (with studs on top)
+   - Torso:     2.0 × 2.0 × 1.0
+   - Left Arm:  1.0 × 2.0 × 1.0
+   - Right Arm: 1.0 × 2.0 × 1.0
+   - Left Leg:  1.0 × 2.0 × 1.0
+   - Right Leg: 1.0 × 2.0 × 1.0
+   
+   Scale: 1 stud = 0.4 units in our scene
+   ═══════════════════════════════════════════════════════════════ */
 
-const SKIN = '#e8b88a';
-const SHIRT = '#1a5fb4';
-const PANTS = '#3d3846';
-const SHOE = '#1c1c1c';
+const S = 0.4; // stud scale
 
-/** A single limb/body part */
-const BodyPart = ({
-  args,
-  position,
+// Classic "noob" colors
+const COLORS = {
+  head: '#f3b700',     // Bright yellow
+  torso: '#00589c',    // Bright blue
+  leftArm: '#f3b700',  // Yellow
+  rightArm: '#f3b700', // Yellow
+  leftLeg: '#3a7d44',  // Br. green (classic noob)
+  rightLeg: '#3a7d44', // Br. green
+};
+
+/** Rounded box body part with subtle bevel look */
+const Part = ({
+  size,
+  pos,
   color,
-  castShadow = true,
 }: {
-  args: [number, number, number];
-  position: [number, number, number];
+  size: [number, number, number];
+  pos: [number, number, number];
   color: string;
-  castShadow?: boolean;
 }) => (
-  <mesh position={position} castShadow={castShadow}>
-    <boxGeometry args={args} />
-    <meshStandardMaterial color={color} roughness={0.6} metalness={0.05} />
+  <mesh position={pos} castShadow receiveShadow>
+    <boxGeometry args={size} />
+    <meshStandardMaterial
+      color={color}
+      roughness={0.55}
+      metalness={0.02}
+    />
   </mesh>
 );
 
-/** The blocky avatar character */
-const BlockyAvatar = () => {
-  const groupRef = useRef<THREE.Group>(null);
+/** The classic head stud (cylinder on top of head) */
+const HeadStud = () => (
+  <mesh position={[0, (1.2 * S) / 2 + 0.06, 0]} castShadow>
+    <cylinderGeometry args={[0.16, 0.16, 0.12, 16]} />
+    <meshStandardMaterial color={COLORS.head} roughness={0.5} metalness={0.05} />
+  </mesh>
+);
+
+/** Smiley face decal on head front */
+const Face = () => {
+  const headW = 1.2 * S;
+  const z = headW / 2 + 0.001;
 
   return (
-    <group ref={groupRef} position={[0, 0, 0]}>
-      {/* Head */}
-      <BodyPart args={[1, 1, 1]} position={[0, 2.5, 0]} color={SKIN} />
-      
-      {/* Face details */}
-      {/* Eyes */}
-      <mesh position={[-0.2, 2.6, 0.51]}>
-        <boxGeometry args={[0.15, 0.15, 0.01]} />
-        <meshStandardMaterial color="#1a1a2e" />
+    <group position={[0, 0, z]}>
+      {/* Left eye */}
+      <mesh position={[-0.07, 0.04, 0]}>
+        <circleGeometry args={[0.035, 16]} />
+        <meshBasicMaterial color="#1a1a2e" />
       </mesh>
-      <mesh position={[0.2, 2.6, 0.51]}>
-        <boxGeometry args={[0.15, 0.15, 0.01]} />
-        <meshStandardMaterial color="#1a1a2e" />
+      {/* Right eye */}
+      <mesh position={[0.07, 0.04, 0]}>
+        <circleGeometry args={[0.035, 16]} />
+        <meshBasicMaterial color="#1a1a2e" />
       </mesh>
-      {/* Smile */}
-      <mesh position={[0, 2.25, 0.51]}>
-        <boxGeometry args={[0.4, 0.08, 0.01]} />
-        <meshStandardMaterial color="#c44" />
+      {/* Smile — arc made from a torus segment */}
+      <mesh position={[0, -0.03, 0]} rotation={[0, 0, Math.PI]}>
+        <torusGeometry args={[0.07, 0.012, 8, 16, Math.PI]} />
+        <meshBasicMaterial color="#1a1a2e" />
       </mesh>
-
-      {/* Torso */}
-      <BodyPart args={[2, 2, 1]} position={[0, 1, 0]} color={SHIRT} />
-
-      {/* Left Arm */}
-      <BodyPart args={[1, 2, 1]} position={[-1.5, 1, 0]} color={SHIRT} />
-      {/* Left Hand */}
-      <BodyPart args={[1, 0.3, 1]} position={[-1.5, -0.15, 0]} color={SKIN} />
-
-      {/* Right Arm */}
-      <BodyPart args={[1, 2, 1]} position={[1.5, 1, 0]} color={SHIRT} />
-      {/* Right Hand */}
-      <BodyPart args={[1, 0.3, 1]} position={[1.5, -0.15, 0]} color={SKIN} />
-
-      {/* Left Leg */}
-      <BodyPart args={[1, 2, 1]} position={[-0.5, -1, 0]} color={PANTS} />
-      {/* Left Shoe */}
-      <BodyPart args={[1, 0.3, 1.15]} position={[-0.5, -2.15, 0.075]} color={SHOE} />
-
-      {/* Right Leg */}
-      <BodyPart args={[1, 2, 1]} position={[0.5, -1, 0]} color={PANTS} />
-      {/* Right Shoe */}
-      <BodyPart args={[1, 0.3, 1.15]} position={[0.5, -2.15, 0.075]} color={SHOE} />
     </group>
   );
 };
 
-/** Ground platform */
-const Ground = () => (
-  <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.35, 0]} receiveShadow>
-    <circleGeometry args={[2, 64]} />
-    <meshStandardMaterial color="#c8c8c8" roughness={0.9} />
-  </mesh>
-);
+/** Complete R6 character */
+const R6Character = () => {
+  const headSize: [number, number, number] = [1.2 * S, 1.2 * S, 1.2 * S];
+  const torsoSize: [number, number, number] = [2.0 * S, 2.0 * S, 1.0 * S];
+  const armSize: [number, number, number] = [1.0 * S, 2.0 * S, 1.0 * S];
+  const legSize: [number, number, number] = [1.0 * S, 2.0 * S, 1.0 * S];
 
-const Scene = () => {
+  // Y positions (bottom of feet = 0)
+  const legY = 1.0 * S;                          // center of legs
+  const torsoY = legY + 1.0 * S + 1.0 * S;       // 2.0 * S + gap
+  const headY = torsoY + 1.0 * S + 0.6 * S;      // top of torso + half head
+  const armY = torsoY;                             // arms align with torso
+
+  // X positions
+  const armX = 1.5 * S;  // torso half-width + arm half-width
+  const legX = 0.5 * S;  // centered under torso
+
   return (
-    <>
-      <ambientLight intensity={0.6} />
-      <directionalLight
-        position={[4, 6, 4]}
-        intensity={1.2}
-        castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-      />
-      <directionalLight position={[-3, 4, -2]} intensity={0.3} />
-      <hemisphereLight
-        args={['#b1e1ff', '#b97a20', 0.3]}
-      />
+    <group position={[0, -torsoY, 0]}>
+      {/* Head */}
+      <group position={[0, headY, 0]}>
+        <Part size={headSize} pos={[0, 0, 0]} color={COLORS.head} />
+        <HeadStud />
+        <Face />
+      </group>
 
-      <BlockyAvatar />
-      <Ground />
+      {/* Torso */}
+      <Part size={torsoSize} pos={[0, torsoY, 0]} color={COLORS.torso} />
 
-      <OrbitControls
-        enablePan={false}
-        enableZoom={true}
-        minDistance={4}
-        maxDistance={10}
-        minPolarAngle={Math.PI / 6}
-        maxPolarAngle={Math.PI / 1.8}
-        target={[0, 0.5, 0]}
-        autoRotate
-        autoRotateSpeed={1.5}
-      />
-    </>
+      {/* Left Arm */}
+      <Part size={armSize} pos={[-armX, armY, 0]} color={COLORS.leftArm} />
+
+      {/* Right Arm */}
+      <Part size={armSize} pos={[armX, armY, 0]} color={COLORS.rightArm} />
+
+      {/* Left Leg */}
+      <Part size={legSize} pos={[-legX, legY, 0]} color={COLORS.leftLeg} />
+
+      {/* Right Leg */}
+      <Part size={legSize} pos={[legX, legY, 0]} color={COLORS.rightLeg} />
+    </group>
   );
 };
 
+/** Ground plate */
+const GroundPlate = () => (
+  <mesh
+    rotation={[-Math.PI / 2, 0, 0]}
+    position={[0, -1.62, 0]}
+    receiveShadow
+  >
+    <circleGeometry args={[1.6, 64]} />
+    <meshStandardMaterial color="#b8b8b8" roughness={0.85} />
+  </mesh>
+);
+
+/** Grid helper on the ground */
+const GroundGrid = () => (
+  <gridHelper
+    args={[4, 20, '#cccccc', '#e0e0e0']}
+    position={[0, -1.61, 0]}
+  />
+);
+
+const Scene = () => (
+  <>
+    {/* Lighting — studio-style 3-point */}
+    <ambientLight intensity={0.5} />
+    <directionalLight
+      position={[3, 5, 4]}
+      intensity={1.4}
+      castShadow
+      shadow-mapSize-width={1024}
+      shadow-mapSize-height={1024}
+      shadow-camera-far={20}
+      shadow-camera-left={-3}
+      shadow-camera-right={3}
+      shadow-camera-top={3}
+      shadow-camera-bottom={-3}
+    />
+    <directionalLight position={[-2, 3, -2]} intensity={0.3} />
+    <hemisphereLight args={['#aadcff', '#ffe8a0', 0.25]} />
+
+    <R6Character />
+    <GroundPlate />
+    <GroundGrid />
+
+    <OrbitControls
+      enablePan={false}
+      enableZoom={true}
+      minDistance={3}
+      maxDistance={8}
+      minPolarAngle={Math.PI / 8}
+      maxPolarAngle={Math.PI / 2}
+      target={[0, 0, 0]}
+      autoRotate
+      autoRotateSpeed={1.2}
+    />
+  </>
+);
+
 export const Avatar3DViewer = ({ equippedItems }: Avatar3DViewerProps) => {
   return (
-    <div style={{
-      width: '100%',
-      height: '100%',
-      minHeight: 350,
-      background: 'linear-gradient(180deg, #87CEEB 0%, #b8dff0 40%, #d4d4d4 100%)',
-      borderRadius: 4,
-      overflow: 'hidden',
-    }}>
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        minHeight: 350,
+        borderRadius: 4,
+        overflow: 'hidden',
+        background: '#e8eef4',
+      }}
+    >
       <Canvas
-        camera={{ position: [0, 1.5, 7], fov: 35 }}
+        camera={{ position: [0, 0.3, 5], fov: 32 }}
         shadows
         gl={{ antialias: true, alpha: false }}
         style={{ width: '100%', height: '100%' }}
       >
-        <color attach="background" args={['#c5dff0']} />
-        <fog attach="fog" args={['#c5dff0', 12, 25]} />
+        <color attach="background" args={['#e8eef4']} />
+        <fog attach="fog" args={['#e8eef4', 10, 20]} />
         <Suspense fallback={null}>
           <Scene />
         </Suspense>
