@@ -105,8 +105,14 @@ const AuthHome = () => {
                 Start Playing
               </Button>
             </Link>
+            <Link to="/apply">
+              <Button variant="outline" size="xl" className="gap-2">
+                <FileText className="w-5 h-5" />
+                Apply to Join
+              </Button>
+            </Link>
             <Link to="/login">
-              <Button variant="outline" size="xl">
+              <Button variant="ghost" size="xl">
                 Already have an account?
               </Button>
             </Link>
