@@ -305,7 +305,7 @@ const AdminUserManagement = () => {
 
             {/* Role Badges */}
             <div className="flex flex-wrap items-center justify-center gap-2">
-              {isOwnerAccount && (
+              {(isOwnerAccount || targetRoles.isOwner) && (
                 <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded font-bold flex items-center gap-1">
                   <Crown className="w-3 h-3" /> OWNER
                 </span>
