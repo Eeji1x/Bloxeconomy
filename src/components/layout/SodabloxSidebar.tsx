@@ -35,6 +35,7 @@ export const SodabloxSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [headerOffset, setHeaderOffset] = useState(60);
 
   const handleSignOut = async () => {
     await signOut();
