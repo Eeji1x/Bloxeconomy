@@ -93,12 +93,61 @@ const AdminCMD = () => {
     return result;
   };
 
+  const generateInviteKey = (): string => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const segment = (len: number) =>
+      Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    return `INV-${segment(5)}-${segment(5)}`;
+  };
+
   const processCommand = async (cmd: string) => {
     const trimmed = cmd.trim().toLowerCase();
     const newLines = [...lines, `\x1b[32mroot@sodablox\x1b[0m:\x1b[34m~\x1b[0m$ ${cmd}`];
 
     if (!trimmed) {
       setLines(newLines);
+      return;
+    }
+
+    // Generate invite keys command
+    const genMatch = trimmed.match(/^generate\s+inv\s+keys?\s+(\d+)$/);
+    if (genMatch) {
+      const count = Math.min(parseInt(genMatch[1]), 50); // cap at 50
+      if (count <= 0) {
+        setLines([...newLines, '  \x1b[31mError:\x1b[0m Number must be at least 1.']);
+        return;
+      }
+      setLines([...newLines, `  Generating ${count} invite key(s)...`]);
+
+      const userId = profile?.user_id;
+      if (!userId) {
+        setLines([...newLines, '  \x1b[31mError:\x1b[0m Not authenticated.']);
+        return;
+      }
+
+      const keysToInsert = Array.from({ length: count }, () => ({
+        key: generateInviteKey(),
+        created_by: userId,
+      }));
+
+      const { data, error } = await supabase
+        .from('invite_keys')
+        .insert(keysToInsert)
+        .select('key');
+
+      if (error) {
+        setLines([...newLines, `  \x1b[31mError:\x1b[0m ${error.message}`]);
+      } else {
+        const generated = data || [];
+        setLines([
+          ...newLines,
+          '',
+          `  \x1b[32m✓\x1b[0m Successfully generated \x1b[33m${generated.length}\x1b[0m invite key(s):`,
+          '',
+          ...generated.map(k => `  \x1b[36m${k.key}\x1b[0m`),
+          '',
+        ]);
+      }
       return;
     }
 
@@ -110,13 +159,14 @@ const AdminCMD = () => {
         '',
         '  Available commands:',
         '',
-        '  \x1b[36mneofetch\x1b[0m     - Display system information',
-        '  \x1b[36mstats\x1b[0m        - Show live site statistics',
-        '  \x1b[36musers\x1b[0m        - List online users',
-        '  \x1b[36mwhoami\x1b[0m       - Show current user info',
-        '  \x1b[36mdate\x1b[0m         - Show current date/time',
-        '  \x1b[36mclear\x1b[0m        - Clear terminal',
-        '  \x1b[36mhelp\x1b[0m         - Show this message',
+        '  \x1b[36mneofetch\x1b[0m                  - Display system information',
+        '  \x1b[36mstats\x1b[0m                     - Show live site statistics',
+        '  \x1b[36musers\x1b[0m                     - List online users',
+        '  \x1b[36mwhoami\x1b[0m                    - Show current user info',
+        '  \x1b[36mdate\x1b[0m                      - Show current date/time',
+        '  \x1b[36mgenerate inv keys <N>\x1b[0m     - Generate N invite keys (max 50)',
+        '  \x1b[36mclear\x1b[0m                     - Clear terminal',
+        '  \x1b[36mhelp\x1b[0m                      - Show this message',
         '',
       ]);
     } else if (trimmed === 'clear') {

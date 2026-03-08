@@ -18,8 +18,13 @@ export const Layout = ({ children }: LayoutProps) => {
   const { theme } = useTheme();
   const location = useLocation();
 
-  const authPaths = ['/login', '/signup'];
-  const isAuthPage = authPaths.some(p => location.pathname.startsWith(p));
+  const authPaths = ['/login', '/signup', '/auth'];
+  const isAuthPage = authPaths.some(p => location.pathname === p || location.pathname.startsWith(p + '/'));
+
+  // Auth home page has its own full layout
+  if (location.pathname === '/auth') {
+    return <>{children}</>;
+  }
 
   if (isMaintenanceMode && !isLoading && !isAuthPage) {
     return <Maintenance />;
