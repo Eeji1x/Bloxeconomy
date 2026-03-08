@@ -242,7 +242,7 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string
-          duration_hours: number
+          duration_minutes: number
           ends_at: string
           id: string
           starts_at: string
@@ -251,7 +251,7 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by: string
-          duration_hours?: number
+          duration_minutes?: number
           ends_at: string
           id?: string
           starts_at?: string
@@ -260,7 +260,7 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string
-          duration_hours?: number
+          duration_minutes?: number
           ends_at?: string
           id?: string
           starts_at?: string
