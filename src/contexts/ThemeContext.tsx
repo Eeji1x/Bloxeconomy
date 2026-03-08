@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
 
-export type ThemeId = 'sodablox' | 'roblox2020';
+export type ThemeId = 'sodablox' | 'roblox2020' | 'roblox2008';
 
-const VALID_THEMES: ThemeId[] = ['sodablox', 'roblox2020'];
+const VALID_THEMES: ThemeId[] = ['sodablox', 'roblox2020', 'roblox2008'];
 
 interface ThemeOption {
   id: ThemeId;
@@ -41,6 +41,18 @@ export const THEMES: ThemeOption[] = [
       accent: '#335FFF',
       card: '#FFFFFF',
       text: '#111827',
+    },
+  },
+  {
+    id: 'roblox2008',
+    name: 'Roblox 2008',
+    description: 'Retro early-web Roblox with blue gradients and classic navigation',
+    preview: {
+      bg: '#D5DEE3',
+      navbar: '#5B98D0',
+      accent: '#0055BF',
+      card: '#FFFFFF',
+      text: '#000000',
     },
   },
 ];

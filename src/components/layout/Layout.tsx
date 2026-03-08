@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { AnnouncementBar } from './AnnouncementBar';
 import { Roblox2020Navbar } from './Roblox2020Navbar';
+import { Roblox2008Navbar } from './Roblox2008Navbar';
 import { SodabloxSidebar } from './SodabloxSidebar';
 import { BanRedirectWrapper } from '@/components/auth/BanRedirectWrapper';
 import { useMaintenanceMode } from '@/hooks/useMaintenanceMode';
@@ -24,7 +25,24 @@ export const Layout = ({ children }: LayoutProps) => {
     return <Maintenance />;
   }
 
-  // Roblox 2020 layout — sidebar + top bar
+  // Roblox 2008 layout
+  if (theme === 'roblox2008') {
+    return (
+      <div className="min-h-screen bg-background">
+        <AnnouncementBar />
+        <Roblox2008Navbar />
+        <main className="lg:ml-[180px] min-h-[calc(100vh-95px)]">
+          <div className="max-w-[900px] mx-auto px-4 py-4">
+            <BanRedirectWrapper>
+              {children}
+            </BanRedirectWrapper>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Roblox 2020 layout
   if (theme === 'roblox2020') {
     return (
       <div className="min-h-screen bg-background">
@@ -41,7 +59,7 @@ export const Layout = ({ children }: LayoutProps) => {
     );
   }
 
-  // Default SODABLOX layout — now with sidebar + top bar
+  // Default SODABLOX layout
   return (
     <div className="min-h-screen bg-background">
       <AnnouncementBar />
