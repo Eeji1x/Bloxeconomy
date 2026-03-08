@@ -78,6 +78,11 @@ const Index = () => {
     return <Roblox2008Home />;
   }
 
+  // SODABLOX 2015 themed home
+  if (theme === 'roblox2015') {
+    return <Roblox2015Home />;
+  }
+
   // SODABLOX 2016 themed home
   if (theme === 'roblox2016') {
     return <Roblox2016Home />;

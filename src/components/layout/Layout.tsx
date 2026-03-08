@@ -74,6 +74,23 @@ export const Layout = ({ children }: LayoutProps) => {
     );
   }
 
+  // SODABLOX 2015 layout — dark charcoal topbar, red accents
+  if (theme === 'roblox2015') {
+    return (
+      <div className="min-h-screen" style={{ background: '#e6e6e6' }}>
+        <AnnouncementBar />
+        <Roblox2015Navbar />
+        <main className="lg:ml-[175px] min-h-[calc(100vh-46px)]">
+          <div className="max-w-[1100px] mx-auto px-4 py-4">
+            <BanRedirectWrapper>
+              {children}
+            </BanRedirectWrapper>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   // Default SODABLOX layout
   return (
     <div className="min-h-screen bg-background">
