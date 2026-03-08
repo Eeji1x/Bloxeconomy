@@ -110,6 +110,7 @@ const Admin = () => {
         {activeTab === 'maintenance' && isAdmin && <div className="cyber-card p-6"><MaintenancePanel /></div>}
         {activeTab === 'messaging' && isAdmin && <div className="cyber-card p-6"><GlobalMessagePanel /></div>}
         {activeTab === 'lottery' && isAdmin && <div className="cyber-card p-6"><LotteryPanel /></div>}
+        {activeTab === 'sodamons' && isAdmin && <div className="cyber-card p-6"><SodamonsValueManager /></div>}
         {activeTab === 'wipe' && isAdmin && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
       </div>
     </div>

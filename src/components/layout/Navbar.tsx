@@ -31,6 +31,7 @@ const navLinks = [
   { to: '/inbox', label: 'Inbox', icon: Mail },
   { to: '/users', label: 'Users', icon: Users },
   { to: '/leaderboards', label: 'Top', icon: Trophy },
+  { to: '/sodamons', label: 'Sodamons', icon: Trophy },
 ];
 
 export const Navbar = () => {

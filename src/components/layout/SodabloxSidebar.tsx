@@ -12,6 +12,7 @@ const topTabs = [
   { to: '/catalog', label: 'Catalog' },
   { to: '/trading', label: 'Trade' },
   { to: '/leaderboards', label: 'Leaderboard' },
+  { to: '/sodamons', label: 'Sodamons' },
 ];
 
 const sidebarLinks = [

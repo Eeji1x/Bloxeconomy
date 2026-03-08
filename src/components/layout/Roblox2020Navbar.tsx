@@ -63,6 +63,7 @@ const topTabs = [
   { to: '/trading', label: 'Trade' },
   { to: '/avatar', label: 'Create' },
   { to: '/leaderboards', label: 'Charts' },
+  { to: '/sodamons', label: 'Sodamons' },
 ];
 
 const sidebarMain = [
