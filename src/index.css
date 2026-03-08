@@ -283,6 +283,9 @@
     border: none;
     border-radius: 2px;
   }
+  [data-theme="roblox2016"] .rbx16-hamburger .icon-nav-menu {
+    filter: brightness(0) invert(1);
+  }
   [data-theme="roblox2016"] .rbx16-hamburger:hover {
     background: rgba(255,255,255,0.1);
   }
