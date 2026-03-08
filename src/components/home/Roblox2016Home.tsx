@@ -142,7 +142,7 @@ export const Roblox2016Home = () => {
                   display: 'block',
                   padding: '7px 12px',
                   fontSize: 14,
-                  color: '#0055b3',
+                  color: '#00a2ff',
                   borderBottom: '1px solid #e3e3e3',
                   textDecoration: 'none',
                 }}
