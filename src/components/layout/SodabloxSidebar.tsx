@@ -31,7 +31,7 @@ const secondaryLinks = [
 ];
 
 export const SodabloxSidebar = () => {
-  const { user, profile, isAdmin, isEconomyManager, signOut } = useAuth();
+  const { user, profile, isAdmin, isOwner, isEconomyManager, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
