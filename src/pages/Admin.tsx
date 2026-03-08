@@ -544,6 +544,8 @@ const CatalogPanel = () => {
     stock: null as number | null,
     is_on_sale: true,
     resell_enabled: true,
+    sale_start_time: '',
+    sale_end_time: '',
   });
 
   useEffect(() => {
