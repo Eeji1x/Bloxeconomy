@@ -48,9 +48,38 @@ const Profile = () => {
   const [friendStatus, setFriendStatus] = useState<'none' | 'pending_sent' | 'pending_received' | 'accepted'>('none');
   const [friendshipId, setFriendshipId] = useState<string | null>(null);
   const [friendLoading, setFriendLoading] = useState(false);
+  const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
 
-  const isOwnProfile = !userId || userId === user?.id;
-  const viewingUserId = userId || user?.id;
+  const isOwnProfile = !userId || userId === user?.id || (currentUserProfile && userId === String(currentUserProfile.numeric_id));
+
+  useEffect(() => {
+    const resolveUserId = async () => {
+      if (!userId) {
+        setResolvedUserId(user?.id || null);
+        return;
+      }
+
+      // Check if userId is a numeric ID
+      const numericId = parseInt(userId);
+      if (!isNaN(numericId) && String(numericId) === userId) {
+        // Look up by numeric_id
+        const { data } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('numeric_id', numericId)
+          .maybeSingle();
+        
+        setResolvedUserId(data?.user_id || null);
+      } else {
+        // It's a UUID
+        setResolvedUserId(userId);
+      }
+    };
+
+    resolveUserId();
+  }, [userId, user]);
+
+  const viewingUserId = resolvedUserId;
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -61,11 +90,10 @@ const Profile = () => {
 
       setIsLoading(true);
 
-      // Fetch profile
-      // Fetch only public-safe columns for other users; own profile gets full data
+      const isOwn = viewingUserId === user?.id;
       const publicColumns = 'id,user_id,username,numeric_id,avatar_data,is_online,is_verified,created_at,updated_at';
       const ownColumns = 'id,user_id,username,numeric_id,emeralds,avatar_data,is_online,is_banned,ban_reason,last_seen,created_at,updated_at,is_verified,last_daily_claim';
-      const selectColumns = isOwnProfile ? ownColumns : publicColumns;
+      const selectColumns = isOwn ? ownColumns : publicColumns;
       
       const { data: profileResult, error: profileError } = await supabase
         .from('profiles')
