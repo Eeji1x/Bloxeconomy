@@ -356,7 +356,7 @@ const Profile = () => {
                   <p>Member since {memberSince}</p>
                   <p>User #{profileData.numeric_id}</p>
                   {profileData.is_online ? (
-                    <p className="text-green-500 font-medium">● Online</p>
+                    <p className="text-accent font-medium">● Online</p>
                   ) : (
                     <p>● Offline</p>
                   )}
