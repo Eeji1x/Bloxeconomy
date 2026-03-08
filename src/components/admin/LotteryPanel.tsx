@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { BAD_DECISIONS_NUMERIC_ID } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Trophy, Gift, Clock, CheckCircle, Users } from 'lucide-react';
 import { toast } from 'sonner';
