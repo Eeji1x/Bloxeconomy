@@ -214,10 +214,10 @@ const Trading = () => {
 
     const { data: profiles } = await supabase
       .from('public_profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified')
+      .select('user_id, username, numeric_id, is_verified')
       .in('user_id', Array.from(allUserIds));
 
-    const profileMap = new Map(profiles?.map(p => [p.user_id, p]));
+    const profileMap = new Map(profiles?.map(p => [p.user_id!, { ...p, emeralds: 0 }]));
 
     const addProfiles = (trades: Trade[]) => trades.map(t => ({
       ...t,
