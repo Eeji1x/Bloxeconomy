@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
-export type AppRole = 'admin' | 'economy_manager' | 'user';
+export type AppRole = 'admin' | 'owner' | 'economy_manager' | 'user';
 
 export interface UserRoleInfo {
   isAdmin: boolean;
+  isOwner: boolean;
   isEconomyManager: boolean;
   roles: AppRole[];
 }
