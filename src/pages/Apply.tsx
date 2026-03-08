@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { FileText, ArrowLeft, CheckCircle, RefreshCw, ShieldCheck } from 'lucide-react';
+import { FileText, ArrowLeft, CheckCircle, RefreshCw, ShieldCheck, Search, Clock, XCircle } from 'lucide-react';
 
 // Word list for spelling challenge
 const CHALLENGE_WORDS = [
@@ -34,6 +34,38 @@ const Apply = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
+
+  // Status checker state
+  const [showStatusChecker, setShowStatusChecker] = useState(false);
+  const [statusInput, setStatusInput] = useState('');
+  const [statusResult, setStatusResult] = useState<{ status: string; reject_reason?: string; username?: string } | null>(null);
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [statusError, setStatusError] = useState('');
+
+  const checkStatus = async () => {
+    if (!statusInput.trim()) {
+      setStatusError('Please enter your Application ID');
+      return;
+    }
+    setStatusLoading(true);
+    setStatusError('');
+    setStatusResult(null);
+    try {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('status, reject_reason, username')
+        .eq('short_id', statusInput.trim().toUpperCase())
+        .maybeSingle();
+      if (error || !data) {
+        setStatusError('Application not found. Check your ID and try again.');
+      } else {
+        setStatusResult(data);
+      }
+    } catch {
+      setStatusError('Something went wrong.');
+    }
+    setStatusLoading(false);
+  };
 
   // Custom captcha state
   const [captchaCode, setCaptchaCode] = useState(generateCaptcha);
@@ -270,6 +302,70 @@ const Apply = () => {
             {isSubmitting ? 'Submitting...' : 'Submit Application'}
           </Button>
         </form>
+
+        {/* Status Checker */}
+        <div className="cyber-card p-5 space-y-3">
+          <button
+            type="button"
+            onClick={() => setShowStatusChecker(!showStatusChecker)}
+            className="w-full flex items-center justify-between text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Search className="w-4 h-4" /> Already applied? Check your status
+            </span>
+            <span>{showStatusChecker ? '▲' : '▼'}</span>
+          </button>
+
+          {showStatusChecker && (
+            <div className="space-y-3 pt-2 border-t border-border">
+              <div className="flex gap-2">
+                <Input
+                  value={statusInput}
+                  onChange={(e) => setStatusInput(e.target.value.toUpperCase())}
+                  placeholder="APP-XXXXXXXX"
+                  className="font-mono"
+                  maxLength={16}
+                />
+                <Button onClick={checkStatus} disabled={statusLoading} variant="outline" size="sm">
+                  {statusLoading ? '...' : 'Check'}
+                </Button>
+              </div>
+
+              {statusError && (
+                <p className="text-sm text-destructive">{statusError}</p>
+              )}
+
+              {statusResult && (
+                <div className="p-4 rounded-lg border border-border space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{statusResult.username}</span>
+                    {statusResult.status === 'pending' && <Clock className="w-4 h-4 text-yellow-500" />}
+                    {statusResult.status === 'accepted' && <CheckCircle className="w-4 h-4 text-green-500" />}
+                    {statusResult.status === 'rejected' && <XCircle className="w-4 h-4 text-red-500" />}
+                    <span className="text-xs capitalize px-2 py-0.5 rounded bg-muted">{statusResult.status}</span>
+                  </div>
+                  {statusResult.status === 'pending' && (
+                    <p className="text-sm text-muted-foreground">Your application is still under review. Check back later!</p>
+                  )}
+                  {statusResult.status === 'accepted' && (
+                    <p className="text-sm text-accent">Your application was accepted! Check your registration link to create your account.</p>
+                  )}
+                  {statusResult.status === 'rejected' && (
+                    <div>
+                      <p className="text-sm text-destructive">Your application was rejected.</p>
+                      {statusResult.reject_reason && (
+                        <p className="text-sm text-muted-foreground mt-1 p-2 rounded bg-destructive/10">
+                          <strong>Reason:</strong> {statusResult.reject_reason}
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-2">You can reapply by submitting a new application above.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="text-center">
           <Link to="/auth" className="text-sm text-muted-foreground hover:text-primary transition-colors">
