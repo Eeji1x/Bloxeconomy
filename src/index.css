@@ -151,10 +151,6 @@
   }
 
   /* ── Font: Source Sans Pro (matching ECS globals.css) ── */
-  [data-theme="roblox2016"] body,
-  /* Source Sans Pro — authentic 2016 Roblox font */
-  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap');
-
   [data-theme="roblox2016"] * {
     font-family: "Source Sans Pro", Arial, Helvetica, sans-serif !important;
     letter-spacing: 0 !important;
