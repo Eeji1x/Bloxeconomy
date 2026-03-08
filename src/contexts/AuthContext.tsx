@@ -124,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               if (!profileData.is_banned) {
                 await updateOnlineStatus(session.user.id, true);
                 // Auto-grant 100 daily emeralds
-                await autoGrantDailyEmeralds(session.user.id, profileData);
+                await autoGrantDailyEmeralds();
                 // Log hashed IP for alt detection
                 supabase.functions.invoke('log-ip').catch(() => {});
               }
