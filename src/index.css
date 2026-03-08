@@ -974,8 +974,8 @@
   [data-theme="roblox2016"] .neon-border,
   [data-theme="roblox2016"] .neon-border-pink,
   [data-theme="roblox2016"] .neon-border-green {
-    border: 1px solid #c3c3c3;
-    box-shadow: none;
+    border: none;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
   }
   [data-theme="roblox2016"] .glow-cyan,
   [data-theme="roblox2016"] .glow-pink,
