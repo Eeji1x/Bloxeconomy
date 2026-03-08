@@ -19,6 +19,7 @@ interface InventoryItem {
     name: string;
     image_url: string;
     item_type: string;
+    model_url?: string | null;
   } | null;
 }
 
