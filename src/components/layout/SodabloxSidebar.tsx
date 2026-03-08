@@ -42,6 +42,25 @@ export const SodabloxSidebar = () => {
     navigate('/');
   };
 
+  useEffect(() => {
+    const computeOffset = () => {
+      const announcement = document.querySelector('[data-announcement-bar="true"]') as HTMLElement | null;
+      const announcementHeight = announcement?.offsetHeight ?? 0;
+      setHeaderOffset(60 + announcementHeight);
+    };
+
+    computeOffset();
+    window.addEventListener('resize', computeOffset);
+
+    const observer = new MutationObserver(computeOffset);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
+    return () => {
+      window.removeEventListener('resize', computeOffset);
+      observer.disconnect();
+    };
+  }, []);
+
   const SidebarLink = ({ link, closeMobile = false }: { link: { to: string; label: string; icon: any; authOnly?: boolean }; closeMobile?: boolean }) => {
     if (link.authOnly && !user) return null;
     const Icon = link.icon;
