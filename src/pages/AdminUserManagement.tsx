@@ -68,6 +68,9 @@ const AdminUserManagement = () => {
   const [showInventory, setShowInventory] = useState(false);
   const [emeraldInput, setEmeraldInput] = useState('');
   const [banReasonInput, setBanReasonInput] = useState('');
+  const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
+  const [itemSearchQuery, setItemSearchQuery] = useState('');
+  const [showAddItem, setShowAddItem] = useState(false);
 
   const isSuperOwner = authProfile?.numeric_id === SUPER_OWNER_NUMERIC_ID;
   const isProtected = profile && PROTECTED_USER_IDS.includes(profile.numeric_id) && !isSuperOwner;
