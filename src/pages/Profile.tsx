@@ -55,6 +55,9 @@ const Profile = () => {
   const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
 
   const is2016 = theme === 'roblox2016';
+  const is2015 = theme === 'roblox2015';
+  const isClassic = is2016 || is2015;
+  const p = is2015 ? 'rbx15' : 'rbx16';
   const isOwnProfile = !userId || userId === user?.id || (currentUserProfile && userId === String(currentUserProfile.numeric_id));
 
   useEffect(() => {
@@ -179,7 +182,7 @@ const Profile = () => {
   if (authLoading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className={is2016 ? "rbx16-spinner" : "w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"} />
+        <div className={isClassic ? `${p}-spinner` : "w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"} />
       </div>
     );
   }
@@ -203,7 +206,7 @@ const Profile = () => {
   /* ═══════════════════════════════════════════
      ROBLOX 2016 PROFILE LAYOUT
      ═══════════════════════════════════════════ */
-  if (is2016) {
+  if (isClassic) {
     return (
       <div style={{ maxWidth: 960 }}>
         {/* Profile header */}

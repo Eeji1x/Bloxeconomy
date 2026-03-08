@@ -2740,3 +2740,208 @@
   background: hsl(180 100% 50% / 0.3);
   color: white;
 }
+
+/* ═══════════════════════════════════════════════════
+   2015 THEME: Map rbx16-* classes to work under 2015 theme
+   This allows shared classic layouts to render properly
+   ═══════════════════════════════════════════════════ */
+
+/* Panels */
+[data-theme="roblox2015"] .rbx16-panel {
+  background: #fff;
+  overflow: hidden;
+}
+[data-theme="roblox2015"] .rbx16-panel-header {
+  border-bottom: 2px solid #c3c3c3;
+  padding: 8px 12px;
+  font-size: 16px !important;
+  font-weight: 700;
+  color: #1e1e1f;
+}
+[data-theme="roblox2015"] .rbx16-panel-body {
+  padding: 12px;
+}
+
+/* Buttons */
+[data-theme="roblox2015"] .rbx16-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 5px 16px; font-size: 15px !important; font-weight: 500;
+  color: #fff !important; background: #393B3D;
+  border: none; border-radius: 3px; cursor: pointer; text-decoration: none !important;
+}
+[data-theme="roblox2015"] .rbx16-btn-primary:hover { background: #4a4c4e; }
+
+[data-theme="roblox2015"] .rbx16-btn-buy {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 5px 16px; font-size: 15px !important; font-weight: 600;
+  color: #fff !important;
+  background: linear-gradient(0deg, rgba(0,113,0,1) 0%, rgba(64,193,64,1) 100%);
+  border: 1px solid #006600; border-radius: 2px; cursor: pointer;
+  text-decoration: none !important; width: 100%;
+}
+[data-theme="roblox2015"] .rbx16-btn-buy:hover {
+  background: linear-gradient(0deg, rgba(71,232,71,1) 0%, rgba(71,232,71,1) 100%);
+}
+
+[data-theme="roblox2015"] .rbx16-btn-continue {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 5px 16px; font-size: 15px !important; font-weight: 500;
+  color: #fff !important; background: #393B3D;
+  border: 1px solid #2a2c2e; border-radius: 3px; cursor: pointer; text-decoration: none !important;
+}
+[data-theme="roblox2015"] .rbx16-btn-continue:hover { background: #4a4c4e; }
+
+[data-theme="roblox2015"] .rbx16-btn-cancel {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 5px 16px; font-size: 15px !important; font-weight: 500;
+  color: #fff !important; background: #999;
+  border: 1px solid #888; border-radius: 3px; cursor: pointer; text-decoration: none !important;
+}
+[data-theme="roblox2015"] .rbx16-btn-cancel:hover { background: #aaa !important; }
+
+[data-theme="roblox2015"] .rbx16-btn-danger {
+  display: inline-flex; align-items: center;
+  padding: 5px 16px; font-size: 15px !important; font-weight: 500;
+  color: #fff !important; background: #E2231A;
+  border: none; border-radius: 3px; cursor: pointer; text-decoration: none !important;
+}
+[data-theme="roblox2015"] .rbx16-btn-danger:hover { background: #c91f17; }
+
+[data-theme="roblox2015"] .rbx16-btn-legacy {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 5px 16px; font-size: 15px !important; font-weight: 500;
+  color: #fff !important; background: #393B3D;
+  border: 1px solid #2a2c2e; border-radius: 3px; cursor: pointer; text-decoration: none !important;
+}
+[data-theme="roblox2015"] .rbx16-btn-legacy:hover { background: #4a4c4e; }
+
+/* Links & Text */
+[data-theme="roblox2015"] .rbx16-link {
+  font-size: 13px !important; color: #0055b3 !important; text-decoration: none !important;
+}
+[data-theme="roblox2015"] .rbx16-link:hover { text-decoration: underline !important; }
+
+[data-theme="roblox2015"] .rbx16-text { font-size: 14px !important; color: #1e1e1f; margin: 0; }
+[data-theme="roblox2015"] .rbx16-text-muted { font-size: 13px !important; color: #666; }
+
+/* Spinner */
+[data-theme="roblox2015"] .rbx16-spinner {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 2px solid #c3c3c3; border-top-color: #E2231A;
+  animation: rbx15-spin 0.6s linear infinite;
+}
+
+/* Notification badge */
+[data-theme="roblox2015"] .rbx16-notif-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 5px;
+  background: #E2231A; color: #fff; font-size: 11px !important;
+  font-weight: 700; border-radius: 9px;
+}
+
+/* Catalog page */
+[data-theme="roblox2015"] .rbx16-catalog-page {
+  display: flex; gap: 16px;
+}
+[data-theme="roblox2015"] .rbx16-catalog-sidebar { width: 160px; flex-shrink: 0; }
+[data-theme="roblox2015"] .rbx16-catalog-main { flex: 1; min-width: 0; }
+[data-theme="roblox2015"] .rbx16-catalog-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px;
+}
+[data-theme="roblox2015"] .rbx16-catalog-item {
+  background: #fff; border: 1px solid #e8e8e8; text-decoration: none !important;
+  overflow: hidden; transition: border-color 0.15s;
+}
+[data-theme="roblox2015"] .rbx16-catalog-item:hover { border-color: #E2231A; }
+[data-theme="roblox2015"] .rbx16-catalog-item-img {
+  aspect-ratio: 1; position: relative; overflow: hidden; background: #fff;
+}
+[data-theme="roblox2015"] .rbx16-catalog-item-img img {
+  width: 100%; height: 100%; object-fit: contain; padding: 6px;
+}
+[data-theme="roblox2015"] .rbx16-catalog-item-info { padding: 4px 6px; }
+[data-theme="roblox2015"] .rbx16-catalog-item-name {
+  display: block; font-size: 12px !important; font-weight: 600; color: #0055b3;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+[data-theme="roblox2015"] .rbx16-catalog-item-price {
+  display: block; font-size: 12px !important; font-weight: 700; color: #02b757;
+}
+[data-theme="roblox2015"] .rbx16-catalog-item-stock {
+  display: block; font-size: 11px !important; color: #999;
+}
+[data-theme="roblox2015"] .rbx16-cat-link {
+  display: block; width: 100%; text-align: left; padding: 8px 12px;
+  font-size: 14px !important; border: none; cursor: pointer;
+  background: transparent; color: #1e1e1f; text-decoration: none !important;
+  border-left: 3px solid transparent;
+}
+[data-theme="roblox2015"] .rbx16-cat-link:hover { background: #f8f8f8; }
+[data-theme="roblox2015"] .rbx16-cat-link-active {
+  background: #f2f2f2; border-left-color: #E2231A; font-weight: 600; color: #E2231A;
+}
+[data-theme="roblox2015"] .rbx16-search-catalog {
+  padding: 4px 8px; font-size: 13px !important;
+  border: 1px solid #c3c3c3; background: #fff; width: 180px;
+}
+[data-theme="roblox2015"] .rbx16-offsale-tag {
+  position: absolute; top: 4px; left: 4px;
+  padding: 2px 6px; font-size: 10px !important; font-weight: 700;
+  background: #666; color: #fff;
+}
+[data-theme="roblox2015"] .rbx16-soldout-tag {
+  position: absolute; top: 4px; left: 4px;
+  padding: 2px 6px; font-size: 10px !important; font-weight: 700;
+  background: #E2231A; color: #fff;
+}
+[data-theme="roblox2015"] .rbx16-limited-overlay {
+  position: absolute; bottom: 0; left: 0; width: 35px; height: auto; z-index: 2;
+}
+[data-theme="roblox2015"] .rbx16-limited-overlay-detail {
+  position: absolute; bottom: 0; left: 0; width: 60px; height: auto; z-index: 2;
+}
+
+/* Item Detail */
+[data-theme="roblox2015"] .rbx16-item-page { max-width: 900px; }
+[data-theme="roblox2015"] .rbx16-breadcrumb {
+  margin-bottom: 12px; font-size: 13px !important;
+}
+[data-theme="roblox2015"] .rbx16-item-layout {
+  display: flex; gap: 16px;
+}
+[data-theme="roblox2015"] .rbx16-item-image-col { width: 300px; flex-shrink: 0; }
+[data-theme="roblox2015"] .rbx16-item-info-col { flex: 1; min-width: 0; }
+[data-theme="roblox2015"] .rbx16-item-image-container {
+  aspect-ratio: 1; position: relative; overflow: hidden; background: #fff; padding: 8px;
+}
+[data-theme="roblox2015"] .rbx16-item-image-container img {
+  width: 100%; height: 100%; object-fit: contain;
+}
+[data-theme="roblox2015"] .rbx16-item-stats-table { border-collapse: collapse; width: 100%; }
+[data-theme="roblox2015"] .rbx16-stat-label {
+  padding: 6px 8px; font-size: 13px !important; color: #666; font-weight: 600; width: 100px;
+  border-bottom: 1px solid #e8e8e8;
+}
+[data-theme="roblox2015"] .rbx16-stat-value {
+  padding: 6px 8px; font-size: 13px !important; border-bottom: 1px solid #e8e8e8;
+}
+
+/* Friends */
+[data-theme="roblox2015"] .rbx16-friend-tile {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  text-decoration: none !important;
+}
+[data-theme="roblox2015"] .rbx16-friend-avatar {
+  width: 64px; height: 64px; overflow: hidden;
+  border: 1px solid #c3c3c3; background: #f2f2f2;
+}
+[data-theme="roblox2015"] .rbx16-friend-name {
+  font-size: 11px !important; font-weight: 500; color: #0055b3;
+  text-align: center; width: 64px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+[data-theme="roblox2015"] .rbx16-online-dot {
+  position: absolute; bottom: 0; right: 0;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #02b757; border: 2px solid #fff;
+}
