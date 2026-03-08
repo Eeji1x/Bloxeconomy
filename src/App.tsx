@@ -34,32 +34,34 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AuthProvider>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/:userId" element={<Profile />} />
-              <Route path="/catalog" element={<Catalog />} />
-              <Route path="/catalog/:itemId" element={<ItemDetail />} />
-              <Route path="/promocodes" element={<Promocodes />} />
-              <Route path="/trading" element={<Trading />} />
-              <Route path="/avatar" element={<Avatar />} />
-              <Route path="/friends" element={<Friends />} />
-              <Route path="/inbox" element={<Inbox />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/players" element={<AdminPlayers />} />
-              <Route path="/admin/players/:userId" element={<AdminUserManagement />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/leaderboards" element={<Leaderboards />} />
-              <Route path="/banned" element={<Banned />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/users" element={<Users />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/:userId" element={<Profile />} />
+                <Route path="/catalog" element={<Catalog />} />
+                <Route path="/catalog/:itemId" element={<ItemDetail />} />
+                <Route path="/promocodes" element={<Promocodes />} />
+                <Route path="/trading" element={<Trading />} />
+                <Route path="/avatar" element={<Avatar />} />
+                <Route path="/friends" element={<Friends />} />
+                <Route path="/inbox" element={<Inbox />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin/players" element={<AdminPlayers />} />
+                <Route path="/admin/players/:userId" element={<AdminUserManagement />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/leaderboards" element={<Leaderboards />} />
+                <Route path="/banned" element={<Banned />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          </AuthProvider>
+        </ThemeProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
