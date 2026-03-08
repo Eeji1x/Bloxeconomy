@@ -24,7 +24,7 @@ export const Layout = ({ children }: LayoutProps) => {
   const isAuthPage = authPaths.some(p => location.pathname === p || location.pathname.startsWith(p + '/'));
 
   // These pages have their own full layout
-  if (location.pathname === '/auth' || location.pathname === '/apply' || location.pathname === '/privacy') {
+  if (location.pathname === '/auth' || location.pathname === '/apply' || location.pathname === '/privacy' || location.pathname.startsWith('/register/')) {
     return <>{children}</>;
   }
 
