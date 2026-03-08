@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { Zap, Crown, Sparkles } from 'lucide-react';
+import { Crown } from 'lucide-react';
 import { HomeLeftPanel } from '@/components/home/HomeLeftPanel';
 import { HomeFriendsList } from '@/components/home/HomeFriendsList';
 import { HomeQuickActions } from '@/components/home/HomeQuickActions';
