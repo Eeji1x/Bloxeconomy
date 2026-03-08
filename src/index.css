@@ -1036,9 +1036,9 @@
 
   /* Flatten cards — ECS style (no rounded corners, minimal borders) */
   [data-theme="roblox2016"] .rounded-lg.border {
-    border-color: #c3c3c3;
-    box-shadow: none;
-    border-radius: 0 !important;
+    border-color: transparent;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
+    border-radius: 3px !important;
   }
   [data-theme="roblox2016"] .rounded-lg,
   [data-theme="roblox2016"] .rounded-md,
