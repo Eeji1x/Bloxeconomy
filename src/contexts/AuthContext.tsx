@@ -139,6 +139,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 await updateOnlineStatus(session.user.id, true);
                 // Auto-grant 100 daily emeralds
                 await autoGrantDailyEmeralds(session.user.id, profileData);
+                // Log hashed IP for alt detection
+                supabase.functions.invoke('log-ip').catch(() => {});
               }
             }
             
