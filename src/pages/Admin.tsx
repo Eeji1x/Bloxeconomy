@@ -42,6 +42,7 @@ const tabs: Tab[] = [
   { id: 'messaging', label: 'Messaging', icon: <Mail className="w-4 h-4" /> },
   { id: 'lottery', label: 'Lottery', icon: <Trophy className="w-4 h-4" /> },
   { id: 'sodamons', label: 'Sodamons Values', icon: <Gem className="w-4 h-4" /> },
+  { id: 'alt-detection', label: 'Alt Detection', icon: <Eye className="w-4 h-4" /> },
   { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
