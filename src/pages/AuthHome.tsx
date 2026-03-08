@@ -14,10 +14,7 @@ const AuthHome = () => {
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  if (user) {
-    navigate('/');
-    return null;
-  }
+  // No longer redirect logged-in users — they can view this page
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,29 +47,36 @@ const AuthHome = () => {
             <span className="gradient-text">SODA</span>
             <span className="text-foreground">BLOX</span>
           </Link>
-          <form onSubmit={handleLogin} className="hidden sm:flex items-center gap-2">
-            <Input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="h-9 w-36 bg-input border-border text-sm"
-            />
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-9 w-36 bg-input border-border text-sm"
-            />
-            <Button type="submit" variant="neon" size="sm" disabled={isLoggingIn}>
-              {isLoggingIn ? '...' : 'Login'}
-            </Button>
-          </form>
-          <div className="flex sm:hidden gap-2">
-            <Link to="/login"><Button variant="outline" size="sm">Login</Button></Link>
-            <Link to="/signup"><Button variant="neon" size="sm">Sign Up</Button></Link>
-          </div>
+          {!user && (
+            <form onSubmit={handleLogin} className="hidden sm:flex items-center gap-2">
+              <Input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="h-9 w-36 bg-input border-border text-sm"
+              />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-9 w-36 bg-input border-border text-sm"
+              />
+              <Button type="submit" variant="neon" size="sm" disabled={isLoggingIn}>
+                {isLoggingIn ? '...' : 'Login'}
+              </Button>
+            </form>
+          )}
+          {!user && (
+            <div className="flex sm:hidden gap-2">
+              <Link to="/login"><Button variant="outline" size="sm">Login</Button></Link>
+              <Link to="/signup"><Button variant="neon" size="sm">Sign Up</Button></Link>
+            </div>
+          )}
+          {user && (
+            <Link to="/"><Button variant="neon" size="sm">Go to Dashboard</Button></Link>
+          )}
         </div>
       </nav>
 
@@ -99,23 +103,34 @@ const AuthHome = () => {
             A futuristic virtual world revival. Collect items, trade limiteds, and build your legacy.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/signup">
-              <Button variant="neon" size="xl" className="group">
-                <Zap className="w-5 h-5 group-hover:animate-pulse" />
-                Start Playing
-              </Button>
-            </Link>
-            <Link to="/apply">
-              <Button variant="outline" size="xl" className="gap-2">
-                <FileText className="w-5 h-5" />
-                Apply to Join
-              </Button>
-            </Link>
-            <Link to="/login">
-              <Button variant="ghost" size="xl">
-                Already have an account?
-              </Button>
-            </Link>
+            {!user ? (
+              <>
+                <Link to="/signup">
+                  <Button variant="neon" size="xl" className="group">
+                    <Zap className="w-5 h-5 group-hover:animate-pulse" />
+                    Start Playing
+                  </Button>
+                </Link>
+                <Link to="/apply">
+                  <Button variant="outline" size="xl" className="gap-2">
+                    <FileText className="w-5 h-5" />
+                    Apply to Join
+                  </Button>
+                </Link>
+                <Link to="/login">
+                  <Button variant="ghost" size="xl">
+                    Already have an account?
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Link to="/">
+                <Button variant="neon" size="xl" className="group">
+                  <Zap className="w-5 h-5 group-hover:animate-pulse" />
+                  Go to Dashboard
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -172,23 +187,25 @@ const AuthHome = () => {
       </section>
 
       {/* CTA */}
-      <section className="relative py-16 px-4">
-        <div className="max-w-3xl mx-auto relative overflow-hidden rounded-2xl">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20" />
-          <div className="absolute inset-0 cyber-grid opacity-30" />
-          <div className="relative p-12 text-center space-y-6">
-            <h2 className="text-3xl md:text-4xl font-display font-bold">
-              Ready to join the <span className="gradient-text">revolution</span>?
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Create your account now and receive 100 free emeralds to start your journey.
-            </p>
-            <Link to="/signup">
-              <Button variant="neon" size="xl">Create Account</Button>
-            </Link>
+      {!user && (
+        <section className="relative py-16 px-4">
+          <div className="max-w-3xl mx-auto relative overflow-hidden rounded-2xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20" />
+            <div className="absolute inset-0 cyber-grid opacity-30" />
+            <div className="relative p-12 text-center space-y-6">
+              <h2 className="text-3xl md:text-4xl font-display font-bold">
+                Ready to join the <span className="gradient-text">revolution</span>?
+              </h2>
+              <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+                Create your account now and receive 100 free emeralds to start your journey.
+              </p>
+              <Link to="/signup">
+                <Button variant="neon" size="xl">Create Account</Button>
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground space-y-2">
