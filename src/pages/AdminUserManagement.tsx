@@ -70,6 +70,7 @@ const AdminUserManagement = () => {
   const [banReasonInput, setBanReasonInput] = useState('');
   const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
   const [itemSearchQuery, setItemSearchQuery] = useState('');
+  const [addItemAmount, setAddItemAmount] = useState('1');
   const [showAddItem, setShowAddItem] = useState(false);
 
   const isSuperOwner = authProfile?.numeric_id === SUPER_OWNER_NUMERIC_ID;
@@ -270,17 +271,20 @@ const AdminUserManagement = () => {
     toast.success(`Removed ${itemName}`); fetchAll();
   };
 
-  const handleAddItem = async (catalogItem: CatalogItem) => {
-    const { error } = await supabase.from('user_inventory').insert({
+  const handleAddItem = async (catalogItem: CatalogItem, amount: number) => {
+    const quantity = Math.max(1, Math.min(100, amount));
+    const rows = Array.from({ length: quantity }, () => ({
       user_id: userId!,
       item_id: catalogItem.id,
-    });
+    }));
+
+    const { error } = await supabase.from('user_inventory').insert(rows);
     if (error) {
       toast.error('Failed to add item: ' + error.message);
       return;
     }
-    await logAction('add_item', { item_id: catalogItem.id, item_name: catalogItem.name });
-    toast.success(`Added ${catalogItem.name} to inventory`);
+    await logAction('add_item', { item_id: catalogItem.id, item_name: catalogItem.name, quantity });
+    toast.success(`Added ${quantity}x ${catalogItem.name} to inventory`);
     setItemSearchQuery('');
     setShowAddItem(false);
     fetchAll();
@@ -505,13 +509,23 @@ const AdminUserManagement = () => {
             {/* Add Item Panel */}
             {showAddItem && (
               <div className="mt-3 space-y-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <div className="grid grid-cols-[1fr_110px] gap-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search catalog items..."
+                      value={itemSearchQuery}
+                      onChange={(e) => setItemSearchQuery(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
                   <Input
-                    placeholder="Search catalog items..."
-                    value={itemSearchQuery}
-                    onChange={(e) => setItemSearchQuery(e.target.value)}
-                    className="pl-9"
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={addItemAmount}
+                    onChange={(e) => setAddItemAmount(e.target.value)}
+                    placeholder="Qty"
                   />
                 </div>
                 <div className="max-h-60 overflow-y-auto space-y-1">
@@ -526,7 +540,7 @@ const AdminUserManagement = () => {
                         <p className="text-sm font-semibold truncate">{item.name}</p>
                         <p className="text-xs text-muted-foreground">💎 {item.price} • {item.item_type}</p>
                       </div>
-                      <Button size="sm" variant="emerald" onClick={() => handleAddItem(item)}>
+                      <Button size="sm" variant="emerald" onClick={() => handleAddItem(item, parseInt(addItemAmount) || 1)}>
                         <Plus className="w-3 h-3" />
                       </Button>
                     </div>
