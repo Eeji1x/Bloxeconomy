@@ -108,7 +108,7 @@ const Profile = () => {
       }
 
       // For other users' profiles, set defaults for fields not fetched
-      const safeProfile: ProfileData = isOwnProfile
+      const safeProfile: ProfileData = isOwn
         ? (profileResult as unknown as ProfileData)
         : {
             ...(profileResult as unknown as Partial<ProfileData>),
