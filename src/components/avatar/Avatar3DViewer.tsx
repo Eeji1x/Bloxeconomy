@@ -1,13 +1,27 @@
 import { Suspense, useLayoutEffect, useMemo, useRef, useEffect, useState } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import * as THREE from 'three';
 
+interface EquippedItem {
+  image_url: string;
+  name?: string;
+  model_url?: string | null;
+}
+
 interface Avatar3DViewerProps {
-  equippedItems: { image_url: string; name?: string }[];
+  equippedItems: EquippedItem[];
 }
 
 const MODEL_PATH = '/models/roblox-avatar.glb';
+
+const ObjEquippedItem = ({ url }: { url: string }) => {
+  const obj = useLoader(OBJLoader, url);
+  const model = useMemo(() => obj.clone(true), [obj]);
+
+  return <primitive object={model} />;
+};
 
 const EquippedItemOverlay = ({ imageUrl, modelHeight }: { imageUrl: string; modelHeight: number }) => {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
@@ -40,7 +54,7 @@ const EquippedItemOverlay = ({ imageUrl, modelHeight }: { imageUrl: string; mode
   );
 };
 
-const AvatarModel = ({ equippedItems }: { equippedItems: { image_url: string; name?: string }[] }) => {
+const AvatarModel = ({ equippedItems }: { equippedItems: EquippedItem[] }) => {
   const { scene } = useGLTF(MODEL_PATH);
   const groupRef = useRef<THREE.Group>(null);
   const [modelHeight, setModelHeight] = useState(1);
@@ -62,11 +76,19 @@ const AvatarModel = ({ equippedItems }: { equippedItems: { image_url: string; na
     setModelHeight(size.y);
   }, [model]);
 
+  const objItems = equippedItems.filter(i => i.model_url);
+  const pngItems = equippedItems.filter(i => !i.model_url);
+
   return (
     <group ref={groupRef}>
       <primitive object={model} scale={0.4} />
-      {equippedItems.map((item, i) => (
-        <EquippedItemOverlay key={`${item.image_url}-${i}`} imageUrl={item.image_url} modelHeight={modelHeight} />
+      {objItems.map((item, i) => (
+        <Suspense key={`obj-${item.model_url}-${i}`} fallback={null}>
+          <ObjEquippedItem url={item.model_url!} />
+        </Suspense>
+      ))}
+      {pngItems.map((item, i) => (
+        <EquippedItemOverlay key={`png-${item.image_url}-${i}`} imageUrl={item.image_url} modelHeight={modelHeight} />
       ))}
     </group>
   );
@@ -74,7 +96,7 @@ const AvatarModel = ({ equippedItems }: { equippedItems: { image_url: string; na
 
 useGLTF.preload(MODEL_PATH);
 
-const Scene = ({ equippedItems }: { equippedItems: { image_url: string; name?: string }[] }) => (
+const Scene = ({ equippedItems }: { equippedItems: EquippedItem[] }) => (
   <>
     <ambientLight intensity={0.5} />
     <directionalLight

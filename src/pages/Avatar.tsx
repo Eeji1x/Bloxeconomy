@@ -19,6 +19,7 @@ interface InventoryItem {
     name: string;
     image_url: string;
     item_type: string;
+    model_url?: string | null;
   } | null;
 }
 
@@ -39,7 +40,7 @@ const Avatar = () => {
   useEffect(() => {
     const fetchInventory = async () => {
       if (!user) return;
-      const { data, error } = await supabase.from('user_inventory').select(`id, item_id, quantity, is_equipped, catalog_items (id, name, image_url, item_type)`).eq('user_id', user.id);
+      const { data, error } = await supabase.from('user_inventory').select(`id, item_id, quantity, is_equipped, catalog_items (id, name, image_url, item_type, model_url)`).eq('user_id', user.id);
       if (!error && data) setInventory(data as InventoryItem[]);
       setLoadingInventory(false);
     };
@@ -94,6 +95,7 @@ const Avatar = () => {
                     equippedItems={equippedItems.filter(i => i.catalog_items).map(i => ({
                       image_url: i.catalog_items!.image_url,
                       name: i.catalog_items!.name,
+                      model_url: i.catalog_items!.model_url,
                     }))}
                   />
                 </div>
@@ -191,6 +193,7 @@ const Avatar = () => {
                 equippedItems={equippedItems.filter(i => i.catalog_items).map(i => ({
                   image_url: i.catalog_items!.image_url,
                   name: i.catalog_items!.name,
+                  model_url: i.catalog_items!.model_url,
                 }))}
               />
             </div>
