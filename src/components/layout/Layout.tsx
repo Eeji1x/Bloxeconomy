@@ -4,6 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { AnnouncementBar } from './AnnouncementBar';
 import { Roblox2016Navbar } from './Roblox2016Navbar';
 import { Roblox2015Navbar } from './Roblox2015Navbar';
+import { Roblox2012Navbar } from './Roblox2012Navbar';
 import { Roblox2008Navbar } from './Roblox2008Navbar';
 
 import { SodabloxSidebar } from './SodabloxSidebar';
@@ -39,8 +40,6 @@ export const Layout = ({ children }: LayoutProps) => {
       <div style={{ background: '#F8FCFF', minHeight: '100vh' }}>
         <AnnouncementBar />
         <Roblox2008Navbar />
-
-        {/* Body: 900px container, content only */}
         <div className="rbx08-container">
           <main style={{ padding: 15, background: 'white', minHeight: 'calc(100vh - 105px)' }}>
             <BanRedirectWrapper>
@@ -48,10 +47,30 @@ export const Layout = ({ children }: LayoutProps) => {
             </BanRedirectWrapper>
           </main>
         </div>
-
-        {/* Footer */}
         <div className="rbx08-container">
           <div className="rbx08-footer" style={{ padding: '10px 0' }}>
+            © {new Date().getFullYear()} SODABLOX Corporation. All rights reserved.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Roblox 2012 layout: header + tabs, 960px container ──
+  if (theme === 'roblox2012') {
+    return (
+      <div style={{ background: '#E1E1E1', minHeight: '100vh' }}>
+        <AnnouncementBar />
+        <Roblox2012Navbar />
+        <div className="rbx12-container">
+          <main className="rbx12-main">
+            <BanRedirectWrapper>
+              {children}
+            </BanRedirectWrapper>
+          </main>
+        </div>
+        <div className="rbx12-container">
+          <div className="rbx12-footer">
             © {new Date().getFullYear()} SODABLOX Corporation. All rights reserved.
           </div>
         </div>
