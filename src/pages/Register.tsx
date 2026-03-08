@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,6 @@ import { validateUsername } from '@/lib/profanity';
 
 const Register = () => {
   const { token } = useParams<{ token: string }>();
-  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,23 +21,12 @@ const Register = () => {
 
   useEffect(() => {
     const checkToken = async () => {
-      if (!token) {
-        setIsValidating(false);
-        return;
-      }
-
-      // We can't SELECT from registration_tokens as anon, so call the edge function with a check-only mode
+      if (!token) { setIsValidating(false); return; }
       try {
         const res = await supabase.functions.invoke('register-with-token', {
-          body: { token, username: '__check__', password: '__check__' },
+          body: { action: 'validate', token },
         });
-        // If it returns "Username must be 3-20 characters" or similar validation error, the token is valid
-        // If it returns "Invalid or expired" or "already been used", token is bad
-        if (res.data?.message?.includes('Invalid') || res.data?.message?.includes('already been used')) {
-          setTokenValid(false);
-        } else {
-          setTokenValid(true);
-        }
+        setTokenValid(res.data?.valid === true);
       } catch {
         setTokenValid(false);
       }
@@ -56,12 +44,10 @@ const Register = () => {
       setError(validation.message || 'Invalid username');
       return;
     }
-
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
     }
-
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -70,9 +56,8 @@ const Register = () => {
     setIsLoading(true);
     try {
       const res = await supabase.functions.invoke('register-with-token', {
-        body: { token, username: username.trim(), password },
+        body: { action: 'register', token, username: username.trim(), password },
       });
-
       if (res.data?.success) {
         setSuccess(true);
         toast.success('Account created!');
@@ -103,12 +88,8 @@ const Register = () => {
         <div className="max-w-md w-full text-center space-y-6">
           <XCircle className="w-16 h-16 text-destructive mx-auto" />
           <h1 className="text-3xl font-display font-bold">Invalid Link</h1>
-          <p className="text-muted-foreground">
-            This registration link is invalid or has already been used.
-          </p>
-          <Link to="/auth">
-            <Button variant="outline">Back to Home</Button>
-          </Link>
+          <p className="text-muted-foreground">This registration link is invalid or has already been used.</p>
+          <Link to="/auth"><Button variant="outline">Back to Home</Button></Link>
         </div>
       </div>
     );
@@ -120,14 +101,8 @@ const Register = () => {
         <div className="max-w-md w-full text-center space-y-6">
           <CheckCircle className="w-16 h-16 text-accent mx-auto" />
           <h1 className="text-3xl font-display font-bold">Account Created!</h1>
-          <p className="text-muted-foreground">
-            Your SODABLOX account has been created. You can now log in.
-          </p>
-          <Link to="/login">
-            <Button variant="neon" className="gap-2">
-              <UserPlus className="w-4 h-4" /> Go to Login
-            </Button>
-          </Link>
+          <p className="text-muted-foreground">Your SODABLOX account has been created. You can now log in.</p>
+          <Link to="/login"><Button variant="neon" className="gap-2"><UserPlus className="w-4 h-4" /> Go to Login</Button></Link>
         </div>
       </div>
     );
@@ -151,59 +126,30 @@ const Register = () => {
               <span className="text-sm text-destructive">{error}</span>
             </div>
           )}
-
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Choose a username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="pl-10 h-12 bg-input border-border focus:border-primary"
-                  maxLength={20}
-                  required
-                />
+                <Input id="username" type="text" placeholder="Choose a username" value={username} onChange={(e) => setUsername(e.target.value)} className="pl-10 h-12 bg-input border-border focus:border-primary" maxLength={20} required />
               </div>
               <p className="text-xs text-muted-foreground">3-20 characters, letters, numbers, and underscores</p>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Create a password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 h-12 bg-input border-border focus:border-primary"
-                  required
-                />
+                <Input id="password" type="password" placeholder="Create a password" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10 h-12 bg-input border-border focus:border-primary" required />
               </div>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10 h-12 bg-input border-border focus:border-primary"
-                  required
-                />
+                <Input id="confirmPassword" type="password" placeholder="Confirm your password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="pl-10 h-12 bg-input border-border focus:border-primary" required />
               </div>
             </div>
           </div>
-
           <Button type="submit" variant="neon" size="lg" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <span className="flex items-center gap-2">
@@ -211,9 +157,7 @@ const Register = () => {
                 Creating account...
               </span>
             ) : (
-              <>
-                <UserPlus className="w-5 h-5" /> Create Account
-              </>
+              <><UserPlus className="w-5 h-5" /> Create Account</>
             )}
           </Button>
         </form>
