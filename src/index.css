@@ -3204,9 +3204,10 @@
 
 /* Override theme-specific suppression */
 [data-theme="vapor"] .cyber-card {
-  background: #fff !important;
-  border: 1px solid #dee2e6 !important;
+  background: #1e1e1e !important;
+  border: 1px solid #333 !important;
   box-shadow: none !important;
+  color: #ddd !important;
 }
 [data-theme="vapor"] .gradient-text {
   background: none !important;
