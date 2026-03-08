@@ -26,15 +26,15 @@ export const Layout = ({ children }: LayoutProps) => {
 
   if (theme === 'roblox2020') {
     return (
-      <div className="min-h-screen bg-background">
-        <AnnouncementBar />
-        <Roblox2020Navbar />
-        <main className="lg:ml-[220px] px-6 py-6">
-          <BanRedirectWrapper>
-            {children}
-          </BanRedirectWrapper>
-        </main>
-      </div>
+    <div className="min-h-screen bg-background">
+      <AnnouncementBar />
+      <Roblox2020Navbar />
+      <main className="lg:ml-[200px] px-5 py-5 min-h-[calc(100vh-46px)]">
+        <BanRedirectWrapper>
+          {children}
+        </BanRedirectWrapper>
+      </main>
+    </div>
     );
   }
 

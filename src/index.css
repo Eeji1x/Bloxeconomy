@@ -263,21 +263,27 @@
     color: hsl(0 0% 10%);
   }
 
-  /* Roblox 2020 topbar + sidebar */
+  /* Roblox 2020 topbar + sidebar - exact Roblox colors */
   [data-theme="roblox2020"] .roblox-topbar {
-    background: hsl(220 10% 20%);
-    border-bottom: 1px solid hsl(220 10% 16%);
+    background: #393b3d;
+    border-bottom: none;
   }
 
   [data-theme="roblox2020"] .roblox-sidebar {
-    background: hsl(220 10% 23%);
-    border-right: 1px solid hsl(220 10% 18%);
+    background: #393b3d;
+    border-right: none;
   }
 
   /* Roblox 2020 button overrides */
   [data-theme="roblox2020"] button[class*="bg-primary"],
   [data-theme="roblox2020"] a[class*="bg-primary"] {
     border-radius: 4px;
+  }
+
+  /* Roblox 2020 green button (like Buy/Equip in Roblox) */
+  [data-theme="roblox2020"] .bg-accent {
+    background: #02b757 !important;
+  }
   }
 }
 
