@@ -1351,8 +1351,8 @@
   }
   [data-theme="roblox2016"] .rbx16-dropdown-item:hover {
     background: #f2f2f2;
-    border-left: 3px solid #0074BD;
-    padding-left: 11px;
+    box-shadow: 4px 0 0 0 #00a2ff inset;
+    cursor: pointer;
   }
 
   /* Notification badge */
