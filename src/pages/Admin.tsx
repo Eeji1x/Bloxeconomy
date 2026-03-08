@@ -12,6 +12,7 @@ import InviteKeysPanel from '@/components/admin/InviteKeysPanel';
 import MaintenancePanel from '@/components/admin/MaintenancePanel';
 import GlobalMessagePanel from '@/components/admin/GlobalMessagePanel';
 import LotteryPanel from '@/components/admin/LotteryPanel';
+import SodamonsValueManager from '@/components/admin/SodamonsValueManager';
 import AdminPlayers from '@/pages/AdminPlayers';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
