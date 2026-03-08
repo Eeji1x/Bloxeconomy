@@ -4,6 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { AnnouncementBar } from './AnnouncementBar';
 import { Roblox2016Navbar } from './Roblox2016Navbar';
 import { Roblox2015Navbar } from './Roblox2015Navbar';
+import { Roblox2012Navbar } from './Roblox2012Navbar';
 import { Roblox2008Navbar } from './Roblox2008Navbar';
 
 import { SodabloxSidebar } from './SodabloxSidebar';
