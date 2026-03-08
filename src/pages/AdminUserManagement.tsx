@@ -236,8 +236,8 @@ const AdminUserManagement = () => {
   if (!profile) return <div className="text-center py-20 text-muted-foreground">User not found</div>;
 
   const inventoryValue = inventory.reduce((sum, i) => sum + (i.catalog_items?.price || 0), 0);
-  const canManagePermissions = isSuperOwner || (!targetRoles.isAdmin && !targetRoles.isEconomyManager && !PROTECTED_USER_IDS.includes(profile.numeric_id));
-  const canBan = isSuperOwner || (!PROTECTED_USER_IDS.includes(profile.numeric_id) && !targetRoles.isAdmin && !targetRoles.isEconomyManager);
+  const canManagePermissions = isSuperOwner || !PROTECTED_USER_IDS.includes(profile.numeric_id);
+  const canBan = isSuperOwner || (!PROTECTED_USER_IDS.includes(profile.numeric_id));
 
   const ConfirmAction = ({ trigger, title, description, onConfirm, variant = 'destructive' }: { trigger: React.ReactNode; title: string; description: string; onConfirm: () => void; variant?: 'destructive' | 'default' }) => (
     <AlertDialog>

@@ -129,7 +129,7 @@ const AdminPlayers = ({ embedded = false }: AdminPlayersProps) => {
   };
 
   const OwnerBadge = ({ numericId }: { numericId: number }) => {
-    if (numericId === 5) {
+    if (numericId === 1) {
       return <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/20 text-primary flex items-center gap-0.5"><Crown className="w-2.5 h-2.5" />OWNER</span>;
     }
     return null;
