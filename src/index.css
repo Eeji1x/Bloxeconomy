@@ -504,16 +504,16 @@
     padding: 5px 2px;
     color: #393b3d;
     text-decoration: none !important;
-    font-size: 15px !important;
+    font-size: 14px !important;
     font-weight: 400;
     cursor: pointer;
     transition: none;
   }
   [data-theme="roblox2016"] .rbx16-sidebar-link:hover {
-    color: #0074BD;
+    color: #00a2ff;
   }
   [data-theme="roblox2016"] .rbx16-sidebar-link-active {
-    color: #0074BD;
+    color: #00a2ff;
     font-weight: 700;
   }
   [data-theme="roblox2016"] .rbx16-sidebar-link-admin {
