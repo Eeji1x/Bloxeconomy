@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { forceDeleteItem } from '@/lib/forceDeleteItem';
 
 const AdminCMD = () => {
   const { profile } = useAuth();

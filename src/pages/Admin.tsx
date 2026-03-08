@@ -208,9 +208,14 @@ const CatalogPanel = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this item?')) return;
-    await supabase.from('catalog_items').delete().eq('id', id);
-    toast.success('Item deleted'); fetchItems();
+    if (!confirm('Delete this item? This will remove it from all inventories, serials, listings, and value history.')) return;
+    const { success, error, deletedName } = await forceDeleteItem(id);
+    if (success) {
+      toast.success(`"${deletedName}" deleted`);
+      fetchItems();
+    } else {
+      toast.error(`Failed to delete: ${error}`);
+    }
   };
 
   const toggleOnSale = async (id: string, current: boolean) => {
