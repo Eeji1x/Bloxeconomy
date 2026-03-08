@@ -57,7 +57,7 @@ export const Layout = ({ children }: LayoutProps) => {
       <div className="min-h-screen" style={{ background: '#f2f4f5' }}>
         <AnnouncementBar />
         <Roblox2020Navbar />
-        <main className="lg:ml-[220px] min-h-[calc(100vh-48px)]">
+        <main className="lg:ml-[200px] min-h-[calc(100vh-48px)]">
           <div className="max-w-[1100px] mx-auto px-6 py-6">
             <BanRedirectWrapper>
               {children}

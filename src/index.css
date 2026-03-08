@@ -99,73 +99,60 @@
   }
 
   /* ═══════════════════════════════════════════════════
-     ROBLOX 2020-2021 THEME — pixel-perfect replica
-     Topbar: #393b3d (48px), Sidebar: #393b3d (220px)
-     BG: #f2f4f5, Primary: #0074BD, Text: #191b1d
+     ROBLOX 2020-2021 THEME — 1:1 EXACT REPLICA
+     Topbar: #232527, Sidebar: #232527 (200px)
+     BG: #f2f4f5, Accent: #0074BD, Text: #191b1d
+     Font: Builder Sans / HCo Gotham SSm approximation
      ═══════════════════════════════════════════════════ */
   [data-theme="roblox2020"] {
-    --background: 200 10% 95%;
+    --background: 200 7% 95%;
     --foreground: 210 10% 11%;
-
     --card: 0 0% 100%;
     --card-foreground: 210 10% 11%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 210 10% 11%;
-
-    /* Primary — Roblox blue */
-    --primary: 204 100% 37%;
+    --primary: 202 100% 37%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 10% 95%;
+    --secondary: 210 5% 94%;
     --secondary-foreground: 210 10% 11%;
-
-    --muted: 220 10% 95%;
-    --muted-foreground: 215 6% 46%;
-
-    --accent: 204 100% 37%;
+    --muted: 210 5% 94%;
+    --muted-foreground: 210 4% 46%;
+    --accent: 202 100% 37%;
     --accent-foreground: 0 0% 100%;
-
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 220 13% 91%;
+    --border: 210 9% 88%;
     --input: 0 0% 100%;
-    --ring: 204 100% 37%;
-
+    --ring: 202 100% 37%;
     --radius: 8px;
-
-    --sidebar-background: 210 3% 23%;
+    --sidebar-background: 210 4% 15%;
     --sidebar-foreground: 0 0% 74%;
     --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 210 3% 23%;
-    --sidebar-accent: 210 3% 27%;
+    --sidebar-primary-foreground: 210 4% 15%;
+    --sidebar-accent: 210 4% 19%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 210 3% 27%;
-    --sidebar-ring: 204 100% 37%;
-
-    --neon-cyan: 204 100% 37%;
+    --sidebar-border: 210 4% 19%;
+    --sidebar-ring: 202 100% 37%;
+    --neon-cyan: 202 100% 37%;
     --neon-pink: 340 82% 52%;
     --neon-green: 145 63% 42%;
     --neon-purple: 262 52% 47%;
     --neon-orange: 25 95% 53%;
     --neon-yellow: 45 93% 47%;
-
     --glow-cyan: none;
     --glow-pink: none;
     --glow-green: none;
     --glow-purple: none;
-
     --gradient-cyber: none;
     --gradient-dark: none;
     --gradient-card: none;
     --gradient-glow: none;
   }
 
-  /* ── Font — Gotham SSm approximation (real Roblox uses Builder Sans / Gotham) ── */
+  /* ── Font: HCo Gotham SSm / Builder Sans approximation ── */
   [data-theme="roblox2020"] body,
   [data-theme="roblox2020"] * {
-    font-family: "Gotham SSm", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    font-family: "HCo Gotham SSm", "Gotham SSm A", "Gotham SSm B", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     letter-spacing: 0 !important;
   }
   [data-theme="roblox2020"] h1,
@@ -174,51 +161,266 @@
   [data-theme="roblox2020"] h4,
   [data-theme="roblox2020"] h5,
   [data-theme="roblox2020"] h6 {
-    font-family: "Gotham SSm", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    font-family: "HCo Gotham SSm", "Gotham SSm A", "Gotham SSm B", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     font-weight: 700;
     letter-spacing: 0 !important;
   }
 
-  /* ── Topbar — #393b3d, 48px (authentic 2020-2021) ── */
-  [data-theme="roblox2020"] .roblox-topbar {
-    background: #393b3d;
-    border-bottom: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  /* ═══ TOPBAR ═══ #232527, h48, shadow */
+  [data-theme="roblox2020"] .rbx20-topbar {
+    background: #232527;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
   }
 
-  /* ── Sidebar — #393b3d matching topbar (real Roblox unified dark sidebar) ── */
-  [data-theme="roblox2020"] .roblox-sidebar {
-    background: #393b3d;
-    border-right: none;
+  /* ═══ SIDEBAR ═══ #232527, w200 */
+  [data-theme="roblox2020"] .rbx20-sidebar {
+    background: #232527;
   }
 
-  /* ── Sidebar link styles ── */
-  [data-theme="roblox2020"] .rbx20-sidebar-link {
-    font-size: 14px !important;
+  /* ── Sidebar nav links ── */
+  [data-theme="roblox2020"] .rbx20-nav-link {
+    color: #bdbebe;
+  }
+  [data-theme="roblox2020"] .rbx20-nav-link:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.04);
+  }
+  [data-theme="roblox2020"] .rbx20-nav-link-active {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+    border-left: 3px solid #ffffff;
+    padding-left: 13px;
   }
 
-  /* ── Topbar tab styles ── */
+  /* ── Topbar tabs ── */
   [data-theme="roblox2020"] .rbx20-topbar-tab {
-    font-size: 13px !important;
+    letter-spacing: 0.5px !important;
   }
 
   /* ── Robux/Emerald pill ── */
   [data-theme="roblox2020"] .rbx20-robux-pill {
-    background: #606162;
+    background: #3e4042;
+    transition: background 0.15s;
   }
   [data-theme="roblox2020"] .rbx20-robux-pill:hover {
-    background: #6e7071;
+    background: #4a4c4e;
   }
 
   /* ── Login button ── */
   [data-theme="roblox2020"] .rbx20-login-btn {
-    background: #0074BD;
+    background: #0074bd;
+    transition: background 0.15s;
   }
   [data-theme="roblox2020"] .rbx20-login-btn:hover {
     background: #005f9a;
   }
 
-  /* ── Kill all cyberpunk effects ── */
+  /* ═══ HOME PAGE COMPONENTS ═══ */
+
+  /* Home container */
+  [data-theme="roblox2020"] .rbx20-home-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Section spacing */
+  [data-theme="roblox2020"] .rbx20-section {
+    /* no extra styles needed */
+  }
+
+  /* Section title — matches real Roblox "Continue" / "Popular" */
+  [data-theme="roblox2020"] .rbx20-section-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #191b1d;
+    line-height: 1.2;
+  }
+
+  /* See All link */
+  [data-theme="roblox2020"] .rbx20-see-all {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #606162;
+    text-decoration: none;
+  }
+  [data-theme="roblox2020"] .rbx20-see-all:hover {
+    text-decoration: underline;
+  }
+
+  /* White card panels */
+  [data-theme="roblox2020"] .rbx20-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* Game tile cards (Continue section) */
+  [data-theme="roblox2020"] .rbx20-game-tile {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+  [data-theme="roblox2020"] .rbx20-game-tile:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    transform: translateY(-1px);
+  }
+  [data-theme="roblox2020"] .rbx20-game-tile-thumb {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f2f4f5;
+  }
+  [data-theme="roblox2020"] .rbx20-game-tile-info {
+    padding: 6px 8px;
+  }
+  [data-theme="roblox2020"] .rbx20-game-tile-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #191b1d;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Friend tile */
+  [data-theme="roblox2020"] .rbx20-friend-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  [data-theme="roblox2020"] .rbx20-friend-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #e0e0e0;
+    background: #f2f4f5;
+    transition: border-color 0.15s;
+  }
+  [data-theme="roblox2020"] .rbx20-friend-tile:hover .rbx20-friend-avatar {
+    border-color: #0074bd;
+  }
+  [data-theme="roblox2020"] .rbx20-friend-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: #191b1d;
+    text-align: center;
+    width: 64px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  [data-theme="roblox2020"] .rbx20-online-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #02b757;
+    border: 2px solid #ffffff;
+  }
+
+  /* Profile card */
+  [data-theme="roblox2020"] .rbx20-profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #e0e0e0;
+    background: #f2f4f5;
+  }
+  [data-theme="roblox2020"] .rbx20-profile-username {
+    font-size: 18px;
+    font-weight: 800;
+    color: #191b1d;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Buttons (matching real Roblox 2020 buttons) */
+  [data-theme="roblox2020"] .rbx20-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 20px;
+    height: 32px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    background: #0074bd;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+  [data-theme="roblox2020"] .rbx20-btn-primary:hover {
+    background: #005f9a;
+    text-decoration: none;
+  }
+  [data-theme="roblox2020"] .rbx20-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 20px;
+    height: 32px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #191b1d;
+    background: #ffffff;
+    border: 1px solid #b8b8b8;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  [data-theme="roblox2020"] .rbx20-btn-secondary:hover {
+    border-color: #888;
+    text-decoration: none;
+  }
+  [data-theme="roblox2020"] .rbx20-btn-danger {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 20px;
+    height: 32px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    background: #e34d4d;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+  [data-theme="roblox2020"] .rbx20-btn-danger:hover {
+    background: #c43c3c;
+    text-decoration: none;
+  }
+
+  /* Spinner */
+  [data-theme="roblox2020"] .rbx20-spinner {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+    border-top-color: #0074bd;
+    animation: rbx20-spin 0.6s linear infinite;
+  }
+  @keyframes rbx20-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ═══ GLOBAL OVERRIDES FOR 2020 THEME ═══ */
+
+  /* Kill all cyberpunk effects */
   [data-theme="roblox2020"] .cyber-card {
     background: #ffffff;
     border: 1px solid #e0e0e0;
@@ -265,14 +467,14 @@
     display: none !important;
   }
 
-  /* ── Online dot ── */
+  /* Online dot */
   [data-theme="roblox2020"] .online-dot {
     background: #02b757;
     box-shadow: none;
     animation: none;
   }
 
-  /* ── Emerald display ── */
+  /* Emerald display */
   [data-theme="roblox2020"] .emerald-display {
     background: #02b757;
     border: none;
@@ -280,7 +482,7 @@
     border-radius: 4px;
   }
 
-  /* ── Badges ── */
+  /* Badges */
   [data-theme="roblox2020"] .limited-badge {
     box-shadow: none;
     background: #f68802;
@@ -294,60 +496,29 @@
     border-radius: 4px;
   }
 
-  /* ── Roblox-style white section panels ── */
+  /* Legacy panel classes (backward compat) */
   [data-theme="roblox2020"] .rbx-panel {
     background: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     overflow: hidden;
   }
-  [data-theme="roblox2020"] .rbx-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-bottom: 1px solid #e0e0e0;
-  }
-  [data-theme="roblox2020"] .rbx-panel-header h2,
-  [data-theme="roblox2020"] .rbx-panel-header span {
-    font-size: 16px;
-    font-weight: 800;
-    color: #191b1d;
-  }
 
-  /* ── Game tile cards ── */
-  [data-theme="roblox2020"] .rbx20-game-tile {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: box-shadow 0.15s;
-  }
-  [data-theme="roblox2020"] .rbx20-game-tile:hover {
-    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-  }
-
-  /* ── Flatten cards ── */
+  /* Flatten cards */
   [data-theme="roblox2020"] .rounded-lg.border {
     border-color: #e0e0e0;
     box-shadow: none;
   }
 
-  /* ── Buttons ── */
-  [data-theme="roblox2020"] .rbx20-btn-primary {
-    background: #0074BD;
-    transition: background 0.15s;
-  }
-  [data-theme="roblox2020"] .rbx20-btn-primary:hover {
-    background: #005f9a;
-  }
+  /* Primary button override */
   [data-theme="roblox2020"] .bg-primary {
-    background: #0074BD !important;
+    background: #0074bd !important;
   }
   [data-theme="roblox2020"] .bg-primary:hover {
     background: #005f9a !important;
   }
 
-  /* ── Scrollbar ── */
+  /* Scrollbar */
   [data-theme="roblox2020"] ::-webkit-scrollbar-track {
     background: #f2f4f5;
   }
@@ -361,11 +532,6 @@
   [data-theme="roblox2020"] ::selection {
     background: rgba(0,116,189,0.2);
     color: #191b1d;
-  }
-
-  /* ── Avatar images ── */
-  [data-theme="roblox2020"] .rbx-avatar-circle {
-    border-radius: 50%;
   }
 
   /* ═══════════════════════════════════════════════════
