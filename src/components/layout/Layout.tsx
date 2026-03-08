@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { AnnouncementBar } from './AnnouncementBar';
-import { Roblox2020Navbar } from './Roblox2020Navbar';
+import { Roblox2016Navbar } from './Roblox2016Navbar';
 import { Roblox2008Navbar } from './Roblox2008Navbar';
 import { SodabloxSidebar } from './SodabloxSidebar';
 import { BanRedirectWrapper } from '@/components/auth/BanRedirectWrapper';
