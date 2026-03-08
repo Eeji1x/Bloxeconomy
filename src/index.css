@@ -152,6 +152,9 @@
 
   /* ── Font: Source Sans Pro (matching ECS globals.css) ── */
   [data-theme="roblox2016"] body,
+  /* Source Sans Pro — authentic 2016 Roblox font */
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap');
+
   [data-theme="roblox2016"] * {
     font-family: "Source Sans Pro", Arial, Helvetica, sans-serif !important;
     letter-spacing: 0 !important;
@@ -168,19 +171,22 @@
     letter-spacing: 0 !important;
   }
 
-  /* ── Links (ECS globals.css) ── */
+  /* ── Links (real 2016: #00a2ff on hover, not the darker blue) ── */
   [data-theme="roblox2016"] a {
-    color: #0055b3;
+    color: #00a2ff;
     text-decoration: none !important;
   }
   [data-theme="roblox2016"] a:hover {
-    color: #0055b3;
+    color: #00a2ff;
+    text-decoration: none !important;
   }
 
   /* ── Body bg (real 2016: #e3e3e3) ── */
   [data-theme="roblox2016"] body {
     background: #e3e3e3 !important;
-    font-size: 14px !important;
+    font-size: 16px !important;
+    font-weight: 300 !important;
+    color: #191919 !important;
   }
 
   /* ═══════════════════════════════════════════════════
