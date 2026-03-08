@@ -53,6 +53,8 @@ const Profile = () => {
   const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
   const [friendCount, setFriendCount] = useState(0);
   const [activeTab, setActiveTab] = useState<'about' | 'inventory'>('about');
+  const [show3D, setShow3D] = useState(false);
+  const [equippedItems, setEquippedItems] = useState<{ image_url: string; name?: string }[]>([]);
 
   const isOwnProfile = !userId || userId === user?.id || (currentUserProfile && userId === String(currentUserProfile.numeric_id));
 
