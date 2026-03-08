@@ -203,7 +203,7 @@ const Users = () => {
 
 /* Roblox 2020 circular avatar card */
 const RbxUserCard = ({ user, isAdminUser }: { user: UserProfile; isAdminUser: boolean }) => (
-  <Link to={`/profile/${user.user_id}`} className="flex flex-col items-center gap-1.5 group">
+  <Link to={`/profile/${user.numeric_id}`} className="flex flex-col items-center gap-1.5 group">
     <div className="relative">
       <div className="w-[68px] h-[68px] rounded-full overflow-hidden border-2 border-border bg-muted group-hover:border-primary/40 transition-colors">
         <img
@@ -233,7 +233,7 @@ const RbxUserCard = ({ user, isAdminUser }: { user: UserProfile; isAdminUser: bo
 
 /* Default cyberpunk user card */
 const UserCard = ({ user, isAdmin }: { user: UserProfile; isAdmin: boolean }) => (
-  <Link to={`/profile/${user.user_id}`}>
+  <Link to={`/profile/${user.numeric_id}`}>
     <div className="cyber-card text-center group cursor-pointer">
       <div className="w-20 h-20 mx-auto mb-3 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/30 flex items-center justify-center overflow-hidden">
         <img src={DEFAULT_AVATAR} alt={user.username} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }} />

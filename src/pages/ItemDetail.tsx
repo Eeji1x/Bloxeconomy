@@ -221,106 +221,25 @@ const ItemDetail = () => {
       return;
     }
 
-    // Re-fetch buyer's current emeralds to prevent stale data
-    const { data: freshProfile } = await supabase
-      .from('profiles')
-      .select('emeralds')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!freshProfile) {
-      toast.error('Could not verify your balance');
-      return;
-    }
-
-    if (freshProfile.emeralds < listing.price) {
-      const needed = listing.price - freshProfile.emeralds;
-      toast.error(`You need ${needed.toLocaleString()} more Emeralds to buy this item.`);
-      return;
-    }
-
-    // Verify listing is still active
-    const { data: activeListing } = await supabase
-      .from('resale_listings')
-      .select('id')
-      .eq('id', listing.id)
-      .eq('is_active', true)
-      .maybeSingle();
-
-    if (!activeListing) {
-      toast.error('This listing is no longer available');
-      await fetchResaleListings();
-      return;
-    }
-
-    // Verify seller still owns the item
-    const { data: sellerOwns } = await supabase
-      .from('user_inventory')
-      .select('id')
-      .eq('id', listing.inventory_id)
-      .eq('user_id', listing.seller_id)
-      .maybeSingle();
-
-    if (!sellerOwns) {
-      toast.error('Seller no longer owns this item');
-      // Clean up stale listing
-      await supabase.from('resale_listings').delete().eq('id', listing.id);
-      await fetchResaleListings();
-      return;
-    }
-
     setBuyingResale(listing.id);
 
     try {
-      // Get seller profile for emerald update
-      const { data: sellerProfile } = await supabase
-        .from('profiles')
-        .select('emeralds')
-        .eq('user_id', listing.seller_id)
-        .single();
+      const { data, error } = await supabase.functions.invoke('process-resale-purchase', {
+        body: { listing_id: listing.id },
+      });
 
-      if (!sellerProfile) throw new Error('Seller not found');
-
-      // Deduct emeralds from buyer (use fresh balance)
-      const { error: buyerError } = await supabase
-        .from('profiles')
-        .update({ emeralds: freshProfile.emeralds - listing.price })
-        .eq('user_id', user.id);
-
-      if (buyerError) throw buyerError;
-
-      // Add emeralds to seller
-      await supabase
-        .from('profiles')
-        .update({ emeralds: sellerProfile.emeralds + listing.price })
-        .eq('user_id', listing.seller_id);
-
-      // Transfer item ownership and unequip
-      await supabase
-        .from('user_inventory')
-        .update({ user_id: user.id, is_equipped: false })
-        .eq('id', listing.inventory_id);
-
-      // Update serial ownership
-      await supabase
-        .from('item_serials')
-        .update({ owner_id: user.id })
-        .eq('inventory_id', listing.inventory_id);
-
-      // Delete listing
-      await supabase
-        .from('resale_listings')
-        .delete()
-        .eq('id', listing.id);
+      if (error) throw error;
+      if (data?.error) {
+        toast.error(data.error);
+        await fetchResaleListings();
+        return;
+      }
 
       await refreshProfile();
       await fetchResaleListings();
       await fetchUserInventory();
       
-      // Update RAP with resale price
-      await updateItemRAP(item!.id, listing.price);
-      
-      toast.success('Purchase successful!');
+      toast.success('Purchase successful. Item has been added to your inventory.');
     } catch (error) {
       toast.error('Purchase failed');
     } finally {
@@ -413,9 +332,9 @@ const ItemDetail = () => {
   };
 
   const handleRemoveListing = async (listing: ResaleListing) => {
-    // Only seller or admin can remove
-    if (listing.seller_id !== user?.id && !isAdmin) {
-      toast.error('Only the seller or an admin can remove this listing');
+    // Only the seller can delist their own items
+    if (listing.seller_id !== user?.id) {
+      toast.error('Only the seller can remove this listing');
       return;
     }
 
@@ -649,14 +568,6 @@ const ItemDetail = () => {
                         onClick={() => handleRemoveListing(listing)}
                       >
                         <Trash2 className="w-4 h-4" />
-                      </Button>
-                    ) : isAdmin ? (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleRemoveListing(listing)}
-                      >
-                        Remove
                       </Button>
                     ) : (
                       <Button

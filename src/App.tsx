@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Users from "./pages/Users";
+import UserRedirect from "./pages/UserRedirect";
 import Profile from "./pages/Profile";
 import Catalog from "./pages/Catalog";
 import ItemDetail from "./pages/ItemDetail";
@@ -45,6 +46,7 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/users" element={<Users />} />
+                <Route path="/users/:username" element={<UserRedirect />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/profile/:userId" element={<Profile />} />
                 <Route path="/catalog" element={<Catalog />} />
