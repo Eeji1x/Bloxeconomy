@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Users from "./pages/Users";
+import UserRedirect from "./pages/UserRedirect";
 import Profile from "./pages/Profile";
 import Catalog from "./pages/Catalog";
 import ItemDetail from "./pages/ItemDetail";
