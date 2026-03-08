@@ -14,10 +14,7 @@ const AuthHome = () => {
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  if (user) {
-    navigate('/');
-    return null;
-  }
+  // No longer redirect logged-in users — they can view this page
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
