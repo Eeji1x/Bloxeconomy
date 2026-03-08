@@ -64,88 +64,33 @@ const Promocodes = () => {
     setIsRedeeming(true);
 
     try {
-      // Find the promocode
-      const { data: promocode, error: findError } = await supabase
-        .from('promocodes')
-        .select('*')
-        .eq('code', code.toUpperCase())
-        .eq('is_active', true)
-        .maybeSingle();
+      const { data, error } = await supabase.functions.invoke('redeem-promocode', {
+        body: { code: code.trim() },
+      });
 
-      if (findError || !promocode) {
-        toast.error('Invalid or expired code');
-        return;
-      }
-
-      // Check if already redeemed
-      const { data: existingRedemption } = await supabase
-        .from('promocode_redemptions')
-        .select('id')
-        .eq('promocode_id', promocode.id)
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (existingRedemption) {
-        toast.error('You have already redeemed this code');
-        return;
-      }
-
-      // Check max uses
-      if (promocode.max_uses !== null && promocode.current_uses >= promocode.max_uses) {
-        toast.error('This code has reached its maximum uses');
-        return;
-      }
-
-      // Create redemption record
-      const { error: redemptionError } = await supabase
-        .from('promocode_redemptions')
-        .insert({
-          promocode_id: promocode.id,
-          user_id: user.id,
-        });
-
-      if (redemptionError) throw redemptionError;
-
-      // Update promocode uses
-      await supabase
-        .from('promocodes')
-        .update({ 
-          current_uses: promocode.current_uses + 1,
-          is_active: promocode.max_uses === null || promocode.current_uses + 1 < promocode.max_uses
-        })
-        .eq('id', promocode.id);
-
-      // Give rewards
-      if (promocode.emerald_reward > 0) {
-        await supabase
-          .from('profiles')
-          .update({ emeralds: profile.emeralds + promocode.emerald_reward })
-          .eq('user_id', user.id);
-      }
-
-      if (promocode.item_reward_id) {
-        await supabase
-          .from('user_inventory')
-          .insert({
-            user_id: user.id,
-            item_id: promocode.item_reward_id,
-            quantity: 1,
-          });
-      }
+      if (error) throw new Error(error.message || 'Failed to redeem code');
+      if (data?.error) throw new Error(data.error);
 
       await refreshProfile();
       setCode('');
-      setRedeemedCodes([...redeemedCodes, promocode.id]);
+      
+      // Refresh redeemed codes list
+      const { data: redemptions } = await supabase
+        .from('promocode_redemptions')
+        .select('promocode_id')
+        .eq('user_id', user.id);
+      if (redemptions) {
+        setRedeemedCodes(redemptions.map(r => r.promocode_id));
+      }
       
       toast.success(
-        promocode.emerald_reward > 0
-          ? `Successfully redeemed ${promocode.emerald_reward} Emeralds!`
+        data?.emerald_reward > 0
+          ? `Successfully redeemed ${data.emerald_reward} Emeralds!`
           : 'Successfully redeemed your reward!'
       );
-
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redeem error:', error);
-      toast.error('Failed to redeem code');
+      toast.error(error.message || 'Failed to redeem code');
     } finally {
       setIsRedeeming(false);
     }
