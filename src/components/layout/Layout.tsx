@@ -51,14 +51,14 @@ export const Layout = ({ children }: LayoutProps) => {
     );
   }
 
-  // Roblox 2020 layout
-  if (theme === 'roblox2020') {
+  // SODABLOX 2016 layout (based on ECS economy-simulator)
+  if (theme === 'roblox2016') {
     return (
-      <div className="min-h-screen" style={{ background: '#f2f4f5' }}>
+      <div className="min-h-screen" style={{ background: '#e8e8e8' }}>
         <AnnouncementBar />
-        <Roblox2020Navbar />
-        <main className="lg:ml-[200px] min-h-[calc(100vh-48px)]">
-          <div className="max-w-[1100px] mx-auto px-6 py-6">
+        <Roblox2016Navbar />
+        <main className="lg:ml-[175px] min-h-[calc(100vh-46px)]">
+          <div className="max-w-[1100px] mx-auto px-4 py-4">
             <BanRedirectWrapper>
               {children}
             </BanRedirectWrapper>

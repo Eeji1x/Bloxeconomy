@@ -39,7 +39,7 @@ const Friends = () => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const isRoblox = theme === 'roblox2020';
+  const isRoblox = theme === 'roblox2016';
 
   useEffect(() => {
     if (user) {

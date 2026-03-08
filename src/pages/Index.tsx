@@ -77,9 +77,9 @@ const Index = () => {
     return <Roblox2008Home />;
   }
 
-  // Roblox 2020 themed home
-  if (theme === 'roblox2020') {
-    return <Roblox2020Home />;
+  // SODABLOX 2016 themed home
+  if (theme === 'roblox2016') {
+    return <Roblox2016Home />;
   }
 
   // Default SODABLOX home
