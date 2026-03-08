@@ -98,8 +98,12 @@ const Profile = () => {
       const { data: roleData } = await supabase.from('user_roles').select('role').eq('user_id', viewingUserId).eq('role', 'admin').maybeSingle();
       setIsProfileAdmin(!!roleData);
 
-      const { data: inventoryData } = await supabase.from('user_inventory').select(`id, item_id, quantity, catalog_items (id, name, image_url, item_type)`).eq('user_id', viewingUserId);
-      if (inventoryData) setInventory(inventoryData as InventoryItem[]);
+      const { data: inventoryData } = await supabase.from('user_inventory').select(`id, item_id, quantity, is_equipped, catalog_items (id, name, image_url, item_type)`).eq('user_id', viewingUserId);
+      if (inventoryData) {
+        setInventory(inventoryData as InventoryItem[]);
+        const equipped = (inventoryData as any[]).filter(i => i.is_equipped && i.catalog_items).map(i => ({ image_url: i.catalog_items.image_url, name: i.catalog_items.name }));
+        setEquippedItems(equipped);
+      }
 
       const { count } = await supabase.from('friends').select('id', { count: 'exact', head: true }).eq('status', 'accepted').or(`requester_id.eq.${viewingUserId},addressee_id.eq.${viewingUserId}`);
       setFriendCount(count || 0);
