@@ -316,6 +316,10 @@ const ItemDetail = () => {
       await refreshProfile();
       await fetchResaleListings();
       await fetchUserInventory();
+      
+      // Update RAP with resale price
+      await updateItemRAP(item!.id, listing.price);
+      
       toast.success('Purchase successful!');
     } catch (error) {
       toast.error('Purchase failed');
