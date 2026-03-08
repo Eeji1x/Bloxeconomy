@@ -276,7 +276,7 @@ export const Roblox2020Navbar = () => {
             <Link
               to="/login"
               className="ml-1 px-5 py-1.5 rounded text-white text-[13px] font-semibold transition-colors"
-              style={{ background: '#335FFF' }}
+              style={{ background: '#0074BD' }}
             >
               Log In
             </Link>
