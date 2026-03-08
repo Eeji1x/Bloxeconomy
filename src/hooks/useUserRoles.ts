@@ -36,6 +36,7 @@ export const useUserRoles = (userId?: string) => {
     const roles = (data?.map(r => r.role) || []) as AppRole[];
     setRoleInfo({
       isAdmin: roles.includes('admin'),
+      isOwner: roles.includes('owner'),
       isEconomyManager: roles.includes('economy_manager'),
       roles,
     });
