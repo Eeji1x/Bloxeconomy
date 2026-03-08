@@ -12,7 +12,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { action, token, username, password, application_id } = await req.json();
+    const body = await req.json();
+    const { action, token, username, password, application_id, short_id } = body;
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -27,7 +28,6 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Verify the caller is admin/owner
       const authHeader = req.headers.get("Authorization");
       if (!authHeader?.startsWith("Bearer ")) {
         return new Response(
@@ -52,7 +52,6 @@ Deno.serve(async (req) => {
         auth: { autoRefreshToken: false, persistSession: false },
       });
 
-      // Check caller is admin or owner
       const { data: roleData } = await adminClient
         .from("user_roles")
         .select("role")
@@ -66,7 +65,6 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Generate cryptographically secure token
       const bytes = new Uint8Array(48);
       crypto.getRandomValues(bytes);
       const secureToken = Array.from(bytes)
@@ -74,7 +72,6 @@ Deno.serve(async (req) => {
         .join("")
         .slice(0, 64);
 
-      // Insert token using service role (bypasses RLS)
       const { error: insertErr } = await adminClient
         .from("registration_tokens")
         .insert({
@@ -93,6 +90,62 @@ Deno.serve(async (req) => {
 
       return new Response(
         JSON.stringify({ success: true, token: secureToken }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── ACTION: lookup-status (check application status + registration link by short_id) ──
+    if (action === "lookup-status") {
+      if (!short_id) {
+        return new Response(
+          JSON.stringify({ success: false, message: "Missing application ID." }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const adminClient = createClient(supabaseUrl, serviceRoleKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+      });
+
+      const { data: app } = await adminClient
+        .from("applications")
+        .select("id, status, reject_reason, username")
+        .eq("short_id", short_id.trim().toUpperCase())
+        .maybeSingle();
+
+      if (!app) {
+        return new Response(
+          JSON.stringify({ success: false, message: "Application not found." }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const result: any = {
+        success: true,
+        status: app.status,
+        username: app.username,
+        reject_reason: app.reject_reason,
+      };
+
+      // If accepted, look up the registration token
+      if (app.status === "accepted") {
+        const { data: tokenRecord } = await adminClient
+          .from("registration_tokens")
+          .select("token, is_used")
+          .eq("application_id", app.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (tokenRecord && !tokenRecord.is_used) {
+          result.registration_token = tokenRecord.token;
+        } else if (tokenRecord?.is_used) {
+          result.token_used = true;
+        }
+      }
+
+      return new Response(
+        JSON.stringify(result),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -170,7 +223,6 @@ Deno.serve(async (req) => {
         auth: { autoRefreshToken: false, persistSession: false },
       });
 
-      // Look up token
       const { data: tokenRecord, error: tokenError } = await adminClient
         .from("registration_tokens")
         .select("*")
@@ -215,7 +267,6 @@ Deno.serve(async (req) => {
         .maybeSingle();
 
       if (existingProfile) {
-        // Unclaim the token since registration failed
         await adminClient
           .from("registration_tokens")
           .update({ is_used: false, used_at: null })
@@ -235,7 +286,6 @@ Deno.serve(async (req) => {
       });
 
       if (authError || !authData.user) {
-        // Unclaim the token
         await adminClient
           .from("registration_tokens")
           .update({ is_used: false, used_at: null })
