@@ -271,12 +271,6 @@ const AdminUserManagement = () => {
   };
 
   const handleAddItem = async (catalogItem: CatalogItem) => {
-    // Check if user already owns this item (unique constraint)
-    const existing = inventory.find(i => i.item_id === catalogItem.id);
-    if (existing) {
-      toast.error(`${profile?.username} already owns ${catalogItem.name}`);
-      return;
-    }
     const { error } = await supabase.from('user_inventory').insert({
       user_id: userId!,
       item_id: catalogItem.id,
