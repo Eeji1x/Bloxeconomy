@@ -10,7 +10,7 @@ const MODEL_PATH = '/models/roblox-avatar.glb';
 
 const AvatarModel = () => {
   const { scene } = useGLTF(MODEL_PATH);
-  return <primitive object={scene} scale={1} position={[0, -1.5, 0]} />;
+  return <primitive object={scene} scale={1} position={[0, -1.2, 0]} />;
 };
 
 // Preload the model
@@ -32,12 +32,12 @@ const Scene = () => (
     <AvatarModel />
 
     {/* Ground plate */}
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]} receiveShadow>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.2, 0]} receiveShadow>
       <circleGeometry args={[1.6, 64]} />
       <meshStandardMaterial color="#b8b8b8" roughness={0.85} />
     </mesh>
 
-    <gridHelper args={[4, 20, '#cccccc', '#e0e0e0']} position={[0, -1.49, 0]} />
+    <gridHelper args={[4, 20, '#cccccc', '#e0e0e0']} position={[0, -1.19, 0]} />
 
     <OrbitControls
       enablePan={false}
