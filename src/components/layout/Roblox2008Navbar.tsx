@@ -24,7 +24,7 @@ const allNavLinks = [
 ];
 
 export const Roblox2008Navbar = () => {
-  const { user, profile, isAdmin, isEconomyManager, signOut } = useAuth();
+  const { user, profile, isAdmin, isOwner, isEconomyManager, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
