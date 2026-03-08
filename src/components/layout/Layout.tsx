@@ -20,7 +20,7 @@ export const Layout = ({ children }: LayoutProps) => {
   const { theme } = useTheme();
   const location = useLocation();
 
-  const authPaths = ['/login', '/signup', '/auth', '/apply', '/privacy'];
+  const authPaths = ['/login', '/signup', '/auth', '/apply', '/privacy', '/register'];
   const isAuthPage = authPaths.some(p => location.pathname === p || location.pathname.startsWith(p + '/'));
 
   // These pages have their own full layout
