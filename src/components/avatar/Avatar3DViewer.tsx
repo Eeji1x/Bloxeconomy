@@ -66,7 +66,7 @@ export const Avatar3DViewer = ({ equippedItems }: Avatar3DViewerProps) => {
       }}
     >
       <Canvas
-        camera={{ position: [0, 0.3, 5], fov: 32 }}
+        camera={{ position: [0, 0.5, 5], fov: 32 }}
         shadows
         gl={{ antialias: true, alpha: false }}
         style={{ width: '100%', height: '100%' }}
