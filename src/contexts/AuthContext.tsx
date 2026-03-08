@@ -12,6 +12,16 @@ const checkIsEconomyManager = async (userId: string): Promise<boolean> => {
   return !error && data !== null;
 };
 
+const checkIsOwner = async (userId: string): Promise<boolean> => {
+  const { data, error } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userId)
+    .eq('role', 'owner')
+    .maybeSingle();
+  return !error && data !== null;
+};
+
 interface Profile {
   id: string;
   user_id: string;
