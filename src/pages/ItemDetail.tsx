@@ -163,7 +163,7 @@ const ItemDetail = () => {
     }
     setBuyingItem(true);
     try {
-      const { data, error } = await supabase.rpc('purchase_item', { p_item_id: item.id });
+      const { data, error } = await (supabase.rpc as any)('purchase_item', { p_item_id: item.id });
       if (error) throw error;
       const result = data as Record<string, unknown> | null;
       if (result?.error) {
