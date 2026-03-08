@@ -38,7 +38,7 @@ const TexturePlane = ({ imageUrl, zOffset = 0 }: { imageUrl: string; zOffset?: n
   return (
     <mesh position={[0, dims.h / 2, zOffset]}>
       <planeGeometry args={[dims.w, dims.h]} />
-      <meshBasicMaterial map={texture} transparent={false} depthWrite={true} side={THREE.FrontSide} />
+      <meshBasicMaterial map={texture} transparent alphaTest={0.1} depthWrite={true} side={THREE.DoubleSide} />
     </mesh>
   );
 };
