@@ -87,7 +87,7 @@ const Admin = () => {
           {isAdmin ? 'Admin Panel' : isOwner ? 'Owner Panel' : 'Economy Panel'}
         </h1>
         <p className="text-muted-foreground">
-          {isAdmin ? 'Manage players, catalog, site settings' : 'Manage catalog items and promocodes'}
+          {isAdmin ? 'Manage players, catalog, site settings' : isOwner ? 'Full access — manage everything' : 'Manage catalog items and promocodes'}
         </p>
       </div>
 
