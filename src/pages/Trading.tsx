@@ -213,8 +213,8 @@ const Trading = () => {
     });
 
     const { data: profiles } = await supabase
-      .from('profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified, is_banned')
+      .from('public_profiles')
+      .select('user_id, username, numeric_id, emeralds, is_verified')
       .in('user_id', Array.from(allUserIds));
 
     const profileMap = new Map(profiles?.map(p => [p.user_id, p]));
