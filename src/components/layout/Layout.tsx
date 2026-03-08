@@ -27,7 +27,8 @@ export const Layout = ({ children }: LayoutProps) => {
     return <>{children}</>;
   }
 
-  if (isMaintenanceMode && !isLoading && !isAuthPage) {
+  // Fail-closed guard: while status is unresolved, keep non-auth pages blocked
+  if ((isLoading || isMaintenanceMode) && !isAuthPage) {
     return <Maintenance />;
   }
 
