@@ -378,6 +378,12 @@ const Catalog = () => {
                       Limited
                     </div>
                   )}
+                  {item.model_url && (
+                    <div className="absolute bottom-2 right-2 px-1.5 py-0.5 text-[10px] font-bold uppercase rounded bg-primary/80 text-primary-foreground flex items-center gap-1">
+                      <Box className="w-3 h-3" />
+                      3D
+                    </div>
+                  )}
                   {alreadyOwned && isLimited && (
                     <div className="absolute bottom-2 left-2 px-2 py-0.5 text-xs font-bold uppercase rounded bg-accent/80 text-accent-foreground">
                       Owned
