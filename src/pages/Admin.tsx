@@ -150,7 +150,7 @@ const CatalogPanel = () => {
     resell_enabled: true,
     sale_start_time: '',
     sale_end_time: '',
-    model_url: '' as string,
+    
   });
 
   useEffect(() => { fetchItems(); }, []);
