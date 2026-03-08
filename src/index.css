@@ -2996,7 +2996,7 @@
   gap: 4px;
 }
 .vapor-nav-link {
-  color: rgba(0,0,0,0.55) !important;
+  color: rgba(255,255,255,0.6) !important;
   text-decoration: none !important;
   padding: 6px 12px;
   font-size: 14px;
@@ -3007,11 +3007,11 @@
   border: none;
 }
 .vapor-nav-link:hover {
-  color: rgba(0,0,0,0.8) !important;
-  background: rgba(0,0,0,0.04);
+  color: rgba(255,255,255,0.9) !important;
+  background: rgba(255,255,255,0.08);
 }
 .vapor-nav-link.active {
-  color: rgba(0,0,0,0.9) !important;
+  color: #fff !important;
   font-weight: 600;
 }
 .vapor-navbar-right {
