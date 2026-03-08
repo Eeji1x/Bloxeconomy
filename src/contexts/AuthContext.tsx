@@ -65,6 +65,28 @@ export const useAuth = () => {
   return context;
 };
 
+  const autoGrantDailyEmeralds = async (userId: string, profileData: any) => {
+    try {
+      const lastClaim = profileData.last_daily_claim ? new Date(profileData.last_daily_claim) : null;
+      const now = new Date();
+      
+      if (lastClaim) {
+        const hoursSince = (now.getTime() - lastClaim.getTime()) / (1000 * 60 * 60);
+        if (hoursSince < 24) return;
+      }
+
+      await supabase
+        .from('profiles')
+        .update({ 
+          emeralds: profileData.emeralds + 100,
+          last_daily_claim: now.toISOString()
+        })
+        .eq('user_id', userId);
+    } catch (error) {
+      console.error('Error granting daily emeralds:', error);
+    }
+  };
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -115,6 +137,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               // Only update online status if not banned
               if (!profileData.is_banned) {
                 await updateOnlineStatus(session.user.id, true);
+                // Auto-grant 100 daily emeralds
+                await autoGrantDailyEmeralds(session.user.id, profileData);
               }
             }
             
