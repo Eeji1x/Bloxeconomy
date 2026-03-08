@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import {
   ChevronLeft, Shield, Ban, UserCheck, Lock, Unlock, KeyRound, RefreshCw,
   Edit, FileText, Gem, Eye, Package, Trash2, EyeOff, RotateCcw,
-  ArrowLeftRight, Store, User, Calendar, Clock, Hash, Crown, BadgeCheck
+  ArrowLeftRight, Store, User, Calendar, Clock, Hash, Crown, BadgeCheck, Plus, Search
 } from 'lucide-react';
 
 interface UserProfile {
