@@ -50,7 +50,8 @@ export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
         .select('user_id, username, is_verified')
         .in('user_id', ownerIds);
 
-      const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+      const profileRows = (profiles || []) as Array<{ user_id: string; username: string; is_verified: boolean | null }>;
+      const profileMap = new Map(profileRows.map(p => [p.user_id, p]));
 
       const ownersData: SerialOwner[] = serialsData.map((serial) => {
         const profile = profileMap.get(serial.owner_id);
