@@ -235,13 +235,13 @@ const Trading = () => {
     setSearching(true);
     const { data } = await supabase
       .from('public_profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified')
+      .select('user_id, username, numeric_id, is_verified')
       .neq('user_id', user?.id)
       .or(`username.ilike.%${searchQuery}%,numeric_id.eq.${parseInt(searchQuery) || 0}`)
       .limit(10);
 
     if (data) {
-      setSearchResults(data.map(d => ({ ...d, is_banned: false })) as Profile[]);
+      setSearchResults(data.map(d => ({ ...d, emeralds: 0, is_banned: false })) as Profile[]);
     }
     setSearching(false);
   };
