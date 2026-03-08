@@ -271,17 +271,20 @@ const AdminUserManagement = () => {
     toast.success(`Removed ${itemName}`); fetchAll();
   };
 
-  const handleAddItem = async (catalogItem: CatalogItem) => {
-    const { error } = await supabase.from('user_inventory').insert({
+  const handleAddItem = async (catalogItem: CatalogItem, amount: number) => {
+    const quantity = Math.max(1, Math.min(100, amount));
+    const rows = Array.from({ length: quantity }, () => ({
       user_id: userId!,
       item_id: catalogItem.id,
-    });
+    }));
+
+    const { error } = await supabase.from('user_inventory').insert(rows);
     if (error) {
       toast.error('Failed to add item: ' + error.message);
       return;
     }
-    await logAction('add_item', { item_id: catalogItem.id, item_name: catalogItem.name });
-    toast.success(`Added ${catalogItem.name} to inventory`);
+    await logAction('add_item', { item_id: catalogItem.id, item_name: catalogItem.name, quantity });
+    toast.success(`Added ${quantity}x ${catalogItem.name} to inventory`);
     setItemSearchQuery('');
     setShowAddItem(false);
     fetchAll();
