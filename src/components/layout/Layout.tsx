@@ -6,7 +6,7 @@ import { Roblox2016Navbar } from './Roblox2016Navbar';
 import { Roblox2015Navbar } from './Roblox2015Navbar';
 import { Roblox2012Navbar } from './Roblox2012Navbar';
 import { Roblox2008Navbar } from './Roblox2008Navbar';
-
+import { MercuryNavbar } from './MercuryNavbar';
 import { SodabloxSidebar } from './SodabloxSidebar';
 import { BanRedirectWrapper } from '@/components/auth/BanRedirectWrapper';
 import { useMaintenanceMode } from '@/hooks/useMaintenanceMode';
