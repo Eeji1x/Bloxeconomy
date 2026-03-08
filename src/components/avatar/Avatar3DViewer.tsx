@@ -131,7 +131,7 @@ export const Avatar3DViewer = ({ equippedItems }: Avatar3DViewerProps) => {
         <color attach="background" args={['#e8eef4']} />
         <fog attach="fog" args={['#e8eef4', 10, 20]} />
         <Suspense fallback={null}>
-          <Scene />
+          <Scene equippedItems={equippedItems} />
         </Suspense>
       </Canvas>
     </div>
