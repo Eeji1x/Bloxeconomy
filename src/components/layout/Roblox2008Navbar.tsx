@@ -20,6 +20,7 @@ const allNavLinks = [
   { to: '/inbox', label: 'Messages', authOnly: true },
   { to: '/promocodes', label: 'Promo Codes' },
   { to: '/settings', label: 'Settings', authOnly: true },
+  { to: '/sodamons', label: 'Sodamons' },
 ];
 
 export const Roblox2008Navbar = () => {

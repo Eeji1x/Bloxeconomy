@@ -23,6 +23,9 @@ import AdminPlayers from "./pages/AdminPlayers";
 import AdminUserManagement from "./pages/AdminUserManagement";
 import Settings from "./pages/Settings";
 import Leaderboards from "./pages/Leaderboards";
+import Sodamons from "./pages/Sodamons";
+import SodamonsItem from "./pages/SodamonsItem";
+import SodamonsTop from "./pages/SodamonsTop";
 import Banned from "./pages/Banned";
 import NotFound from "./pages/NotFound";
 
@@ -56,6 +59,9 @@ const App = () => (
                 <Route path="/admin/players/:userId" element={<AdminUserManagement />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/leaderboards" element={<Leaderboards />} />
+                <Route path="/sodamons" element={<Sodamons />} />
+                <Route path="/sodamons/item/:itemId" element={<SodamonsItem />} />
+                <Route path="/sodamons/top" element={<SodamonsTop />} />
                 <Route path="/banned" element={<Banned />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

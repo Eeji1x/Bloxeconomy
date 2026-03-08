@@ -238,6 +238,73 @@ export type Database = {
           },
         ]
       }
+      item_tags: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_tags_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      item_values: {
+        Row: {
+          demand: string
+          id: string
+          item_id: string
+          trend: string
+          updated_at: string
+          updated_by: string | null
+          value: number
+        }
+        Insert: {
+          demand?: string
+          id?: string
+          item_id: string
+          trend?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: number
+        }
+        Update: {
+          demand?: string
+          id?: string
+          item_id?: string
+          trend?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_values_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: true
+            referencedRelation: "catalog_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lotteries: {
         Row: {
           created_at: string
@@ -637,6 +704,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      value_history: {
+        Row: {
+          changed_by: string
+          created_at: string
+          id: string
+          item_id: string
+          new_demand: string | null
+          new_trend: string | null
+          new_value: number
+          old_demand: string | null
+          old_trend: string | null
+          old_value: number | null
+        }
+        Insert: {
+          changed_by: string
+          created_at?: string
+          id?: string
+          item_id: string
+          new_demand?: string | null
+          new_trend?: string | null
+          new_value: number
+          old_demand?: string | null
+          old_trend?: string | null
+          old_value?: number | null
+        }
+        Update: {
+          changed_by?: string
+          created_at?: string
+          id?: string
+          item_id?: string
+          new_demand?: string | null
+          new_trend?: string | null
+          new_value?: number
+          old_demand?: string | null
+          old_trend?: string | null
+          old_value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "value_history_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

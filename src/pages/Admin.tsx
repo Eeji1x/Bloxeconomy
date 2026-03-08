@@ -12,6 +12,7 @@ import InviteKeysPanel from '@/components/admin/InviteKeysPanel';
 import MaintenancePanel from '@/components/admin/MaintenancePanel';
 import GlobalMessagePanel from '@/components/admin/GlobalMessagePanel';
 import LotteryPanel from '@/components/admin/LotteryPanel';
+import SodamonsValueManager from '@/components/admin/SodamonsValueManager';
 import AdminPlayers from '@/pages/AdminPlayers';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
@@ -36,6 +37,7 @@ const tabs: Tab[] = [
   { id: 'maintenance', label: 'Maintenance', icon: <Wrench className="w-4 h-4" /> },
   { id: 'messaging', label: 'Messaging', icon: <Mail className="w-4 h-4" /> },
   { id: 'lottery', label: 'Lottery', icon: <Trophy className="w-4 h-4" /> },
+  { id: 'sodamons', label: 'Sodamons Values', icon: <Gem className="w-4 h-4" /> },
   { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
@@ -108,6 +110,7 @@ const Admin = () => {
         {activeTab === 'maintenance' && isAdmin && <div className="cyber-card p-6"><MaintenancePanel /></div>}
         {activeTab === 'messaging' && isAdmin && <div className="cyber-card p-6"><GlobalMessagePanel /></div>}
         {activeTab === 'lottery' && isAdmin && <div className="cyber-card p-6"><LotteryPanel /></div>}
+        {activeTab === 'sodamons' && isAdmin && <div className="cyber-card p-6"><SodamonsValueManager /></div>}
         {activeTab === 'wipe' && isAdmin && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
       </div>
     </div>
