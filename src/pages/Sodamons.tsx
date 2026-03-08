@@ -16,6 +16,7 @@ interface LimitedItem {
     value: number;
     demand: string;
     trend: string;
+    rap: number;
   } | null;
   owner_count: number;
   tags: string[];
@@ -69,13 +70,13 @@ const Sodamons = () => {
 
     // Fetch values, tags, and owner counts in parallel
     const [valuesRes, tagsRes, ownersRes] = await Promise.all([
-      supabase.from('item_values').select('item_id, value, demand, trend').in('item_id', itemIds),
+      supabase.from('item_values').select('item_id, value, demand, trend, rap').in('item_id', itemIds),
       supabase.from('item_tags').select('item_id, tag').in('item_id', itemIds),
       supabase.from('user_inventory').select('item_id').in('item_id', itemIds),
     ]);
 
-    const valuesMap = new Map<string, { value: number; demand: string; trend: string }>();
-    valuesRes.data?.forEach(v => valuesMap.set(v.item_id, { value: v.value, demand: v.demand, trend: v.trend }));
+    const valuesMap = new Map<string, { value: number; demand: string; trend: string; rap: number }>();
+    valuesRes.data?.forEach(v => valuesMap.set(v.item_id, { value: v.value, demand: v.demand, trend: v.trend, rap: v.rap }));
 
     const tagsMap = new Map<string, string[]>();
     tagsRes.data?.forEach(t => {
@@ -118,7 +119,7 @@ const Sodamons = () => {
           cmp = (a.item_values?.value || 0) - (b.item_values?.value || 0);
           break;
         case 'rap':
-          cmp = a.price - b.price;
+          cmp = (a.item_values?.rap || a.price) - (b.item_values?.rap || b.price);
           break;
         case 'demand':
           cmp = (demandOrder[a.item_values?.demand || 'Normal'] || 0) - (demandOrder[b.item_values?.demand || 'Normal'] || 0);
@@ -229,7 +230,7 @@ const Sodamons = () => {
                         </div>
                       )}
                     </td>
-                    <td className="px-3 py-2 font-mono text-xs">💎 {item.price.toLocaleString()}</td>
+                    <td className="px-3 py-2 font-mono text-xs">💎 {(item.item_values?.rap || item.price).toLocaleString()}</td>
                     <td className="px-3 py-2 font-mono text-xs font-bold">
                       {item.item_values ? `💎 ${item.item_values.value.toLocaleString()}` : '—'}
                     </td>

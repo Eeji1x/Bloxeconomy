@@ -272,6 +272,7 @@ export type Database = {
           demand: string
           id: string
           item_id: string
+          rap: number
           trend: string
           updated_at: string
           updated_by: string | null
@@ -281,6 +282,7 @@ export type Database = {
           demand?: string
           id?: string
           item_id: string
+          rap?: number
           trend?: string
           updated_at?: string
           updated_by?: string | null
@@ -290,6 +292,7 @@ export type Database = {
           demand?: string
           id?: string
           item_id?: string
+          rap?: number
           trend?: string
           updated_at?: string
           updated_by?: string | null

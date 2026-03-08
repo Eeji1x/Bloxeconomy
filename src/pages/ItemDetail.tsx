@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { updateItemRAP } from '@/lib/rap';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { OwnersPanel } from '@/components/catalog/OwnersPanel';
@@ -192,6 +193,12 @@ const ItemDetail = () => {
       await refreshProfile();
       await fetchItem();
       await fetchUserInventory();
+      
+      // Update RAP for limited items
+      if (item.item_type === 'limited') {
+        await updateItemRAP(item.id, item.price);
+      }
+      
       toast.success(`Purchased ${item.name}!`);
     } catch (error) {
       console.error('Purchase error:', error);
@@ -309,6 +316,10 @@ const ItemDetail = () => {
       await refreshProfile();
       await fetchResaleListings();
       await fetchUserInventory();
+      
+      // Update RAP with resale price
+      await updateItemRAP(item!.id, listing.price);
+      
       toast.success('Purchase successful!');
     } catch (error) {
       toast.error('Purchase failed');

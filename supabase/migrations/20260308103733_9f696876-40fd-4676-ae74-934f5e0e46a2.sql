@@ -1,0 +1,2 @@
+
+ALTER TABLE public.item_values ADD COLUMN IF NOT EXISTS rap integer NOT NULL DEFAULT 0;

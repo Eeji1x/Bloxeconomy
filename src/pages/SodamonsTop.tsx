@@ -33,9 +33,9 @@ const SodamonsTop = () => {
       [...merged].filter(i => i.values).sort((a, b) => (b.values?.value || 0) - (a.values?.value || 0)).slice(0, 10)
     );
 
-    // Highest RAP
+    // Highest RAP (from item_values.rap, fallback to catalog price)
     setHighestRAP(
-      [...merged].sort((a, b) => b.price - a.price).slice(0, 10)
+      [...merged].sort((a, b) => (b.values?.rap || b.price) - (a.values?.rap || a.price)).slice(0, 10)
     );
 
     // Most demanded

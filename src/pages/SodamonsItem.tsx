@@ -84,7 +84,7 @@ const SodamonsItem = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
               <div className="text-xs text-muted-foreground uppercase">RAP</div>
-              <div className="font-bold">💎 {item.price.toLocaleString()}</div>
+              <div className="font-bold">💎 {(values?.rap || item.price).toLocaleString()}</div>
             </div>
             <div>
               <div className="text-xs text-muted-foreground uppercase">Value</div>
