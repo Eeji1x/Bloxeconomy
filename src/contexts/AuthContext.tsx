@@ -120,6 +120,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             const adminStatus = await checkIsAdmin(session.user.id);
             setIsAdmin(adminStatus);
+            const ownerStatus = await checkIsOwner(session.user.id);
+            setIsOwner(ownerStatus);
             const econStatus = await checkIsEconomyManager(session.user.id);
             setIsEconomyManager(econStatus);
           } catch (error) {
