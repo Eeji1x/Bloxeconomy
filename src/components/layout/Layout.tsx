@@ -25,14 +25,14 @@ export const Layout = ({ children }: LayoutProps) => {
     return <Maintenance />;
   }
 
-  // Roblox 2008 layout
+  // Roblox 2008 layout — 980px fixed container
   if (theme === 'roblox2008') {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen" style={{ background: '#F1F1F1' }}>
         <AnnouncementBar />
         <Roblox2008Navbar />
-        <main className="lg:ml-[180px] min-h-[calc(100vh-95px)]">
-          <div className="max-w-[900px] mx-auto px-4 py-4">
+        <main className="lg:ml-[160px] min-h-[calc(100vh-70px)]">
+          <div style={{ maxWidth: 820, padding: 15 }}>
             <BanRedirectWrapper>
               {children}
             </BanRedirectWrapper>
