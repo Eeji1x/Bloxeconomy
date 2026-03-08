@@ -72,6 +72,11 @@ const Index = () => {
     );
   }
 
+  // Roblox 2008 themed home
+  if (theme === 'roblox2008') {
+    return <Roblox2008Home />;
+  }
+
   // Roblox 2020 themed home
   if (theme === 'roblox2020') {
     return <Roblox2020Home />;

@@ -43,6 +43,18 @@ export const THEMES: ThemeOption[] = [
       text: '#111827',
     },
   },
+  {
+    id: 'roblox2008',
+    name: 'Roblox 2008',
+    description: 'Retro early-web Roblox with blue gradients and classic navigation',
+    preview: {
+      bg: '#D5DEE3',
+      navbar: '#5B98D0',
+      accent: '#0055BF',
+      card: '#FFFFFF',
+      text: '#000000',
+    },
+  },
 ];
 
 interface ThemeContextType {
