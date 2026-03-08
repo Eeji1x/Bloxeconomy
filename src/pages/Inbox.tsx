@@ -82,7 +82,7 @@ const Inbox = () => {
     }
 
     const partnerIds = Array.from(convos.keys()).filter(id => id !== 'system');
-    const { data: profiles } = partnerIds.length > 0 ? await supabase.from('public_profiles' as any).select('user_id, username').in('user_id', partnerIds) : { data: [] };
+    const { data: profiles } = partnerIds.length > 0 ? await (supabase as any).from('public_profiles').select('user_id, username').in('user_id', partnerIds) : { data: [] };
     const profileMap = new Map((profiles || []).map(p => [p.user_id, p.username]));
 
     const previews: ConversationPreview[] = [];
