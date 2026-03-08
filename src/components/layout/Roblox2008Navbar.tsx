@@ -119,7 +119,7 @@ export const Roblox2008Navbar = () => {
               );
             })}
 
-            {(isAdmin || isEconomyManager) && (
+            {(isAdmin || isOwner || isEconomyManager) && (
               <>
                 <span className="rbx08-separator">&nbsp;|&nbsp;</span>
                 <Link
