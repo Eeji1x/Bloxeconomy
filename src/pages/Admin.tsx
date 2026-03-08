@@ -64,7 +64,7 @@ const Admin = () => {
     if (!activeTab && visibleTabs.length > 0) {
       setActiveTab((isAdmin || isOwner) ? 'cmd' : 'catalog');
     }
-  }, [isAdmin, isEconomyManager]);
+  }, [isAdmin, isOwner, isEconomyManager]);
 
   if (isLoading) {
     return (
