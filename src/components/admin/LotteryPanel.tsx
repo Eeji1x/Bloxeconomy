@@ -163,7 +163,7 @@ const LotteryPanel = () => {
       const { data: lottery, error } = await supabase
         .from('lotteries')
         .insert({
-          duration_hours: duration,
+          duration_hours: durationHours,
           starts_at: startsAt.toISOString(),
           ends_at: endsAt.toISOString(),
           created_by: user.id,
