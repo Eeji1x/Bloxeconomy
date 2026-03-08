@@ -92,6 +92,25 @@ export const Layout = ({ children }: LayoutProps) => {
       </div>
     );
   }
+  // Vapor / Test Theme layout
+  if (theme === 'vapor') {
+    return (
+      <div className="min-h-screen" style={{ background: '#F0F0F0' }}>
+        <AnnouncementBar />
+        <VaporNavbar />
+        <main style={{ maxWidth: 960, margin: '0 auto', padding: '20px 16px' }}>
+          <BanRedirectWrapper>
+            {children}
+          </BanRedirectWrapper>
+        </main>
+        <footer className="vapor-footer">
+          <div style={{ maxWidth: 960, margin: '0 auto', padding: '12px 16px' }}>
+            © {new Date().getFullYear()} SODABLOX. All rights reserved.
+          </div>
+        </footer>
+      </div>
+    );
+  }
 
   // Default SODABLOX layout
   return (
