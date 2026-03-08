@@ -96,7 +96,7 @@ const AvatarModel = ({ equippedItems }: { equippedItems: EquippedItem[] }) => {
 
 useGLTF.preload(MODEL_PATH);
 
-const Scene = ({ equippedItems }: { equippedItems: { image_url: string; name?: string }[] }) => (
+const Scene = ({ equippedItems }: { equippedItems: EquippedItem[] }) => (
   <>
     <ambientLight intensity={0.5} />
     <directionalLight
