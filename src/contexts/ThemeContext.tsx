@@ -67,18 +67,6 @@ export const THEMES: ThemeOption[] = [
       text: '#000000',
     },
   },
-  {
-    id: 'vapor',
-    name: 'Test Theme',
-    description: 'Vapor-style — light navbar, green accents, Bootstrap-inspired cards',
-    preview: {
-      bg: '#121212',
-      navbar: '#1A1A1A',
-      accent: '#28A745',
-      card: '#1E1E1E',
-      text: '#DDDDDD',
-    },
-  },
 ];
 
 interface ThemeContextType {
