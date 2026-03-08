@@ -100,23 +100,23 @@
 
   /* Roblox 2020 Light Theme */
   [data-theme="roblox2020"] {
-    --background: 0 0% 95%;
-    --foreground: 0 0% 10%;
+    --background: 0 0% 94%;
+    --foreground: 0 0% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 0 0% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 0 0% 12%;
 
-    --primary: 207 100% 50%;
+    --primary: 204 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 90%;
-    --secondary-foreground: 0 0% 10%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 12%;
 
-    --muted: 0 0% 90%;
-    --muted-foreground: 0 0% 40%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
     --accent: 145 63% 42%;
     --accent-foreground: 0 0% 100%;
@@ -124,22 +124,22 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 85%;
+    --border: 0 0% 87%;
     --input: 0 0% 100%;
-    --ring: 207 100% 50%;
+    --ring: 204 100% 50%;
 
     --radius: 0.5rem;
 
     --sidebar-background: 220 13% 18%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 207 100% 50%;
+    --sidebar-primary: 204 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 13% 24%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 220 13% 26%;
-    --sidebar-ring: 207 100% 50%;
+    --sidebar-ring: 204 100% 50%;
 
-    --neon-cyan: 207 100% 50%;
+    --neon-cyan: 204 100% 50%;
     --neon-pink: 340 82% 52%;
     --neon-green: 145 63% 42%;
     --neon-purple: 262 52% 47%;
@@ -151,15 +151,15 @@
     --glow-green: none;
     --glow-purple: none;
 
-    --gradient-cyber: linear-gradient(135deg, hsl(207 100% 50%) 0%, hsl(262 52% 47%) 100%);
-    --gradient-dark: linear-gradient(180deg, hsl(0 0% 95%) 0%, hsl(0 0% 92%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(0 0% 97%) 100%);
+    --gradient-cyber: linear-gradient(135deg, hsl(204 100% 50%) 0%, hsl(262 52% 47%) 100%);
+    --gradient-dark: none;
+    --gradient-card: none;
     --gradient-glow: none;
   }
 
-  /* Override cyberpunk-specific styles for Roblox 2020 theme */
+  /* Roblox 2020 font overrides */
   [data-theme="roblox2020"] body {
-    font-family: 'Gotham SSm', 'Segoe UI', 'Roboto', sans-serif;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   }
 
   [data-theme="roblox2020"] h1,
@@ -168,34 +168,40 @@
   [data-theme="roblox2020"] h4,
   [data-theme="roblox2020"] h5,
   [data-theme="roblox2020"] h6 {
-    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     font-weight: 700;
+    letter-spacing: 0;
   }
 
+  /* Roblox 2020 card overrides */
   [data-theme="roblox2020"] .cyber-card {
     background: hsl(0 0% 100%);
-    border: 1px solid hsl(0 0% 88%);
-    box-shadow: 0 1px 4px hsl(0 0% 0% / 0.08);
+    border: 1px solid hsl(0 0% 90%);
+    box-shadow: 0 1px 3px hsl(0 0% 0% / 0.06);
+    border-radius: 8px;
   }
 
   [data-theme="roblox2020"] .cyber-card:hover {
-    border-color: hsl(0 0% 80%);
-    box-shadow: 0 2px 8px hsl(0 0% 0% / 0.12);
+    border-color: hsl(0 0% 82%);
+    box-shadow: 0 2px 6px hsl(0 0% 0% / 0.1);
     transform: none;
   }
 
+  /* Kill all neon/glow effects */
   [data-theme="roblox2020"] .neon-border,
   [data-theme="roblox2020"] .neon-border-pink,
   [data-theme="roblox2020"] .neon-border-green {
-    border: 1px solid hsl(0 0% 85%);
+    border: 1px solid hsl(0 0% 87%);
     box-shadow: none;
   }
 
   [data-theme="roblox2020"] .glow-cyan,
   [data-theme="roblox2020"] .glow-pink,
   [data-theme="roblox2020"] .glow-green,
-  [data-theme="roblox2020"] .glow-purple {
+  [data-theme="roblox2020"] .glow-purple,
+  [data-theme="roblox2020"] .pulse-glow {
     box-shadow: none;
+    animation: none;
   }
 
   [data-theme="roblox2020"] .neon-text,
@@ -205,10 +211,10 @@
   }
 
   [data-theme="roblox2020"] .gradient-text {
-    background: linear-gradient(135deg, hsl(207 100% 50%), hsl(262 52% 47%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: hsl(0 0% 12%);
+    background-clip: unset;
   }
 
   [data-theme="roblox2020"] .cyber-grid {
@@ -220,27 +226,27 @@
     animation: none;
   }
 
-  [data-theme="roblox2020"] .pulse-glow {
-    animation: none;
-    box-shadow: none;
-  }
-
   [data-theme="roblox2020"] .emerald-display {
-    background: linear-gradient(135deg, hsl(145 63% 38%) 0%, hsl(145 63% 48%) 100%);
-    border: 1px solid hsl(145 63% 42% / 0.5);
+    background: hsl(145 63% 42%);
+    border: none;
     box-shadow: none;
+    border-radius: 4px;
   }
 
   [data-theme="roblox2020"] .limited-badge {
     box-shadow: none;
+    background: hsl(45 100% 51%);
+    border-radius: 4px;
   }
 
   [data-theme="roblox2020"] .admin-badge {
     box-shadow: none;
+    border-radius: 4px;
   }
 
+  /* Roblox 2020 scrollbar */
   [data-theme="roblox2020"] ::-webkit-scrollbar-track {
-    background: hsl(0 0% 92%);
+    background: hsl(0 0% 94%);
   }
 
   [data-theme="roblox2020"] ::-webkit-scrollbar-thumb {
@@ -249,31 +255,29 @@
   }
 
   [data-theme="roblox2020"] ::-webkit-scrollbar-thumb:hover {
-    background: hsl(0 0% 60%);
+    background: hsl(0 0% 62%);
   }
 
   [data-theme="roblox2020"] ::selection {
-    background: hsl(207 100% 50% / 0.3);
+    background: hsl(204 100% 50% / 0.25);
     color: hsl(0 0% 10%);
   }
 
-  /* Roblox 2020 navbar override */
-  [data-theme="roblox2020"] nav.sticky {
-    background: hsl(220 13% 18%) !important;
-    border-bottom: none !important;
+  /* Roblox 2020 topbar + sidebar */
+  [data-theme="roblox2020"] .roblox-topbar {
+    background: hsl(220 10% 20%);
+    border-bottom: 1px solid hsl(220 10% 16%);
   }
 
-  [data-theme="roblox2020"] nav.sticky * {
-    --foreground: 0 0% 95%;
-    --muted-foreground: 0 0% 70%;
-    --primary: 207 100% 60%;
+  [data-theme="roblox2020"] .roblox-sidebar {
+    background: hsl(220 10% 23%);
+    border-right: 1px solid hsl(220 10% 18%);
   }
 
-  [data-theme="roblox2020"] nav.sticky .gradient-text {
-    background: linear-gradient(135deg, hsl(207 100% 60%), hsl(0 0% 100%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  /* Roblox 2020 button overrides */
+  [data-theme="roblox2020"] button[class*="bg-primary"],
+  [data-theme="roblox2020"] a[class*="bg-primary"] {
+    border-radius: 4px;
   }
 }
 
