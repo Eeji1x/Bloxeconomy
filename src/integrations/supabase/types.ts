@@ -774,7 +774,7 @@ export type Database = {
       reset_profiles_numeric_id_seq: { Args: never; Returns: undefined }
     }
     Enums: {
-      app_role: "admin" | "user" | "economy_manager"
+      app_role: "admin" | "user" | "economy_manager" | "owner"
       friend_status: "pending" | "accepted" | "declined"
       item_type: "normal" | "limited" | "giftbox"
       trade_status: "pending" | "accepted" | "declined" | "cancelled"
@@ -905,7 +905,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user", "economy_manager"],
+      app_role: ["admin", "user", "economy_manager", "owner"],
       friend_status: ["pending", "accepted", "declined"],
       item_type: ["normal", "limited", "giftbox"],
       trade_status: ["pending", "accepted", "declined", "cancelled"],
