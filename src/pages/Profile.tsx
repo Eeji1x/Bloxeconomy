@@ -121,7 +121,7 @@ const Profile = () => {
   };
 
   const handleSendFriendRequest = async () => {
-    if (!user || !viewingUserId) return;
+    if (!user || !viewingUserId || viewingUserId === user.id) return;
     setFriendLoading(true);
     try {
       const { error } = await supabase.from('friends').insert({ requester_id: user.id, addressee_id: viewingUserId, status: 'pending' });
