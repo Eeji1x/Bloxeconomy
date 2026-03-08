@@ -188,7 +188,7 @@ const LotteryPanel = () => {
       await supabase.from('admin_logs').insert({
         admin_id: user.id,
         action: 'lottery_created',
-        details: { lottery_id: lottery.id, prize_count: actualCount, duration_hours: duration },
+        details: { lottery_id: lottery.id, prize_count: actualCount, duration: `${durationValue} ${durationUnit}` },
       });
 
       toast.success(`Lottery created with ${actualCount} prizes!`);
