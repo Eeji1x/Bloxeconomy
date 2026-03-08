@@ -613,6 +613,8 @@ const CatalogPanel = () => {
           is_on_sale: formData.is_on_sale,
           is_giftbox: false,
           resell_enabled: formData.resell_enabled,
+          sale_start_time: formData.sale_start_time ? new Date(formData.sale_start_time).toISOString() : null,
+          sale_end_time: formData.sale_end_time ? new Date(formData.sale_end_time).toISOString() : null,
         })
         .eq('id', editingItem.id);
       
