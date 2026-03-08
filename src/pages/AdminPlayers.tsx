@@ -11,7 +11,7 @@ import {
   Pagination, PaginationContent, PaginationItem, PaginationLink,
   PaginationNext, PaginationPrevious
 } from '@/components/ui/pagination';
-import { Shield, Search, ArrowUpDown, Users, ChevronLeft } from 'lucide-react';
+import { Shield, Search, ArrowUpDown, Users, ChevronLeft, Crown, Gem as GemIcon } from 'lucide-react';
 
 interface PlayerRow {
   user_id: string;
@@ -24,11 +24,21 @@ interface PlayerRow {
   last_seen: string | null;
 }
 
+interface RoleRow {
+  user_id: string;
+  role: string;
+}
+
 type SortCol = 'numeric_id' | 'username' | 'created_at' | 'emeralds';
 
-const AdminPlayers = () => {
+interface AdminPlayersProps {
+  embedded?: boolean;
+}
+
+const AdminPlayers = ({ embedded = false }: AdminPlayersProps) => {
   const { user, isAdmin, isLoading } = useAuth();
   const [players, setPlayers] = useState<PlayerRow[]>([]);
+  const [roles, setRoles] = useState<RoleRow[]>([]);
   const [inventoryValues, setInventoryValues] = useState<Record<string, number>>({});
   const [totalCount, setTotalCount] = useState(0);
   const [search, setSearch] = useState('');
@@ -57,11 +67,16 @@ const AdminPlayers = () => {
       query = query.or(`username.ilike.%${search.trim()}%,numeric_id.eq.${parseInt(search) || 0}`);
     }
 
-    const { data, count } = await query;
+    const [{ data, count }, { data: rolesData }] = await Promise.all([
+      query,
+      supabase.from('user_roles').select('user_id, role'),
+    ]);
+    
     if (data) setPlayers(data as PlayerRow[]);
     if (count !== null) setTotalCount(count);
+    if (rolesData) setRoles(rolesData as RoleRow[]);
 
-    // Fetch inventory values for these users
+    // Fetch inventory values
     if (data && data.length > 0) {
       const userIds = data.map((p: any) => p.user_id);
       const { data: invData } = await supabase
@@ -82,7 +97,7 @@ const AdminPlayers = () => {
     setLoading(false);
   };
 
-  if (isLoading) {
+  if (isLoading && !embedded) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -90,13 +105,34 @@ const AdminPlayers = () => {
     );
   }
 
-  if (!user || !isAdmin) return <Navigate to="/" replace />;
+  if (!embedded && (!user || !isAdmin)) return <Navigate to="/" replace />;
 
   const totalPages = Math.ceil(totalCount / limit);
+
+  const getUserRoles = (userId: string) => {
+    return roles.filter(r => r.user_id === userId).map(r => r.role);
+  };
 
   const getStatus = (p: PlayerRow) => {
     if (p.is_banned) return { label: 'Banned', cls: 'text-destructive bg-destructive/20' };
     return { label: 'OK', cls: 'text-accent bg-accent/20' };
+  };
+
+  const RoleBadge = ({ role }: { role: string }) => {
+    if (role === 'admin') {
+      return <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-destructive/20 text-destructive flex items-center gap-0.5"><Shield className="w-2.5 h-2.5" />ADMIN</span>;
+    }
+    if (role === 'economy_manager') {
+      return <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-500 flex items-center gap-0.5"><GemIcon className="w-2.5 h-2.5" />ECONOMY</span>;
+    }
+    return null;
+  };
+
+  const OwnerBadge = ({ numericId }: { numericId: number }) => {
+    if (numericId === 5) {
+      return <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/20 text-primary flex items-center gap-0.5"><Crown className="w-2.5 h-2.5" />OWNER</span>;
+    }
+    return null;
   };
 
   const SortButton = ({ col, children }: { col: SortCol; children: React.ReactNode }) => (
@@ -116,18 +152,20 @@ const AdminPlayers = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <Link to="/admin">
-          <Button variant="ghost" size="icon"><ChevronLeft className="w-5 h-5" /></Button>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-display font-bold flex items-center gap-2">
-            <Users className="w-6 h-6 text-primary" />
-            Players
-          </h1>
-          <p className="text-sm text-muted-foreground">{totalCount} total players</p>
+      {!embedded && (
+        <div className="flex items-center gap-3">
+          <Link to="/admin">
+            <Button variant="ghost" size="icon"><ChevronLeft className="w-5 h-5" /></Button>
+          </Link>
+          <div>
+            <h1 className="text-2xl font-display font-bold flex items-center gap-2">
+              <Users className="w-6 h-6 text-primary" />
+              Players
+            </h1>
+            <p className="text-sm text-muted-foreground">{totalCount} total players</p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
@@ -160,6 +198,7 @@ const AdminPlayers = () => {
             <TableRow className="border-border/50">
               <TableHead><SortButton col="numeric_id">ID</SortButton></TableHead>
               <TableHead><SortButton col="username">Username</SortButton></TableHead>
+              <TableHead>Roles</TableHead>
               <TableHead><SortButton col="created_at">Created</SortButton></TableHead>
               <TableHead>Last Online</TableHead>
               <TableHead>Status</TableHead>
@@ -170,19 +209,20 @@ const AdminPlayers = () => {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-12">
+                <TableCell colSpan={8} className="text-center py-12">
                   <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
                 </TableCell>
               </TableRow>
             ) : players.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
                   No players found
                 </TableCell>
               </TableRow>
             ) : (
               players.map((p) => {
                 const status = getStatus(p);
+                const userRoles = getUserRoles(p.user_id);
                 return (
                   <TableRow key={p.user_id} className="border-border/30 hover:bg-primary/5">
                     <TableCell className="font-mono text-muted-foreground">#{p.numeric_id}</TableCell>
@@ -193,6 +233,12 @@ const AdminPlayers = () => {
                       >
                         {p.username}
                       </Link>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        <OwnerBadge numericId={p.numeric_id} />
+                        {userRoles.map(role => <RoleBadge key={role} role={role} />)}
+                      </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {new Date(p.created_at).toLocaleDateString()}
