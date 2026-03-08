@@ -67,14 +67,14 @@ Deno.serve(async (req) => {
     const { data: existing } = await supabase
       .from("ip_hashes")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("ip_hash", ipHash)
       .gte("created_at", oneDayAgo)
       .maybeSingle();
 
     if (!existing) {
       await supabase.from("ip_hashes").insert({
-        user_id: user.id,
+        user_id: userId,
         ip_hash: ipHash,
       });
     }
