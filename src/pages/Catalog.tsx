@@ -17,8 +17,28 @@ interface CatalogItem {
   stock: number | null;
   max_stock: number | null;
   is_on_sale: boolean | null;
+  sale_start_time: string | null;
+  sale_end_time: string | null;
   created_at: string;
 }
+
+type SaleState = 'on_sale' | 'off_sale' | 'sold_out';
+
+const getSaleState = (item: CatalogItem): SaleState => {
+  const now = Date.now();
+
+  // Check stock first
+  if (item.stock !== null && item.stock <= 0) return 'sold_out';
+
+  // Check sale timers
+  if (item.sale_start_time && new Date(item.sale_start_time).getTime() > now) return 'off_sale';
+  if (item.sale_end_time && new Date(item.sale_end_time).getTime() < now) return 'off_sale';
+
+  // Check manual sale flag
+  if (!item.is_on_sale) return 'off_sale';
+
+  return 'on_sale';
+};
 
 const Catalog = () => {
   const { user, profile, refreshProfile } = useAuth();
@@ -36,6 +56,14 @@ const Catalog = () => {
     }
   }, [user]);
 
+  // Refresh sale states every 30 seconds for timer-based items
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setItems(prev => [...prev]); // force re-render to recalculate sale states
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const fetchItems = async () => {
     const { data, error } = await supabase
       .from('catalog_items')
@@ -50,12 +78,10 @@ const Catalog = () => {
 
   const fetchUserInventory = async () => {
     if (!user) return;
-    
     const { data } = await supabase
       .from('user_inventory')
       .select('item_id')
       .eq('user_id', user.id);
-
     if (data) {
       setUserInventory(data.map(i => i.item_id));
     }
@@ -66,29 +92,21 @@ const Catalog = () => {
       toast.error('Please log in to purchase items');
       return;
     }
-
-    // Check if banned
     if (profile.is_banned) {
       toast.error('You are banned and cannot purchase items');
       return;
     }
-
     if (profile.emeralds < item.price) {
       toast.error('Not enough emeralds!');
       return;
     }
 
-    if (!item.is_on_sale) {
-      toast.error('This item is not for sale');
+    const saleState = getSaleState(item);
+    if (saleState !== 'on_sale') {
+      toast.error(saleState === 'sold_out' ? 'This item is sold out' : 'This item is not for sale');
       return;
     }
 
-    if (item.stock !== null && item.stock <= 0) {
-      toast.error('This item is out of stock');
-      return;
-    }
-
-    // For limited items, check if user already owns one
     if (item.item_type === 'limited' && userInventory.includes(item.id)) {
       toast.error('You can only own one of this item');
       return;
@@ -97,23 +115,32 @@ const Catalog = () => {
     setBuyingItem(item.id);
 
     try {
-      // First, re-check stock from database (to prevent race conditions)
+      // Re-check stock from database
       const { data: freshItem, error: fetchError } = await supabase
         .from('catalog_items')
-        .select('stock, is_on_sale')
+        .select('stock, is_on_sale, sale_start_time, sale_end_time')
         .eq('id', item.id)
         .single();
 
-      if (fetchError || !freshItem) {
-        throw new Error('Failed to verify item availability');
-      }
+      if (fetchError || !freshItem) throw new Error('Failed to verify item availability');
 
+      // Validate sale state server-side
+      const now = Date.now();
       if (!freshItem.is_on_sale) {
         toast.error('This item is no longer for sale');
         await fetchItems();
         return;
       }
-
+      if (freshItem.sale_start_time && new Date(freshItem.sale_start_time).getTime() > now) {
+        toast.error('This item is not yet on sale');
+        await fetchItems();
+        return;
+      }
+      if (freshItem.sale_end_time && new Date(freshItem.sale_end_time).getTime() < now) {
+        toast.error('This item sale has ended');
+        await fetchItems();
+        return;
+      }
       if (freshItem.stock !== null && freshItem.stock <= 0) {
         toast.error('This item is now out of stock');
         await fetchItems();
@@ -125,30 +152,21 @@ const Catalog = () => {
         .from('profiles')
         .update({ emeralds: profile.emeralds - item.price })
         .eq('user_id', user.id);
-
       if (emeraldError) throw emeraldError;
 
       // Add to inventory
       const { error: inventoryError } = await supabase
         .from('user_inventory')
-        .insert({
-          user_id: user.id,
-          item_id: item.id,
-          quantity: 1,
-        });
-
+        .insert({ user_id: user.id, item_id: item.id, quantity: 1 });
       if (inventoryError) throw inventoryError;
 
       // Update stock if applicable (global stock)
       if (freshItem.stock !== null) {
         const newStock = freshItem.stock - 1;
         const updates: { stock: number; is_on_sale?: boolean } = { stock: newStock };
-        
-        // Auto off-sale if stock reaches 0
         if (newStock <= 0) {
           updates.is_on_sale = false;
         }
-
         await supabase
           .from('catalog_items')
           .update(updates)
@@ -158,13 +176,10 @@ const Catalog = () => {
       await refreshProfile();
       await fetchItems();
       await fetchUserInventory();
-      
       toast.success(`Successfully purchased ${item.name}!`);
-
     } catch (error) {
       console.error('Purchase error:', error);
       toast.error('Failed to purchase item');
-      // Refresh to show correct state
       await fetchItems();
     } finally {
       setBuyingItem(null);
@@ -209,7 +224,6 @@ const Catalog = () => {
               className="pl-10 w-full sm:w-64 h-12 bg-input border-border"
             />
           </div>
-          
           <div className="flex gap-2">
             {(['all', 'normal', 'limited'] as const).map((f) => (
               <Button
@@ -233,8 +247,9 @@ const Catalog = () => {
           {filteredItems.map((item) => {
             const alreadyOwned = userInventory.includes(item.id);
             const isLimited = item.item_type === 'limited';
-            const canBuy = item.is_on_sale && (item.stock === null || item.stock > 0) && !(isLimited && alreadyOwned);
-            
+            const saleState = getSaleState(item);
+            const canBuy = saleState === 'on_sale' && !(isLimited && alreadyOwned);
+
             return (
               <Link key={item.id} to={`/catalog/${item.id}`} className="cyber-card group">
                 {/* Image */}
@@ -243,9 +258,7 @@ const Catalog = () => {
                     src={item.image_url}
                     alt={item.name}
                     className="w-full h-full object-contain p-2"
-                    onError={(e) => {
-                      e.currentTarget.src = '/placeholder.svg';
-                    }}
+                    onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
                   />
                   {item.item_type === 'limited' && (
                     <div className="absolute top-2 right-2 limited-badge">
@@ -258,6 +271,17 @@ const Catalog = () => {
                       Owned
                     </div>
                   )}
+                  {/* Sale State Badge */}
+                  {saleState === 'off_sale' && (
+                    <div className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold uppercase rounded bg-muted text-muted-foreground border border-border">
+                      OFFSALE
+                    </div>
+                  )}
+                  {saleState === 'sold_out' && (
+                    <div className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold uppercase rounded bg-destructive/80 text-destructive-foreground">
+                      SOLD OUT
+                    </div>
+                  )}
                 </div>
 
                 {/* Info */}
@@ -265,13 +289,12 @@ const Catalog = () => {
                   <h3 className="font-bold text-foreground truncate group-hover:text-primary transition-colors">
                     {item.name}
                   </h3>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1">
                       <Gem className="w-4 h-4 text-accent" />
                       <span className="font-bold text-accent">{item.price.toLocaleString()}</span>
                     </div>
-                    
                     {item.stock !== null && (
                       <span className={`text-xs ${item.stock <= 5 ? 'text-destructive' : 'text-muted-foreground'}`}>
                         {item.stock} left
@@ -296,9 +319,9 @@ const Catalog = () => {
                     </Button>
                   ) : (
                     <Button variant="outline" size="sm" className="w-full" disabled>
-                      {!item.is_on_sale ? 'Off Sale' : 
-                       item.stock === 0 ? 'Sold Out' : 
-                       alreadyOwned ? 'Already Owned' : 'Unavailable'}
+                      {saleState === 'sold_out' ? 'Sold Out'
+                        : saleState === 'off_sale' ? 'Off Sale'
+                        : alreadyOwned ? 'Already Owned' : 'Unavailable'}
                     </Button>
                   )}
                 </div>
