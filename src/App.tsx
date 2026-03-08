@@ -34,6 +34,7 @@ import SodamonsItem from "./pages/SodamonsItem";
 import SodamonsTop from "./pages/SodamonsTop";
 import Banned from "./pages/Banned";
 import EmeraldShop from "./pages/EmeraldShop";
+import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
