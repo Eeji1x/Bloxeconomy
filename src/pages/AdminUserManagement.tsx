@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useParams, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import {
   ChevronLeft, Shield, Ban, UserCheck, Lock, Unlock, KeyRound, RefreshCw,
   Edit, FileText, Gem, Eye, Package, Trash2, EyeOff, RotateCcw,
-  ArrowLeftRight, Store, User, Calendar, Clock, Hash, Crown, BadgeCheck
+  ArrowLeftRight, Store, User, Calendar, Clock, Hash, Crown, BadgeCheck, Plus, Search
 } from 'lucide-react';
 
 interface UserProfile {
@@ -43,6 +43,14 @@ interface InventoryItem {
   catalog_items: { name: string; price: number; item_type: string; image_url: string } | null;
 }
 
+interface CatalogItem {
+  id: string;
+  name: string;
+  price: number;
+  item_type: string;
+  image_url: string;
+}
+
 interface RoleInfo {
   isAdmin: boolean;
   isOwner: boolean;
@@ -60,6 +68,9 @@ const AdminUserManagement = () => {
   const [showInventory, setShowInventory] = useState(false);
   const [emeraldInput, setEmeraldInput] = useState('');
   const [banReasonInput, setBanReasonInput] = useState('');
+  const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
+  const [itemSearchQuery, setItemSearchQuery] = useState('');
+  const [showAddItem, setShowAddItem] = useState(false);
 
   const isSuperOwner = authProfile?.numeric_id === SUPER_OWNER_NUMERIC_ID;
   const isProtected = profile && PROTECTED_USER_IDS.includes(profile.numeric_id) && !isSuperOwner;
@@ -71,11 +82,12 @@ const AdminUserManagement = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [profileRes, rolesRes, invRes, invKeyRes] = await Promise.all([
+    const [profileRes, rolesRes, invRes, invKeyRes, catalogRes] = await Promise.all([
       supabase.from('profiles').select('*').eq('user_id', userId!).maybeSingle(),
       supabase.from('user_roles').select('role').eq('user_id', userId!),
       supabase.from('user_inventory').select('id, item_id, quantity, is_equipped, catalog_items!inner(name, price, item_type, image_url)').eq('user_id', userId!),
       supabase.from('invite_keys').select('key').eq('used_by', userId!).maybeSingle(),
+      supabase.from('catalog_items').select('id, name, price, item_type, image_url').order('name'),
     ]);
     if (profileRes.data) setProfile(profileRes.data as UserProfile);
     
@@ -88,6 +100,7 @@ const AdminUserManagement = () => {
     
     if (invRes.data) setInventory(invRes.data as unknown as InventoryItem[]);
     setInviteKey(invKeyRes.data?.key || null);
+    if (catalogRes.data) setCatalogItems(catalogRes.data as CatalogItem[]);
     setLoading(false);
   };
 
@@ -256,6 +269,34 @@ const AdminUserManagement = () => {
     await logAction('remove_item', { inventory_id: invId, item_name: itemName });
     toast.success(`Removed ${itemName}`); fetchAll();
   };
+
+  const handleAddItem = async (catalogItem: CatalogItem) => {
+    // Check if user already owns this item (unique constraint)
+    const existing = inventory.find(i => i.item_id === catalogItem.id);
+    if (existing) {
+      toast.error(`${profile?.username} already owns ${catalogItem.name}`);
+      return;
+    }
+    const { error } = await supabase.from('user_inventory').insert({
+      user_id: userId!,
+      item_id: catalogItem.id,
+    });
+    if (error) {
+      toast.error('Failed to add item: ' + error.message);
+      return;
+    }
+    await logAction('add_item', { item_id: catalogItem.id, item_name: catalogItem.name });
+    toast.success(`Added ${catalogItem.name} to inventory`);
+    setItemSearchQuery('');
+    setShowAddItem(false);
+    fetchAll();
+  };
+
+  const filteredCatalogItems = useMemo(() => {
+    if (!itemSearchQuery.trim()) return catalogItems.slice(0, 20);
+    const q = itemSearchQuery.toLowerCase();
+    return catalogItems.filter(i => i.name.toLowerCase().includes(q)).slice(0, 20);
+  }, [catalogItems, itemSearchQuery]);
 
   if (authLoading || loading) {
     return (
@@ -458,9 +499,49 @@ const AdminUserManagement = () => {
                 <Gem className="w-4 h-4" /> Remove
               </Button>
             </div>
-            <Button variant="outline" className="w-full gap-2" onClick={() => setShowInventory(!showInventory)}>
-              <Package className="w-4 h-4" /> {showInventory ? 'Hide' : 'Manage'} Inventory ({inventory.length})
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1 gap-2" onClick={() => { setShowInventory(!showInventory); setShowAddItem(false); }}>
+                <Package className="w-4 h-4" /> {showInventory ? 'Hide' : 'Manage'} Inventory ({inventory.length})
+              </Button>
+              <Button variant="emerald" className="gap-2" onClick={() => { setShowAddItem(!showAddItem); setShowInventory(false); }}>
+                <Plus className="w-4 h-4" /> Add Item
+              </Button>
+            </div>
+
+            {/* Add Item Panel */}
+            {showAddItem && (
+              <div className="mt-3 space-y-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search catalog items..."
+                    value={itemSearchQuery}
+                    onChange={(e) => setItemSearchQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <div className="max-h-60 overflow-y-auto space-y-1">
+                  {filteredCatalogItems.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">No items found</p>
+                  ) : filteredCatalogItems.map((item) => (
+                    <div key={item.id} className="flex items-center gap-3 p-2 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="w-10 h-10 rounded bg-primary/10 overflow-hidden shrink-0">
+                        <img src={item.image_url} alt="" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate">{item.name}</p>
+                        <p className="text-xs text-muted-foreground">💎 {item.price} • {item.item_type}</p>
+                      </div>
+                      <Button size="sm" variant="emerald" onClick={() => handleAddItem(item)}>
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Existing Inventory */}
             {showInventory && (
               <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
                 {inventory.length === 0 ? (
