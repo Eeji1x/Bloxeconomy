@@ -294,8 +294,28 @@ const CatalogPanel = () => {
             <div className="space-y-2"><Label>Sale Start Time</Label><input type="datetime-local" value={formData.sale_start_time} onChange={(e) => setFormData({ ...formData, sale_start_time: e.target.value })} className="w-full h-10 rounded-md border bg-input px-3 text-sm" /></div>
             <div className="space-y-2"><Label>Sale End Time</Label><input type="datetime-local" value={formData.sale_end_time} onChange={(e) => setFormData({ ...formData, sale_end_time: e.target.value })} className="w-full h-10 rounded-md border bg-input px-3 text-sm" /></div>
           </div>
-          <div className="space-y-2"><Label>Description</Label><Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Item description..." /></div>
-          <div className="flex gap-2"><Button onClick={handleSubmit}><Save className="w-4 h-4 mr-2" />{editingItem ? 'Update' : 'Create'}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
+          <div className="space-y-2">
+            <Label>3D Model (.obj)</Label>
+            <div className="flex items-center gap-3">
+              <input
+                type="file"
+                accept=".obj"
+                onChange={(e) => setModelFile(e.target.files?.[0] || null)}
+                className="text-sm file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
+              />
+              {(formData.model_url || modelFile) && (
+                <span className="text-xs text-accent">
+                  {modelFile ? `New: ${modelFile.name}` : '✓ Model attached'}
+                </span>
+              )}
+              {formData.model_url && !modelFile && (
+                <Button size="sm" variant="destructive" onClick={() => setFormData({ ...formData, model_url: '' })}>
+                  Remove Model
+                </Button>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-2"><Button onClick={handleSubmit} disabled={uploadingModel}><Save className="w-4 h-4 mr-2" />{uploadingModel ? 'Uploading...' : editingItem ? 'Update' : 'Create'}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
         </div>
       )}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
