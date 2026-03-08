@@ -65,6 +65,93 @@ const Signup = () => {
     }
   };
 
+  // ── Roblox 2008 themed signup ──
+  if (theme === 'roblox2008') {
+    return (
+      <div className="max-w-[400px] mx-auto py-6">
+        <div className="rbx08-panel">
+          <div className="rbx08-panel-header">Create a SODABLOX Account</div>
+          <div className="p-4">
+            <p className="text-[11px] text-[#666] mb-3">
+              SODABLOX is free! Fill out the form below to get started. You need an invite key.
+            </p>
+
+            {error && (
+              <div className="bg-[#fee] border border-[#c00] rounded p-2 mb-3">
+                <span className="text-[11px] text-[#c00] font-bold">{error}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div>
+                <label className="block text-[11px] font-bold text-[#333] mb-1">Invite Key:</label>
+                <input
+                  type="text"
+                  placeholder="INV-XXXXX-XXXXX"
+                  value={inviteKey}
+                  onChange={(e) => setInviteKey(e.target.value.toUpperCase())}
+                  className="w-full border border-[#b0b8c0] rounded-[3px] px-2 py-1.5 text-[11px] font-mono bg-white focus:border-[#0055BF] outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-[#333] mb-1">Character Name:</label>
+                <input
+                  type="text"
+                  placeholder="Choose a username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full border border-[#b0b8c0] rounded-[3px] px-2 py-1.5 text-[11px] bg-white focus:border-[#0055BF] outline-none"
+                  required
+                  maxLength={20}
+                />
+                <span className="text-[9px] text-[#999]">3-20 characters, letters and numbers only</span>
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-[#333] mb-1">Password:</label>
+                <input
+                  type="password"
+                  placeholder="Create a password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full border border-[#b0b8c0] rounded-[3px] px-2 py-1.5 text-[11px] bg-white focus:border-[#0055BF] outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-[#333] mb-1">Confirm Password:</label>
+                <input
+                  type="password"
+                  placeholder="Confirm password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full border border-[#b0b8c0] rounded-[3px] px-2 py-1.5 text-[11px] bg-white focus:border-[#0055BF] outline-none"
+                  required
+                />
+              </div>
+              <div className="bg-[#e8f0fe] border border-[#b0c8e0] rounded p-2">
+                <span className="text-[10px] text-[#003366]">✨ New players receive 100 free Emeralds!</span>
+              </div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="rbx08-btn-blue w-full py-2 text-[12px]"
+              >
+                {isLoading ? 'Creating account...' : 'Sign Up!'}
+              </button>
+            </form>
+
+            <p className="text-[10px] text-[#666] mt-3 text-center">
+              Already have an account?{' '}
+              <Link to="/login" className="text-[#0055BF] hover:underline">Log in here</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Default / other themes ──
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
       <div className="w-full max-w-md space-y-8">
@@ -96,112 +183,52 @@ const Signup = () => {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="inviteKey" className="text-sm font-medium">
-                Invite Key
-              </Label>
+              <Label htmlFor="inviteKey" className="text-sm font-medium">Invite Key</Label>
               <div className="relative">
                 <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="inviteKey"
-                  type="text"
-                  placeholder="INV-XXXXX-XXXXX"
-                  value={inviteKey}
-                  onChange={(e) => setInviteKey(e.target.value.toUpperCase())}
-                  className="pl-10 h-12 bg-input border-border focus:border-primary font-mono"
-                  required
-                />
+                <Input id="inviteKey" type="text" placeholder="INV-XXXXX-XXXXX" value={inviteKey} onChange={(e) => setInviteKey(e.target.value.toUpperCase())} className="pl-10 h-12 bg-input border-border focus:border-primary font-mono" required />
               </div>
-              <p className="text-xs text-muted-foreground">
-                You need a valid invite key to create an account
-              </p>
+              <p className="text-xs text-muted-foreground">You need a valid invite key to create an account</p>
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-medium">
-                Username
-              </Label>
+              <Label htmlFor="username" className="text-sm font-medium">Username</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Choose a unique username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="pl-10 h-12 bg-input border-border focus:border-primary"
-                  required
-                  maxLength={20}
-                />
+                <Input id="username" type="text" placeholder="Choose a unique username" value={username} onChange={(e) => setUsername(e.target.value)} className="pl-10 h-12 bg-input border-border focus:border-primary" required maxLength={20} />
               </div>
-              <p className="text-xs text-muted-foreground">
-                3-20 characters, letters and numbers only
-              </p>
+              <p className="text-xs text-muted-foreground">3-20 characters, letters and numbers only</p>
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
-                Password
-              </Label>
+              <Label htmlFor="password" className="text-sm font-medium">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Create a strong password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 h-12 bg-input border-border focus:border-primary"
-                  required
-                />
+                <Input id="password" type="password" placeholder="Create a strong password" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10 h-12 bg-input border-border focus:border-primary" required />
               </div>
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                Confirm Password
-              </Label>
+              <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10 h-12 bg-input border-border focus:border-primary"
-                  required
-                />
+                <Input id="confirmPassword" type="password" placeholder="Confirm your password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="pl-10 h-12 bg-input border-border focus:border-primary" required />
               </div>
             </div>
           </div>
 
-          <Button
-            type="submit"
-            variant="neon"
-            size="lg"
-            className="w-full"
-            disabled={isLoading}
-          >
+          <Button type="submit" variant="neon" size="lg" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <span className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                 Creating account...
               </span>
             ) : (
-              <>
-                <UserPlus className="w-5 h-5" />
-                Create Account
-              </>
+              <><UserPlus className="w-5 h-5" />Create Account</>
             )}
           </Button>
         </form>
 
-        {/* Footer */}
         <p className="text-center text-muted-foreground">
           Already have an account?{' '}
-          <Link to="/login" className="text-primary hover:underline font-medium">
-            Sign in
-          </Link>
+          <Link to="/signup" className="text-primary hover:underline font-medium">Sign in</Link>
         </p>
       </div>
     </div>
