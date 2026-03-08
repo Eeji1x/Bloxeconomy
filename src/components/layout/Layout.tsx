@@ -54,11 +54,11 @@ export const Layout = ({ children }: LayoutProps) => {
   // Roblox 2020 layout
   if (theme === 'roblox2020') {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen" style={{ background: '#f2f4f5' }}>
         <AnnouncementBar />
         <Roblox2020Navbar />
-        <main className="lg:ml-[200px] min-h-[calc(100vh-60px)]">
-          <div className="max-w-[1200px] mx-auto px-5 py-5">
+        <main className="lg:ml-[220px] min-h-[calc(100vh-48px)]">
+          <div className="max-w-[1100px] mx-auto px-6 py-6">
             <BanRedirectWrapper>
               {children}
             </BanRedirectWrapper>

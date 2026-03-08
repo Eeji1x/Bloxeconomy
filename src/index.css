@@ -99,9 +99,9 @@
   }
 
   /* ═══════════════════════════════════════════════════
-     ROBLOX 2020 THEME — pixel-perfect replica
-     Topbar: #232527, Sidebar: #393b3d, BG: #f2f4f5
-     Primary: #0074BD (blue), Green: #00A2FF, Text: #191b1d
+     ROBLOX 2020-2021 THEME — pixel-perfect replica
+     Topbar: #393b3d (48px), Sidebar: #393b3d (220px)
+     BG: #f2f4f5, Primary: #0074BD, Text: #191b1d
      ═══════════════════════════════════════════════════ */
   [data-theme="roblox2020"] {
     --background: 200 10% 95%;
@@ -135,13 +135,13 @@
 
     --radius: 8px;
 
-    --sidebar-background: 210 4% 24%;
+    --sidebar-background: 210 3% 23%;
     --sidebar-foreground: 0 0% 74%;
     --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 210 4% 24%;
-    --sidebar-accent: 210 4% 28%;
+    --sidebar-primary-foreground: 210 3% 23%;
+    --sidebar-accent: 210 3% 27%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 210 4% 28%;
+    --sidebar-border: 210 3% 27%;
     --sidebar-ring: 204 100% 37%;
 
     --neon-cyan: 204 100% 37%;
@@ -162,10 +162,10 @@
     --gradient-glow: none;
   }
 
-  /* ── Font reset ── */
+  /* ── Font — Gotham SSm approximation (real Roblox uses Builder Sans / Gotham) ── */
   [data-theme="roblox2020"] body,
   [data-theme="roblox2020"] * {
-    font-family: "Source Sans Pro", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    font-family: "Gotham SSm", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
     letter-spacing: 0 !important;
   }
   [data-theme="roblox2020"] h1,
@@ -174,20 +174,48 @@
   [data-theme="roblox2020"] h4,
   [data-theme="roblox2020"] h5,
   [data-theme="roblox2020"] h6 {
-    font-family: "Source Sans Pro", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    font-family: "Gotham SSm", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
     font-weight: 700;
     letter-spacing: 0 !important;
   }
 
-  /* ── Topbar ── */
+  /* ── Topbar — #393b3d, 48px (authentic 2020-2021) ── */
   [data-theme="roblox2020"] .roblox-topbar {
-    background: #232527;
+    background: #393b3d;
     border-bottom: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
   }
 
-  /* ── Sidebar ── */
+  /* ── Sidebar — #393b3d matching topbar (real Roblox unified dark sidebar) ── */
   [data-theme="roblox2020"] .roblox-sidebar {
     background: #393b3d;
+    border-right: none;
+  }
+
+  /* ── Sidebar link styles ── */
+  [data-theme="roblox2020"] .rbx20-sidebar-link {
+    font-size: 14px !important;
+  }
+
+  /* ── Topbar tab styles ── */
+  [data-theme="roblox2020"] .rbx20-topbar-tab {
+    font-size: 13px !important;
+  }
+
+  /* ── Robux/Emerald pill ── */
+  [data-theme="roblox2020"] .rbx20-robux-pill {
+    background: #606162;
+  }
+  [data-theme="roblox2020"] .rbx20-robux-pill:hover {
+    background: #6e7071;
+  }
+
+  /* ── Login button ── */
+  [data-theme="roblox2020"] .rbx20-login-btn {
+    background: #0074BD;
+  }
+  [data-theme="roblox2020"] .rbx20-login-btn:hover {
+    background: #005f9a;
   }
 
   /* ── Kill all cyberpunk effects ── */
@@ -287,6 +315,17 @@
     color: #191b1d;
   }
 
+  /* ── Game tile cards ── */
+  [data-theme="roblox2020"] .rbx20-game-tile {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+  }
+  [data-theme="roblox2020"] .rbx20-game-tile:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+
   /* ── Flatten cards ── */
   [data-theme="roblox2020"] .rounded-lg.border {
     border-color: #e0e0e0;
@@ -294,6 +333,13 @@
   }
 
   /* ── Buttons ── */
+  [data-theme="roblox2020"] .rbx20-btn-primary {
+    background: #0074BD;
+    transition: background 0.15s;
+  }
+  [data-theme="roblox2020"] .rbx20-btn-primary:hover {
+    background: #005f9a;
+  }
   [data-theme="roblox2020"] .bg-primary {
     background: #0074BD !important;
   }
@@ -317,7 +363,7 @@
     color: #191b1d;
   }
 
-  /* ── Avatar images → not forced round ── */
+  /* ── Avatar images ── */
   [data-theme="roblox2020"] .rbx-avatar-circle {
     border-radius: 50%;
   }

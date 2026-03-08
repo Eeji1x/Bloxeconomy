@@ -4,7 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 /* ═══════════════════════════════════════════════════
-   Roblox 2020 SVG Icons (filled, material-style)
+   Roblox 2020-2021 SVG Icons (filled, material-style)
+   Matching the real roblox.com sidebar icons
    ═══════════════════════════════════════════════════ */
 
 const RbxHome = ({ className }: { className?: string }) => (
@@ -54,14 +55,12 @@ const RbxLogout = ({ className }: { className?: string }) => (
 );
 
 /* ═══════════════════════════════════════════════════
-   Layout data
+   Layout data — matching real Roblox 2020-2021
    ═══════════════════════════════════════════════════ */
 
 const topTabs = [
-  { to: '/', label: 'Home' },
   { to: '/catalog', label: 'Avatar Shop' },
   { to: '/trading', label: 'Trade' },
-  { to: '/avatar', label: 'Create' },
   { to: '/leaderboards', label: 'Charts' },
   { to: '/sodamons', label: 'Sodamons' },
 ];
@@ -84,7 +83,7 @@ const sidebarSecondary = [
 ];
 
 /* ═══════════════════════════════════════════════════
-   Component
+   Component — pixel-perfect Roblox 2020-2021 replica
    ═══════════════════════════════════════════════════ */
 
 export const Roblox2020Navbar = () => {
@@ -117,13 +116,13 @@ export const Roblox2020Navbar = () => {
         to={to}
         onClick={closeMobile ? () => setSidebarOpen(false) : undefined}
         className={cn(
-          'flex items-center gap-3 px-5 py-[10px] text-[13px] font-medium transition-colors border-l-[3px]',
+          'rbx20-sidebar-link flex items-center gap-3 px-5 py-[10px] text-[14px] font-medium transition-colors border-l-[3px]',
           isActive
             ? 'border-white bg-white/[0.08] text-white'
             : 'border-transparent text-[#bdbebe] hover:bg-white/[0.04] hover:text-white'
         )}
       >
-        <Icon className="w-[20px] h-[20px] shrink-0" />
+        <Icon className="w-[20px] h-[20px] shrink-0 opacity-90" />
         <span>{link.label}</span>
       </Link>
     );
@@ -131,7 +130,7 @@ export const Roblox2020Navbar = () => {
 
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="flex flex-col h-full">
-      <div className="flex flex-col pt-3">
+      <div className="flex flex-col pt-2">
         {sidebarMain.map((l) => (
           <SidebarLink key={l.label} link={l} closeMobile={mobile} />
         ))}
@@ -152,7 +151,7 @@ export const Roblox2020Navbar = () => {
             to="/admin"
             onClick={mobile ? () => setSidebarOpen(false) : undefined}
             className={cn(
-              'flex items-center gap-3 px-5 py-[10px] text-[13px] font-medium transition-colors border-l-[3px]',
+              'rbx20-sidebar-link flex items-center gap-3 px-5 py-[10px] text-[14px] font-medium transition-colors border-l-[3px]',
               location.pathname === '/admin'
                 ? 'border-[#e34d4d] bg-[#e34d4d]/10 text-[#e34d4d]'
                 : 'border-transparent text-[#e34d4d]/70 hover:bg-[#e34d4d]/5 hover:text-[#e34d4d]'
@@ -176,26 +175,26 @@ export const Roblox2020Navbar = () => {
 
   return (
     <>
-      {/* ─── Top Bar ─── height 60px, #232527 */}
-      <nav className="roblox-topbar sticky top-0 z-50 h-[60px] flex items-center px-4 gap-0">
+      {/* ─── Top Bar ─── 48px height, #393b3d (real Roblox 2020-2021) */}
+      <nav className="roblox-topbar sticky top-0 z-50 h-[48px] flex items-center px-3 gap-0">
         {/* Mobile hamburger */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="lg:hidden p-2 rounded hover:bg-[rgba(255,255,255,0.08)] transition-colors mr-2"
+          className="lg:hidden p-2 rounded hover:bg-white/[0.08] transition-colors mr-1"
         >
           <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
             <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
           </svg>
         </button>
 
-        {/* Logo */}
-        <Link to="/" className="flex items-center shrink-0 mr-6">
-          <span className="font-extrabold text-white text-[20px] tracking-tight">
+        {/* Logo — ROBLOX-style wordmark */}
+        <Link to="/" className="flex items-center shrink-0 mr-4">
+          <span className="font-black text-white text-[18px] tracking-tight" style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif" }}>
             SODABLOX
           </span>
         </Link>
 
-        {/* Top tabs — center */}
+        {/* Top tabs — center, matching real Roblox nav */}
         <div className="hidden md:flex items-center gap-0 h-full">
           {topTabs.map((tab) => {
             const isActive = location.pathname === tab.to;
@@ -204,12 +203,11 @@ export const Roblox2020Navbar = () => {
                 key={tab.to}
                 to={tab.to}
                 className={cn(
-                  'flex items-center h-full px-4 text-[14px] font-semibold transition-colors border-b-[3px]',
+                  'rbx20-topbar-tab flex items-center h-full px-3 text-[13px] font-semibold transition-colors border-b-[3px]',
                   isActive
                     ? 'text-white border-white'
-                    : 'text-[#bdbebe] hover:text-white hover:bg-[rgba(255,255,255,0.08)] border-transparent'
+                    : 'text-[#bdbebe] hover:text-white hover:bg-white/[0.06] border-transparent'
                 )}
-                style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif" }}
               >
                 {tab.label}
               </Link>
@@ -220,55 +218,54 @@ export const Roblox2020Navbar = () => {
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Search bar */}
-        <div className="hidden lg:flex max-w-[320px] mr-3">
-          <div className="flex w-full h-[32px] rounded overflow-hidden">
+        {/* Search bar — matching real Roblox search */}
+        <div className="hidden lg:flex max-w-[240px] mr-2">
+          <div className="flex w-full h-[30px] rounded-[4px] overflow-hidden">
             <input
               type="text"
               placeholder="Search"
-              className="w-[200px] px-3 text-[13px] text-white placeholder-[#8a8b8d] border-none outline-none"
-              style={{ background: '#3e4042', fontFamily: "'Segoe UI', 'Roboto', sans-serif" }}
+              className="w-[180px] px-3 text-[13px] text-white placeholder-[#8a8b8d] border-none outline-none"
+              style={{ background: '#606162' }}
             />
             <button
-              className="px-3 flex items-center justify-center transition-colors"
-              style={{ background: '#0074BD' }}
+              className="px-2.5 flex items-center justify-center transition-colors"
+              style={{ background: '#606162' }}
             >
-              <RbxSearch className="w-[14px] h-[14px] text-white" />
+              <RbxSearch className="w-[14px] h-[14px] text-[#bdbebe]" />
             </button>
           </div>
         </div>
 
         {/* Right controls */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {user && profile && (
             <>
-              {/* Emerald counter (Robux-style) */}
+              {/* Emerald counter (Robux-style pill) */}
               <Link
                 to="/settings"
-                className="flex items-center gap-1.5 h-[32px] px-3 rounded text-[13px] font-medium transition-colors"
-                style={{ background: '#3e4042' }}
+                className="rbx20-robux-pill flex items-center gap-1 h-[28px] px-2.5 rounded-[4px] text-[13px] font-semibold transition-colors"
               >
                 <RbxGem className="w-[14px] h-[14px] text-[#02b757]" />
                 <span className="text-white">{profile.emeralds.toLocaleString()}</span>
               </Link>
 
               {/* Notifications */}
-              <button className="p-2 rounded hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+              <button className="p-1.5 rounded hover:bg-white/[0.08] transition-colors">
                 <RbxBell className="w-[18px] h-[18px] text-[#bdbebe]" />
               </button>
             </>
           )}
 
           {/* Settings gear */}
-          <Link to="/settings" className="p-2 rounded hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+          <Link to="/settings" className="p-1.5 rounded hover:bg-white/[0.08] transition-colors">
             <RbxSettings className="w-[18px] h-[18px] text-[#bdbebe]" />
           </Link>
 
-          {/* User avatar / auth */}
+          {/* User auth */}
           {user && profile ? (
             <button
               onClick={handleSignOut}
-              className="p-2 rounded hover:bg-[rgba(255,255,255,0.08)] transition-colors"
+              className="p-1.5 rounded hover:bg-white/[0.08] transition-colors"
               title="Logout"
             >
               <RbxLogout className="w-[18px] h-[18px] text-[#bdbebe]" />
@@ -276,8 +273,7 @@ export const Roblox2020Navbar = () => {
           ) : (
             <Link
               to="/login"
-              className="ml-1 px-5 py-1.5 rounded text-white text-[13px] font-semibold transition-colors"
-              style={{ background: '#0074BD' }}
+              className="rbx20-login-btn ml-1 px-4 py-1 rounded-[4px] text-white text-[13px] font-semibold transition-colors"
             >
               Log In
             </Link>
@@ -285,8 +281,8 @@ export const Roblox2020Navbar = () => {
         </div>
       </nav>
 
-      {/* ─── Sidebar - Desktop ─── */}
-      <aside className="roblox-sidebar hidden lg:flex fixed left-0 top-[60px] bottom-0 w-[200px] z-40 flex-col overflow-y-auto">
+      {/* ─── Sidebar - Desktop ─── 220px, #393b3d */}
+      <aside className="roblox-sidebar hidden lg:flex fixed left-0 top-[48px] bottom-0 w-[220px] z-40 flex-col overflow-y-auto">
         <SidebarContent />
       </aside>
 
@@ -297,7 +293,7 @@ export const Roblox2020Navbar = () => {
             className="lg:hidden fixed inset-0 bg-black/50 z-40"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="lg:hidden roblox-sidebar fixed left-0 top-[60px] bottom-0 w-[200px] z-50 flex flex-col overflow-y-auto">
+          <aside className="lg:hidden roblox-sidebar fixed left-0 top-[48px] bottom-0 w-[220px] z-50 flex flex-col overflow-y-auto">
             <SidebarContent mobile />
           </aside>
         </>
