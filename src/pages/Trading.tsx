@@ -26,7 +26,7 @@ interface Profile {
   numeric_id: number;
   emeralds: number;
   is_verified: boolean | null;
-  is_banned: boolean | null;
+  is_banned?: boolean | null;
 }
 
 interface InventoryItem {
@@ -128,13 +128,13 @@ const Trading = () => {
 
   const fetchUserById = async (userId: string) => {
     const { data } = await supabase
-      .from('profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified, is_banned')
+      .from('public_profiles')
+      .select('user_id, username, numeric_id, emeralds, is_verified')
       .eq('user_id', userId)
       .single();
 
-    if (data && !data.is_banned) {
-      setSelectedUser(data);
+    if (data) {
+      setSelectedUser({ ...data, is_banned: false } as Profile);
       fetchTheirInventory(userId);
     }
   };
@@ -213,8 +213,8 @@ const Trading = () => {
     });
 
     const { data: profiles } = await supabase
-      .from('profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified, is_banned')
+      .from('public_profiles')
+      .select('user_id, username, numeric_id, emeralds, is_verified')
       .in('user_id', Array.from(allUserIds));
 
     const profileMap = new Map(profiles?.map(p => [p.user_id, p]));
@@ -234,15 +234,14 @@ const Trading = () => {
     
     setSearching(true);
     const { data } = await supabase
-      .from('profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified, is_banned')
+      .from('public_profiles')
+      .select('user_id, username, numeric_id, emeralds, is_verified')
       .neq('user_id', user?.id)
-      .eq('is_banned', false)
       .or(`username.ilike.%${searchQuery}%,numeric_id.eq.${parseInt(searchQuery) || 0}`)
       .limit(10);
 
     if (data) {
-      setSearchResults(data);
+      setSearchResults(data.map(d => ({ ...d, is_banned: false })) as Profile[]);
     }
     setSearching(false);
   };
@@ -320,126 +319,30 @@ const Trading = () => {
   const handleTrade = async (tradeId: string, action: 'accept' | 'decline' | 'cancel') => {
     if (!user || !profile) return;
 
-    const trade = pendingTrades.find(t => t.id === tradeId);
-    if (!trade) return;
-
     try {
+      const { data, error } = await supabase.functions.invoke('execute-trade', {
+        body: { trade_id: tradeId, action },
+      });
+
+      if (error) throw new Error(error.message || 'Failed to process trade');
+      if (data?.error) throw new Error(data.error);
+
+      const messages: Record<string, string> = {
+        accept: 'Trade completed successfully!',
+        decline: 'Trade declined',
+        cancel: 'Trade cancelled',
+      };
+      toast.success(messages[action]);
+
       if (action === 'accept') {
-        // Validate both users still have the items and emeralds
-        const isSender = trade.sender_id === user.id;
-        const myItems = isSender ? trade.sender_items : trade.receiver_items;
-        const myEmeraldOffer = isSender ? trade.sender_emeralds : trade.receiver_emeralds;
-
-        if (myEmeraldOffer > profile.emeralds) {
-          toast.error('You no longer have enough emeralds for this trade');
-          return;
-        }
-
-        // Check if user still owns all items
-        const { data: myCurrentInventory } = await supabase
-          .from('user_inventory')
-          .select('id')
-          .eq('user_id', user.id)
-          .in('id', myItems);
-
-        if ((myCurrentInventory?.length || 0) !== myItems.length) {
-          toast.error('You no longer own all the items in this trade');
-          return;
-        }
-
-        // Get other user's profile to check their emeralds
-        const otherUserId = isSender ? trade.receiver_id : trade.sender_id;
-        const { data: otherProfile } = await supabase
-          .from('profiles')
-          .select('emeralds, is_banned')
-          .eq('user_id', otherUserId)
-          .single();
-
-        if (otherProfile?.is_banned) {
-          toast.error('The other user has been banned');
-          await supabase.from('trades').update({ status: 'cancelled' }).eq('id', tradeId);
-          fetchTrades();
-          return;
-        }
-
-        const theirEmeraldOffer = isSender ? trade.receiver_emeralds : trade.sender_emeralds;
-        if (theirEmeraldOffer > (otherProfile?.emeralds || 0)) {
-          toast.error('The other user no longer has enough emeralds');
-          return;
-        }
-
-        // Check if other user still owns all their items
-        const theirItems = isSender ? trade.receiver_items : trade.sender_items;
-        const { data: theirCurrentInventory } = await supabase
-          .from('user_inventory')
-          .select('id')
-          .eq('user_id', otherUserId)
-          .in('id', theirItems);
-
-        if ((theirCurrentInventory?.length || 0) !== theirItems.length) {
-          toast.error('The other user no longer owns all the items in this trade');
-          return;
-        }
-
-        // Execute the trade atomically
-        // 1. Transfer items from sender to receiver (unequip first)
-        if (trade.sender_items.length > 0) {
-          await supabase
-            .from('user_inventory')
-            .update({ user_id: trade.receiver_id, is_equipped: false })
-            .in('id', trade.sender_items);
-        }
-
-        // 2. Transfer items from receiver to sender (unequip first)
-        if (trade.receiver_items.length > 0) {
-          await supabase
-            .from('user_inventory')
-            .update({ user_id: trade.sender_id, is_equipped: false })
-            .in('id', trade.receiver_items);
-        }
-
-        // 3. Update emeralds
-        const { data: senderProfile } = await supabase
-          .from('profiles')
-          .select('emeralds')
-          .eq('user_id', trade.sender_id)
-          .single();
-
-        const { data: receiverProfile } = await supabase
-          .from('profiles')
-          .select('emeralds')
-          .eq('user_id', trade.receiver_id)
-          .single();
-
-        const senderNewEmeralds = (senderProfile?.emeralds || 0) - trade.sender_emeralds + trade.receiver_emeralds;
-        const receiverNewEmeralds = (receiverProfile?.emeralds || 0) - trade.receiver_emeralds + trade.sender_emeralds;
-
-        await supabase
-          .from('profiles')
-          .update({ emeralds: senderNewEmeralds })
-          .eq('user_id', trade.sender_id);
-
-        await supabase
-          .from('profiles')
-          .update({ emeralds: receiverNewEmeralds })
-          .eq('user_id', trade.receiver_id);
-
-        // 4. Update trade status
-        await supabase.from('trades').update({ status: 'accepted' }).eq('id', tradeId);
-
-        toast.success('Trade completed successfully!');
         await refreshProfile();
         fetchMyInventory();
-      } else {
-        const newStatus = action === 'decline' ? 'declined' : 'cancelled';
-        await supabase.from('trades').update({ status: newStatus }).eq('id', tradeId);
-        toast.success(action === 'decline' ? 'Trade declined' : 'Trade cancelled');
       }
 
       fetchTrades();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error handling trade:', error);
-      toast.error('Failed to process trade');
+      toast.error(error.message || 'Failed to process trade');
     }
   };
 

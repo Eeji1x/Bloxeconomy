@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.log-ip]
 verify_jwt = false
+
+[functions.execute-trade]
+verify_jwt = false
+
+[functions.redeem-promocode]
+verify_jwt = false

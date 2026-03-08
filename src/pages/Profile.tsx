@@ -88,7 +88,10 @@ const Profile = () => {
       const ownColumns = 'id,user_id,username,numeric_id,emeralds,avatar_data,is_online,is_banned,ban_reason,last_seen,created_at,updated_at,is_verified,last_daily_claim';
       const selectColumns = isOwn ? ownColumns : publicColumns;
       
-      const { data: profileResult, error: profileError } = await supabase.from('profiles').select(selectColumns).eq('user_id', viewingUserId).maybeSingle();
+      const query = isOwn
+        ? supabase.from('profiles').select(selectColumns).eq('user_id', viewingUserId).maybeSingle()
+        : (supabase as any).from('public_profiles').select(selectColumns).eq('user_id', viewingUserId).maybeSingle();
+      const { data: profileResult, error: profileError } = await query;
       if (profileError || !profileResult) { setProfileData(null); setIsLoading(false); return; }
 
       const safeProfile: ProfileData = isOwn
@@ -120,7 +123,7 @@ const Profile = () => {
   };
 
   const handleSendFriendRequest = async () => {
-    if (!user || !viewingUserId) return;
+    if (!user || !viewingUserId || viewingUserId === user.id) return;
     setFriendLoading(true);
     try {
       const { error } = await supabase.from('friends').insert({ requester_id: user.id, addressee_id: viewingUserId, status: 'pending' });
