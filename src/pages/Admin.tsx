@@ -160,17 +160,6 @@ const CatalogPanel = () => {
     if (data) setItems(data);
   };
 
-  const uploadModelFile = async (file: File, itemName: string): Promise<string | null> => {
-    const ext = file.name.split('.').pop()?.toLowerCase();
-    if (ext !== 'obj') { toast.error('Only .obj files are supported'); return null; }
-    const fileName = `${Date.now()}_${itemName.replace(/[^a-z0-9]/gi, '_')}.obj`;
-    setUploadingModel(true);
-    const { data, error } = await supabase.storage.from('item-models').upload(fileName, file, { contentType: 'model/obj' });
-    setUploadingModel(false);
-    if (error) { toast.error('Failed to upload model'); return null; }
-    const { data: urlData } = supabase.storage.from('item-models').getPublicUrl(data.path);
-    return urlData.publicUrl;
-  };
 
   const resetForm = () => {
     setFormData({ name: '', description: '', image_url: '', item_type: 'normal', price: 1, stock: null, is_on_sale: true, resell_enabled: true, sale_start_time: '', sale_end_time: '', model_url: '' });
