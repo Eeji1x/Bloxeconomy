@@ -1044,7 +1044,7 @@
   [data-theme="roblox2016"] .rounded-md,
   [data-theme="roblox2016"] .rounded-sm,
   [data-theme="roblox2016"] .rounded {
-    border-radius: 0 !important;
+    border-radius: 3px !important;
   }
   /* Keep rounded-full for avatars/dots */
 
