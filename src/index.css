@@ -3108,19 +3108,20 @@
 
 /* Cards */
 .vapor-card {
-  background: #fff;
-  border: 1px solid #dee2e6;
+  background: #1e1e1e;
+  border: 1px solid #333;
   border-radius: 4px;
   margin-bottom: 16px;
   overflow: hidden;
+  color: #ddd;
 }
 .vapor-card-header {
   padding: 10px 16px;
   font-weight: 600;
   font-size: 15px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-  color: #212529;
+  background: #252525;
+  border-bottom: 1px solid #333;
+  color: #eee;
 }
 .vapor-card-body {
   padding: 16px;
