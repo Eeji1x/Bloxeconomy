@@ -165,8 +165,9 @@ const ItemDetail = () => {
     try {
       const { data, error } = await supabase.rpc('purchase_item', { p_item_id: item.id });
       if (error) throw error;
-      if (data?.error) {
-        toast.error(data.error);
+      const result = data as Record<string, unknown> | null;
+      if (result?.error) {
+        toast.error(String(result.error));
         setBuyingItem(false);
         return;
       }

@@ -19,7 +19,7 @@ import AltDetectionPanel from '@/components/admin/AltDetectionPanel';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
   Plus, Trash2, Save, BadgeCheck, RefreshCw, RotateCcw, Edit,
-  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal
+  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { forceDeleteItem } from '@/lib/forceDeleteItem';
