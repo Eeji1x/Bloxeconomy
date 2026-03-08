@@ -47,6 +47,9 @@ const Catalog = () => {
   const [buyingItem, setBuyingItem] = useState<string | null>(null);
 
   const is2016 = theme === 'roblox2016';
+  const is2015 = theme === 'roblox2015';
+  const isClassic = is2016 || is2015;
+  const p = is2015 ? 'rbx15' : 'rbx16'; // class prefix
 
   useEffect(() => {
     fetchItems();
