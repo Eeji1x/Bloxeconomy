@@ -3,8 +3,14 @@ import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
+interface EquippedItem {
+  image_url: string;
+  name?: string;
+  model_url?: string | null;
+}
+
 interface Avatar3DViewerProps {
-  equippedItems: { image_url: string; name?: string }[];
+  equippedItems: EquippedItem[];
 }
 
 const MODEL_PATH = '/models/roblox-avatar.glb';

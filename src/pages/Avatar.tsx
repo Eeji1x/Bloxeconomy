@@ -39,7 +39,7 @@ const Avatar = () => {
   useEffect(() => {
     const fetchInventory = async () => {
       if (!user) return;
-      const { data, error } = await supabase.from('user_inventory').select(`id, item_id, quantity, is_equipped, catalog_items (id, name, image_url, item_type)`).eq('user_id', user.id);
+      const { data, error } = await supabase.from('user_inventory').select(`id, item_id, quantity, is_equipped, catalog_items (id, name, image_url, item_type, model_url)`).eq('user_id', user.id);
       if (!error && data) setInventory(data as InventoryItem[]);
       setLoadingInventory(false);
     };
