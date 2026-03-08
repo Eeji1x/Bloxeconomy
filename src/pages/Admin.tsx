@@ -14,6 +14,9 @@ import { Textarea } from '@/components/ui/textarea';
 import DatabaseWipePanel from '@/components/admin/DatabaseWipePanel';
 import AdminCreateUserPanel from '@/components/admin/AdminCreateUserPanel';
 import InviteKeysPanel from '@/components/admin/InviteKeysPanel';
+import MaintenancePanel from '@/components/admin/MaintenancePanel';
+import GlobalMessagePanel from '@/components/admin/GlobalMessagePanel';
+import LotteryPanel from '@/components/admin/LotteryPanel';
 import { 
   Shield, 
   Users, 
