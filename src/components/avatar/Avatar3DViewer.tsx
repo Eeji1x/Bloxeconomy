@@ -36,10 +36,18 @@ const TexturePlane = ({ imageUrl, zOffset = 0 }: { imageUrl: string; zOffset?: n
   if (!texture) return null;
 
   return (
-    <mesh position={[0, dims.h / 2, zOffset]}>
-      <planeGeometry args={[dims.w, dims.h]} />
-      <meshBasicMaterial map={texture} transparent alphaTest={0.1} depthWrite={true} side={THREE.DoubleSide} />
-    </mesh>
+    <group position={[0, dims.h / 2, zOffset]}>
+      {/* Front */}
+      <mesh>
+        <planeGeometry args={[dims.w, dims.h]} />
+        <meshBasicMaterial map={texture} transparent alphaTest={0.1} depthWrite side={THREE.FrontSide} />
+      </mesh>
+      {/* Back (flipped so it looks the same) */}
+      <mesh rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[dims.w, dims.h]} />
+        <meshBasicMaterial map={texture} transparent alphaTest={0.1} depthWrite side={THREE.FrontSide} />
+      </mesh>
+    </group>
   );
 };
 
