@@ -332,9 +332,9 @@ const ItemDetail = () => {
   };
 
   const handleRemoveListing = async (listing: ResaleListing) => {
-    // Only seller or admin can remove
-    if (listing.seller_id !== user?.id && !isAdmin) {
-      toast.error('Only the seller or an admin can remove this listing');
+    // Only the seller can delist their own items
+    if (listing.seller_id !== user?.id) {
+      toast.error('Only the seller can remove this listing');
       return;
     }
 
