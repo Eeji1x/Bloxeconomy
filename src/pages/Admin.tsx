@@ -84,7 +84,7 @@ const Admin = () => {
       <div className="space-y-1">
         <h1 className="text-3xl font-display font-bold flex items-center gap-3">
           <Shield className="w-8 h-8 text-destructive" />
-          {isAdmin ? 'Admin Panel' : 'Economy Panel'}
+          {isAdmin ? 'Admin Panel' : isOwner ? 'Owner Panel' : 'Economy Panel'}
         </h1>
         <p className="text-muted-foreground">
           {isAdmin ? 'Manage players, catalog, site settings' : 'Manage catalog items and promocodes'}
