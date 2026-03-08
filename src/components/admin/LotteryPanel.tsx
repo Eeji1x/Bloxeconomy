@@ -31,7 +31,8 @@ const LotteryPanel = () => {
   const [activeLottery, setActiveLottery] = useState<Lottery | null>(null);
   const [prizes, setPrizes] = useState<Prize[]>([]);
   const [pastLotteries, setPastLotteries] = useState<Lottery[]>([]);
-  const [duration, setDuration] = useState(24);
+  const [durationValue, setDurationValue] = useState(24);
+  const [durationUnit, setDurationUnit] = useState<'minutes' | 'hours'>('hours');
   const [prizeCount, setPrizeCount] = useState(3);
   const [creating, setCreating] = useState(false);
   const [drawing, setDrawing] = useState(false);
