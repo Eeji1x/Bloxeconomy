@@ -111,7 +111,7 @@ export const SodabloxSidebar = () => {
   return (
     <>
       {/* ─── Top Bar ─── */}
-      <nav className="sodablox-topbar sticky top-0 z-50 h-[60px] flex items-center px-4 gap-0 bg-card border-b border-primary/20">
+      <nav className="sodablox-topbar sticky top-0 z-[60] h-[60px] flex items-center px-4 gap-0 bg-card border-b border-primary/20">
         {/* Mobile hamburger */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
