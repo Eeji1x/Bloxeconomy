@@ -73,6 +73,7 @@ const ItemDetail = () => {
   const [resellPrice, setResellPrice] = useState('');
   const [selectedInventoryId, setSelectedInventoryId] = useState<string | null>(null);
   const [creatingListing, setCreatingListing] = useState(false);
+  const [view3D, setView3D] = useState(false);
 
   const [itemId, setItemId] = useState<string | null>(null);
   const is2016 = theme === 'roblox2016';
