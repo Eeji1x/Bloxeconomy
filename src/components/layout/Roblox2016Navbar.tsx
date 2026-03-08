@@ -154,7 +154,7 @@ export const Roblox2016Navbar = () => {
                     className="rbx16-nav-link"
                     style={{ padding: '4px' }}
                   >
-                    <span className="icon-nav-settings" style={{ width: 20, height: 20, backgroundSize: '20px auto' }} />
+                    <span className="icon-nav-settings" />
                   </button>
                   {/* Settings dropdown (matching ECS SettingsDropdown) */}
                   {settingsOpen && (
