@@ -10,7 +10,7 @@ const MODEL_PATH = '/models/roblox-avatar.glb';
 
 const AvatarModel = () => {
   const { scene } = useGLTF(MODEL_PATH);
-  return <primitive object={scene} scale={1} position={[0, -1.5, 0]} />;
+  return <primitive object={scene} scale={1} position={[0, -1.2, 0]} />;
 };
 
 // Preload the model
