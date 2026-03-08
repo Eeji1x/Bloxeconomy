@@ -37,7 +37,7 @@ const Scene = () => (
       <meshStandardMaterial color="#b8b8b8" roughness={0.85} />
     </mesh>
 
-    <gridHelper args={[4, 20, '#cccccc', '#e0e0e0']} position={[0, -1.49, 0]} />
+    <gridHelper args={[4, 20, '#cccccc', '#e0e0e0']} position={[0, -1.19, 0]} />
 
     <OrbitControls
       enablePan={false}
