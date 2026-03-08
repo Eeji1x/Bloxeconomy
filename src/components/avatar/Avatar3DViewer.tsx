@@ -30,7 +30,7 @@ const AvatarModel = () => {
 
   return (
     <group ref={groupRef}>
-      <primitive object={model} scale={1} />
+      <primitive object={model} scale={0.4} />
     </group>
   );
 };
