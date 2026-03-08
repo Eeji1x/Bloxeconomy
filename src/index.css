@@ -323,12 +323,13 @@
   }
 
   /* ═══════════════════════════════════════════════════
-     ROBLOX 2008 THEME — 1:1 nostalgic recreation
-     Header: linear-gradient(#4A6EA9, #2C4E8C)
-     BG: #F1F1F1, Sidebar: #E6E6E6, Panels: white
+     ROBLOX 2008 THEME — 1:1 recreation based on madblox source
+     Banner: background image + #6e99c9 nav bar
+     Container: 900px, white bg, black borders
+     Panels: black border, #ccc h4 headers
      ═══════════════════════════════════════════════════ */
   [data-theme="roblox2008"] {
-    --background: 0 0% 95%;
+    --background: 0 0% 100%;
     --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
@@ -337,38 +338,38 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
 
-    /* Primary — classic Roblox blue #4A6EA9 */
-    --primary: 216 39% 48%;
+    /* Primary — classic nav blue #6e99c9 */
+    --primary: 213 43% 61%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 90%;
+    --secondary: 0 0% 86%;
     --secondary-foreground: 0 0% 0%;
 
-    --muted: 0 0% 90%;
+    --muted: 0 0% 86%;
     --muted-foreground: 0 0% 40%;
 
-    --accent: 216 39% 48%;
+    --accent: 213 43% 61%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 76%;
+    --border: 0 0% 0%;
     --input: 0 0% 100%;
-    --ring: 216 39% 48%;
+    --ring: 213 43% 61%;
 
-    --radius: 3px;
+    --radius: 0px;
 
-    --sidebar-background: 0 0% 90%;
+    --sidebar-background: 0 0% 93%;
     --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 216 100% 30%;
+    --sidebar-primary: 240 100% 30%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 85%;
     --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 76%;
-    --sidebar-ring: 216 39% 48%;
+    --sidebar-border: 0 0% 0%;
+    --sidebar-ring: 213 43% 61%;
 
-    --neon-cyan: 216 39% 48%;
+    --neon-cyan: 213 43% 61%;
     --neon-pink: 340 82% 52%;
     --neon-green: 145 63% 42%;
     --neon-purple: 262 52% 47%;
@@ -386,90 +387,131 @@
     --gradient-glow: none;
   }
 
-  /* ── Font: Arial 13px ── */
+  /* ── Font: Verdana 8pt (authentic madblox) ── */
   [data-theme="roblox2008"] body,
   [data-theme="roblox2008"] * {
-    font-family: Arial, Helvetica, sans-serif !important;
-    font-size: 13px;
+    font-family: Verdana, Arial, Helvetica, sans-serif !important;
+    font-size: 11px;
     letter-spacing: 0 !important;
   }
-  [data-theme="roblox2008"] h1 { font-size: 20px !important; }
-  [data-theme="roblox2008"] h2 { font-size: 16px !important; }
-  [data-theme="roblox2008"] h3 { font-size: 14px !important; }
+  [data-theme="roblox2008"] h1 { font-size: 18px !important; font-weight: bold; }
+  [data-theme="roblox2008"] h2 { font-size: 14px !important; font-weight: bold; letter-spacing: 1px !important; }
+  [data-theme="roblox2008"] h3 { font-size: 12px !important; font-weight: bold; letter-spacing: 2px !important; }
+  [data-theme="roblox2008"] h4 { font-size: 11px !important; }
+  [data-theme="roblox2008"] h5 { font-size: 11px !important; letter-spacing: 1px !important; }
   [data-theme="roblox2008"] h1,
   [data-theme="roblox2008"] h2,
   [data-theme="roblox2008"] h3,
   [data-theme="roblox2008"] h4,
   [data-theme="roblox2008"] h5,
   [data-theme="roblox2008"] h6 {
-    font-family: Arial, Helvetica, sans-serif !important;
-    font-weight: 700;
+    font-family: Verdana, Arial, Helvetica, sans-serif !important;
     letter-spacing: 0 !important;
   }
 
-  /* ── Header: 70px blue gradient bar ── */
-  [data-theme="roblox2008"] .rbx08-header {
-    background: linear-gradient(180deg, #4A6EA9, #2C4E8C);
-    height: 70px;
-    border-bottom: 1px solid #1F3B70;
-  }
-
-  /* ── Logo ── */
-  [data-theme="roblox2008"] .rbx08-logo-text {
-    font-family: Impact, "Arial Black", sans-serif !important;
-    font-size: 28px !important;
-    color: white;
-    text-shadow: 2px 2px 0px rgba(0,0,0,0.4);
-    letter-spacing: 3px !important;
-  }
-
-  /* ── Nav links in header ── */
-  [data-theme="roblox2008"] .rbx08-nav-link {
-    color: #FFFFFF;
-    font-size: 13px !important;
-    font-weight: bold;
-    padding: 0 10px;
+  /* ── Links: blue, no decoration, underline on hover ── */
+  [data-theme="roblox2008"] a {
+    color: blue;
     text-decoration: none;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    transition: color 0.15s;
   }
-  [data-theme="roblox2008"] .rbx08-nav-link:hover {
-    color: #E5E5E5;
-  }
-  [data-theme="roblox2008"] .rbx08-nav-link-active {
+  [data-theme="roblox2008"] a:hover {
     text-decoration: underline;
   }
 
-  /* ── Sidebar: 160px grey ── */
-  [data-theme="roblox2008"] .rbx08-sidebar {
-    background: #E6E6E6;
-    border-right: 1px solid #C3C3C3;
-    padding: 10px;
+  /* ── Site body bg: white with cloud-like gradient ── */
+  [data-theme="roblox2008"] body {
+    background: #F8FCFF !important;
   }
 
-  [data-theme="roblox2008"] .rbx08-sidebar-link {
-    display: block;
-    padding: 6px;
-    color: #003399;
-    text-decoration: none;
+  /* ── Container: 900px centered ── */
+  [data-theme="roblox2008"] .rbx08-container {
+    width: 900px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  /* ── Banner: 72px with gradient background ── */
+  [data-theme="roblox2008"] .rbx08-banner {
+    background: linear-gradient(180deg, #4A6EA9 0%, #2C4E8C 50%, #1F3B70 100%);
+    height: 72px;
+    border-top: solid 1px #000;
+    border-bottom: solid 1px #000;
+    border-left: solid 1px #000;
+    border-right: solid 1px #000;
+    color: white;
     font-weight: bold;
-    font-size: 12px !important;
-    border-radius: 2px;
-    transition: background 0.1s;
-  }
-  [data-theme="roblox2008"] .rbx08-sidebar-link:hover {
-    background: #D8D8D8;
-  }
-  [data-theme="roblox2008"] .rbx08-sidebar-link-active {
-    background: #D0D0D0;
-    color: #002266;
+    text-align: center;
+    position: relative;
   }
 
-  /* ── Panels (classic Roblox boxes) ── */
+  /* ── Logo in banner ── */
+  [data-theme="roblox2008"] .rbx08-logo-text {
+    font-family: "Comic Sans MS", Verdana, sans-serif !important;
+    font-size: 24px !important;
+    color: white;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+    letter-spacing: 2px !important;
+    font-weight: bold;
+  }
+
+  /* ── Navigation bar: solid #6e99c9 ── */
+  [data-theme="roblox2008"] .rbx08-navigation {
+    background-color: #6e99c9;
+    border-bottom: solid 1px #000;
+    border-left: solid 1px #000;
+    border-right: solid 1px #000;
+    color: #fff;
+    font-size: 12px !important;
+    font-weight: normal;
+    line-height: 2em;
+    text-align: center;
+    padding: 0 4px;
+  }
+
+  /* ── MenuItem links ── */
+  [data-theme="roblox2008"] .rbx08-menu-item {
+    color: white !important;
+    font-size: 11px !important;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 0 2px;
+  }
+  [data-theme="roblox2008"] .rbx08-menu-item:hover {
+    text-decoration: underline;
+    color: white !important;
+  }
+  [data-theme="roblox2008"] .rbx08-menu-item-active {
+    text-decoration: underline;
+  }
+  [data-theme="roblox2008"] .rbx08-separator {
+    color: white;
+    font-size: 11px !important;
+    padding: 0 2px;
+  }
+
+  /* ── Alert space (currency/messages in banner) ── */
+  [data-theme="roblox2008"] .rbx08-alert-space {
+    background-color: #fff;
+    border: solid 1px #000;
+    color: #6e99c9;
+    padding: 5px 10px;
+    text-align: center;
+    font-size: 10px !important;
+  }
+  [data-theme="roblox2008"] .rbx08-alert-space a {
+    text-decoration: none;
+  }
+
+  /* ── Body area ── */
+  [data-theme="roblox2008"] .rbx08-body {
+    margin: 10px 0;
+    width: 900px;
+    max-width: 100%;
+  }
+
+  /* ── Panels (classic: black 1px border, #ccc h4 headers) ── */
   [data-theme="roblox2008"] .rbx08-panel {
-    border: 1px solid #C3C3C3;
+    border: solid 1px #000;
     background: #FFFFFF;
     margin-bottom: 10px;
     border-radius: 0;
@@ -477,102 +519,165 @@
   }
 
   [data-theme="roblox2008"] .rbx08-panel-header {
-    background: #E6E6E6;
-    border-bottom: 1px solid #C3C3C3;
-    padding: 5px 10px;
+    background-color: #ccc;
+    border-bottom: solid 1px #000;
+    color: #333;
+    margin: 0;
+    text-align: center;
+    padding: 5px;
     font-weight: bold;
-    font-size: 13px !important;
-    color: #000;
+    font-size: 11px !important;
   }
 
   [data-theme="roblox2008"] .rbx08-panel-body {
     padding: 10px;
+    background-color: #fff;
   }
 
-  /* ── Primary button (blue) ── */
+  /* ── Button: white bg, border, hover #6e99c9 ── */
   [data-theme="roblox2008"] .rbx08-btn-primary {
     display: inline-block;
-    background: #4A6EA9;
-    border: 1px solid #2C4E8C;
-    color: white;
-    padding: 4px 10px;
-    font-size: 12px !important;
-    border-radius: 3px;
     cursor: pointer;
+    background-color: #fff;
+    border: solid 1px #333;
+    color: #333;
+    font-family: Verdana, Sans-Serif !important;
+    font-size: 10px !important;
+    padding: 3px 10px;
     text-decoration: none;
-    font-weight: bold;
-    transition: background 0.15s;
+    font-weight: normal;
+    transition: all 0.15s;
   }
   [data-theme="roblox2008"] .rbx08-btn-primary:hover {
-    background: #3C5C96;
+    background-color: #6e99c9;
+    border: solid 1px #000;
+    color: #fff;
+    text-decoration: none;
   }
 
-  /* ── Secondary button (grey) ── */
+  /* ── Secondary button (same style, lighter border) ── */
   [data-theme="roblox2008"] .rbx08-btn-secondary {
     display: inline-block;
-    background: #E6E6E6;
-    border: 1px solid #C3C3C3;
-    color: black;
-    padding: 4px 10px;
-    font-size: 12px !important;
-    border-radius: 3px;
     cursor: pointer;
+    background-color: #fff;
+    border: solid 1px #777;
+    color: #777;
+    font-family: Verdana, Sans-Serif !important;
+    font-size: 10px !important;
+    padding: 3px 10px;
     text-decoration: none;
-    font-weight: bold;
-    transition: background 0.15s;
+    font-weight: normal;
+    transition: all 0.15s;
   }
   [data-theme="roblox2008"] .rbx08-btn-secondary:hover {
-    background: #D8D8D8;
+    background-color: #6e99c9;
+    border: solid 1px #000;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  /* ── Big Button (golden, Comic Sans) ── */
+  [data-theme="roblox2008"] .rbx08-btn-big {
+    display: inline-block;
+    background-color: #F5CD2F;
+    color: #000;
+    height: 2.5em;
+    font-family: "Comic Sans MS", Verdana, sans-serif !important;
+    font-size: 15px !important;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    padding: 4px 16px;
   }
 
   /* ── Red button (admin/danger) ── */
   [data-theme="roblox2008"] .rbx08-btn-red {
     display: inline-block;
-    background: #CC3333;
-    border: 1px solid #AA2222;
+    background-color: #CC3333;
+    border: solid 1px #AA2222;
     color: white;
-    padding: 4px 10px;
-    font-size: 12px !important;
-    border-radius: 3px;
+    padding: 3px 10px;
+    font-size: 10px !important;
     cursor: pointer;
     text-decoration: none;
     font-weight: bold;
+  }
+
+  /* ── TextBox (dashed border) ── */
+  [data-theme="roblox2008"] input[type="text"],
+  [data-theme="roblox2008"] input[type="password"],
+  [data-theme="roblox2008"] input[type="email"],
+  [data-theme="roblox2008"] textarea {
+    border: dashed 2px Gray !important;
+    font-family: Verdana, Sans-Serif !important;
+    font-size: 11px !important;
+    padding: 5px !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* ── Grid (data tables) ── */
+  [data-theme="roblox2008"] .rbx08-grid {
+    background-color: White;
+    border-color: #CCCCCC;
+    border-width: 1px;
+    border-style: solid;
+    width: 100%;
+  }
+  [data-theme="roblox2008"] .rbx08-grid-header {
+    color: White;
+    background-color: #6e99c9;
+    font-weight: bold;
+    text-align: center;
+    padding: 4px;
   }
 
   /* ── Link cards ── */
   [data-theme="roblox2008"] .rbx08-link-card {
     display: block;
     background: #FFFFFF;
-    border: 1px solid #C3C3C3;
+    border: solid 1px #000;
     padding: 8px;
-    font-size: 12px !important;
+    font-size: 11px !important;
     font-weight: bold;
-    color: #003399;
+    color: blue;
     text-align: center;
     text-decoration: none;
     transition: background 0.1s;
   }
   [data-theme="roblox2008"] .rbx08-link-card:hover {
-    background: #F0F0F0;
+    background: #6e99c9;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  /* ── Footer ── */
+  [data-theme="roblox2008"] .rbx08-footer {
+    font-size: 8px !important;
+    font-family: Verdana, sans-serif !important;
+    margin-top: 10px;
+    text-align: center;
+    color: #666;
   }
 
   /* ── Kill all cyberpunk effects for 2008 ── */
   [data-theme="roblox2008"] .cyber-card {
     background: #FFFFFF;
-    border: 1px solid #C3C3C3;
+    border: solid 1px #000;
     box-shadow: none;
     border-radius: 0;
     padding: 10px;
   }
   [data-theme="roblox2008"] .cyber-card:hover {
-    border-color: #4A6EA9;
+    border-color: #000;
     box-shadow: none;
     transform: none;
   }
   [data-theme="roblox2008"] .neon-border,
   [data-theme="roblox2008"] .neon-border-pink,
   [data-theme="roblox2008"] .neon-border-green {
-    border: 1px solid #C3C3C3;
+    border: solid 1px #000;
     box-shadow: none;
   }
   [data-theme="roblox2008"] .glow-cyan,
@@ -591,7 +696,7 @@
   [data-theme="roblox2008"] .gradient-text {
     background: none !important;
     -webkit-background-clip: unset !important;
-    -webkit-text-fill-color: #003399 !important;
+    -webkit-text-fill-color: blue !important;
     background-clip: unset !important;
   }
   [data-theme="roblox2008"] .cyber-grid {
@@ -605,48 +710,62 @@
 
   /* ── Emerald display ── */
   [data-theme="roblox2008"] .emerald-display {
-    background: #E6E6E6;
-    border: 1px solid #C3C3C3;
+    background: #fff;
+    border: solid 1px #000;
     box-shadow: none;
-    border-radius: 3px;
-    color: #000;
+    border-radius: 0;
+    color: green;
   }
 
   /* ── Badges ── */
   [data-theme="roblox2008"] .limited-badge {
     box-shadow: none;
-    background: #CC9900;
-    color: #fff;
-    border-radius: 3px;
+    background: #F5CD2F;
+    color: #000;
+    border-radius: 0;
   }
   [data-theme="roblox2008"] .admin-badge {
     box-shadow: none;
     background: #CC3333;
     color: white;
-    border-radius: 3px;
+    border-radius: 0;
+  }
+
+  /* ── Online indicator ── */
+  [data-theme="roblox2008"] .online-dot {
+    background: green;
+    box-shadow: none;
+    animation: none;
   }
 
   /* ── Scrollbar ── */
   [data-theme="roblox2008"] ::-webkit-scrollbar-track {
-    background: #F1F1F1;
+    background: #F8FCFF;
   }
   [data-theme="roblox2008"] ::-webkit-scrollbar-thumb {
     background: #C3C3C3;
-    border-radius: 3px;
+    border-radius: 0;
   }
   [data-theme="roblox2008"] ::selection {
-    background: rgba(74,110,169,0.3);
+    background: rgba(110,153,201,0.3);
     color: #000;
   }
 
-  /* ── Container wrapper (980px fixed-width) ── */
-  [data-theme="roblox2008"] .rbx08-container {
-    max-width: 980px;
-    margin: 0 auto;
-    background: white;
-    border: 1px solid #C3C3C3;
-    border-top: none;
-    min-height: calc(100vh - 71px);
+  /* ── Flatten rounded corners for all components ── */
+  [data-theme="roblox2008"] .rounded-lg,
+  [data-theme="roblox2008"] .rounded-md,
+  [data-theme="roblox2008"] .rounded-sm,
+  [data-theme="roblox2008"] .rounded-full,
+  [data-theme="roblox2008"] .rounded {
+    border-radius: 0 !important;
+  }
+
+  /* ── Cards and borders → black solid ── */
+  [data-theme="roblox2008"] .border {
+    border-color: #000 !important;
+  }
+  [data-theme="roblox2008"] .border-border {
+    border-color: #000 !important;
   }
 }
 

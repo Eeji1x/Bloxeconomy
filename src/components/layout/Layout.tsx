@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { AnnouncementBar } from './AnnouncementBar';
 import { Roblox2020Navbar } from './Roblox2020Navbar';
 import { Roblox2008Navbar } from './Roblox2008Navbar';
@@ -13,9 +14,24 @@ interface LayoutProps {
   children: ReactNode;
 }
 
+/** Sidebar links for the 2008 theme left nav */
+const sidebar2008Links = [
+  { to: '/', label: 'Home' },
+  { to: '/catalog', label: 'Catalog' },
+  { to: '/avatar', label: 'Avatar' },
+  { to: '/trading', label: 'Trade' },
+  { to: '/friends', label: 'Friends', authOnly: true },
+  { to: '/inbox', label: 'Messages', authOnly: true },
+  { to: '/users', label: 'People' },
+  { to: '/leaderboards', label: 'Leaderboard' },
+  { to: '/promocodes', label: 'Promo Codes' },
+  { to: '/settings', label: 'Settings' },
+];
+
 export const Layout = ({ children }: LayoutProps) => {
   const { isMaintenanceMode, isLoading } = useMaintenanceMode();
   const { theme } = useTheme();
+  const { user, isAdmin, isEconomyManager } = useAuth();
   const location = useLocation();
 
   const authPaths = ['/login', '/signup'];
@@ -25,19 +41,89 @@ export const Layout = ({ children }: LayoutProps) => {
     return <Maintenance />;
   }
 
-  // Roblox 2008 layout — 980px fixed container
+  // ── Roblox 2008 layout: 900px container, sidebar + content side-by-side ──
   if (theme === 'roblox2008') {
     return (
-      <div className="min-h-screen" style={{ background: '#F1F1F1' }}>
+      <div style={{ background: '#F8FCFF', minHeight: '100vh' }}>
         <AnnouncementBar />
         <Roblox2008Navbar />
-        <main className="lg:ml-[160px] min-h-[calc(100vh-70px)]">
-          <div style={{ maxWidth: 820, padding: 15 }}>
+
+        {/* Body: 900px container with sidebar + content */}
+        <div className="rbx08-container" style={{ display: 'flex', minHeight: 'calc(100vh - 105px)' }}>
+          {/* Left sidebar — desktop only */}
+          <aside
+            className="hidden lg:block shrink-0"
+            style={{
+              width: 160,
+              background: '#E6E6E6',
+              borderRight: 'solid 1px #000',
+              padding: 10,
+            }}
+          >
+            {sidebar2008Links.map((link) => {
+              if (link.authOnly && !user) return null;
+              const isActive = location.pathname === link.to;
+              return (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  style={{
+                    display: 'block',
+                    padding: '6px',
+                    color: isActive ? '#002266' : 'blue',
+                    textDecoration: 'none',
+                    fontWeight: 'bold',
+                    fontSize: 11,
+                    background: isActive ? '#D0D0D0' : 'transparent',
+                    borderRadius: 0,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) (e.currentTarget as HTMLElement).style.background = '#D8D8D8';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent';
+                  }}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+
+            {/* Admin link */}
+            {(isAdmin || isEconomyManager) && (
+              <>
+                <div style={{ margin: '8px 0', borderTop: 'solid 1px #000' }} />
+                <Link
+                  to="/admin"
+                  style={{
+                    display: 'block',
+                    padding: '6px',
+                    color: 'red',
+                    textDecoration: 'none',
+                    fontWeight: 'bold',
+                    fontSize: 11,
+                  }}
+                >
+                  ⚡ {isAdmin ? 'Admin Panel' : 'Economy Panel'}
+                </Link>
+              </>
+            )}
+          </aside>
+
+          {/* Main content */}
+          <main style={{ flex: 1, padding: 15, background: 'white' }}>
             <BanRedirectWrapper>
               {children}
             </BanRedirectWrapper>
+          </main>
+        </div>
+
+        {/* Footer */}
+        <div className="rbx08-container">
+          <div className="rbx08-footer" style={{ padding: '10px 0' }}>
+            © {new Date().getFullYear()} SODABLOX Corporation. All rights reserved.
           </div>
-        </main>
+        </div>
       </div>
     );
   }
