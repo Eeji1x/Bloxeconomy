@@ -62,6 +62,7 @@ const topTabs = [
   { to: '/catalog', label: 'Avatar Shop' },
   { to: '/trading', label: 'Trade' },
   { to: '/avatar', label: 'Create' },
+  { to: '/leaderboards', label: 'Charts' },
 ];
 
 const sidebarMain = [
@@ -188,10 +189,7 @@ export const Roblox2020Navbar = () => {
 
         {/* Logo */}
         <Link to="/" className="flex items-center shrink-0 mr-6">
-          <span
-            className="font-extrabold text-white text-[18px] tracking-tight"
-            style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif" }}
-          >
+          <span className="font-extrabold text-white text-[20px] tracking-tight">
             SODABLOX
           </span>
         </Link>
@@ -232,7 +230,7 @@ export const Roblox2020Navbar = () => {
             />
             <button
               className="px-3 flex items-center justify-center transition-colors"
-              style={{ background: '#335FFF' }}
+              style={{ background: '#0074BD' }}
             >
               <RbxSearch className="w-[14px] h-[14px] text-white" />
             </button>
@@ -278,7 +276,7 @@ export const Roblox2020Navbar = () => {
             <Link
               to="/login"
               className="ml-1 px-5 py-1.5 rounded text-white text-[13px] font-semibold transition-colors"
-              style={{ background: '#335FFF' }}
+              style={{ background: '#0074BD' }}
             >
               Log In
             </Link>
