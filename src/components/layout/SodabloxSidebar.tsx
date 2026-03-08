@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Home, ShoppingBag, User, ArrowLeftRight, Gift, Users,
   Shield, Menu, X, Gem, LogOut, LogIn, Trophy, Settings,
