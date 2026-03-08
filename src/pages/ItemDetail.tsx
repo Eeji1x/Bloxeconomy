@@ -290,18 +290,16 @@ const ItemDetail = () => {
           {/* Left — Image */}
           <div className="rbx16-item-image-col">
             <div className="rbx16-panel">
-              {item.model_url && (
-                <div className="rbx16-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Preview</span>
-                  <button onClick={() => setView3D(!view3D)} style={{ fontSize: 11, color: '#00a2ff', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
-                    {view3D ? '2D View' : '3D View'}
-                  </button>
-                </div>
-              )}
+              <div className="rbx16-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Preview</span>
+                <button onClick={() => setView3D(!view3D)} style={{ fontSize: 11, color: '#00a2ff', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                  {view3D ? '2D View' : '3D View'}
+                </button>
+              </div>
               <div className="rbx16-item-image-container">
-                {view3D && item.model_url ? (
+                {view3D ? (
                   <div style={{ width: '100%', height: 300 }}>
-                    <ItemModel3DViewer modelUrl={item.model_url} height={300} />
+                    <ItemModel3DViewer imageUrl={item.image_url} height={300} />
                   </div>
                 ) : (
                   <>
