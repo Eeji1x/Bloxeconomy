@@ -4,7 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, RefreshCw, Copy, Link as LinkIcon } from 'lucide-react';
+
+const generateToken = () => {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let token = '';
+  for (let i = 0; i < 32; i++) {
+    token += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return token;
+};
 
 const ApplicationsPanel = () => {
   const [applications, setApplications] = useState<any[]>([]);
@@ -12,6 +21,7 @@ const ApplicationsPanel = () => {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [loading, setLoading] = useState(true);
+  const [generatedLinks, setGeneratedLinks] = useState<Record<string, string>>({});
 
   useEffect(() => { fetchApplications(); }, [filter]);
 
@@ -24,14 +34,44 @@ const ApplicationsPanel = () => {
     setLoading(false);
   };
 
-  const handleAccept = async (id: string) => {
-    const { error } = await supabase
-      .from('applications')
-      .update({ status: 'accepted', reviewed_at: new Date().toISOString() })
-      .eq('id', id);
-    if (error) { toast.error('Failed to accept'); return; }
-    toast.success('Application accepted!');
-    fetchApplications();
+  const handleAccept = async (app: any) => {
+    try {
+      // Generate a one-time registration token
+      const token = generateToken();
+      
+      // Insert the token
+      const { error: tokenError } = await supabase
+        .from('registration_tokens')
+        .insert({
+          token,
+          application_id: app.id,
+          username: app.username,
+        });
+
+      if (tokenError) {
+        console.error('Token creation error:', tokenError);
+        toast.error('Failed to generate registration link');
+        return;
+      }
+
+      // Update application status
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: 'accepted', reviewed_at: new Date().toISOString() })
+        .eq('id', app.id);
+
+      if (error) {
+        toast.error('Failed to accept application');
+        return;
+      }
+
+      const link = `${window.location.origin}/register/${token}`;
+      setGeneratedLinks(prev => ({ ...prev, [app.id]: link }));
+      toast.success('Application accepted! Registration link generated.');
+      fetchApplications();
+    } catch (err) {
+      toast.error('Failed to accept application');
+    }
   };
 
   const handleReject = async (id: string) => {
@@ -52,6 +92,11 @@ const ApplicationsPanel = () => {
     await supabase.from('applications').delete().eq('id', id);
     toast.success('Application deleted');
     fetchApplications();
+  };
+
+  const copyLink = (link: string) => {
+    navigator.clipboard.writeText(link);
+    toast.success('Registration link copied!');
   };
 
   const pendingCount = applications.filter(a => a.status === 'pending').length;
@@ -88,7 +133,12 @@ const ApplicationsPanel = () => {
                     {app.status === 'rejected' && <XCircle className="w-4 h-4 text-red-500" />}
                     <span className="text-xs text-muted-foreground capitalize px-2 py-0.5 rounded bg-muted">{app.status}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">{new Date(app.created_at).toLocaleString()}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="text-xs text-muted-foreground">{new Date(app.created_at).toLocaleString()}</p>
+                    {app.short_id && (
+                      <span className="text-xs font-mono text-primary bg-primary/10 px-2 py-0.5 rounded">{app.short_id}</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -100,9 +150,29 @@ const ApplicationsPanel = () => {
                 </p>
               )}
 
+              {/* Show generated registration link */}
+              {generatedLinks[app.id] && (
+                <div className="p-3 rounded bg-accent/10 border border-accent/30 space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-accent">
+                    <LinkIcon className="w-4 h-4" /> One-time Registration Link
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      readOnly
+                      value={generatedLinks[app.id]}
+                      className="text-xs font-mono bg-background"
+                    />
+                    <Button size="sm" variant="outline" onClick={() => copyLink(generatedLinks[app.id])}>
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">⚠️ This link can only be used once. Share it with the applicant.</p>
+                </div>
+              )}
+
               {app.status === 'pending' && (
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => handleAccept(app.id)} className="gap-1">
+                  <Button size="sm" onClick={() => handleAccept(app)} className="gap-1">
                     <CheckCircle className="w-4 h-4" /> Accept
                   </Button>
                   {rejectingId === app.id ? (
