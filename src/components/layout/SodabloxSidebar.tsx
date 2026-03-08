@@ -8,11 +8,15 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
+const topTabs = [
+  { to: '/catalog', label: 'Catalog' },
+  { to: '/trading', label: 'Trade' },
+  { to: '/leaderboards', label: 'Leaderboard' },
+];
+
 const sidebarLinks = [
   { to: '/', label: 'Home', icon: Home },
-  { to: '/catalog', label: 'Catalog', icon: ShoppingBag },
-  { to: '/avatar', label: 'Create', icon: User },
-  { to: '/catalog', label: 'Inventory', icon: Package, authOnly: true },
+  { to: '/avatar', label: 'Avatar Editor', icon: User },
   { to: '/trading', label: 'Trade', icon: ArrowLeftRight },
   { to: '/leaderboards', label: 'Leaderboard', icon: Trophy },
   { to: '/settings', label: 'Settings', icon: Settings },
