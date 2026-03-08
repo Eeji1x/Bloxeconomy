@@ -13,11 +13,12 @@ import MaintenancePanel from '@/components/admin/MaintenancePanel';
 import GlobalMessagePanel from '@/components/admin/GlobalMessagePanel';
 import LotteryPanel from '@/components/admin/LotteryPanel';
 import SodamonsValueManager from '@/components/admin/SodamonsValueManager';
+import AdminCMD from '@/components/admin/AdminCMD';
 import AdminPlayers from '@/pages/AdminPlayers';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
   Plus, Trash2, Save, BadgeCheck, RefreshCw, RotateCcw, Edit,
-  AlertTriangle, Wrench, Trophy, Mail, Clock
+  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -28,6 +29,7 @@ interface Tab {
 }
 
 const tabs: Tab[] = [
+  { id: 'cmd', label: 'CMD', icon: <Terminal className="w-4 h-4" /> },
   { id: 'players', label: 'Player Management', icon: <Users className="w-4 h-4" /> },
   { id: 'catalog', label: 'Catalog', icon: <ShoppingBag className="w-4 h-4" /> },
   { id: 'create-user', label: 'Create User', icon: <Plus className="w-4 h-4" /> },
@@ -42,15 +44,20 @@ const tabs: Tab[] = [
 ];
 
 const Admin = () => {
-  const { user, isAdmin, isEconomyManager, isLoading } = useAuth();
+  const { user, isAdmin, isOwner, isEconomyManager, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('');
 
-  const isStaff = isAdmin || isEconomyManager;
+  const isStaff = isAdmin || isOwner || isEconomyManager;
 
-  // Economy managers see catalog, promocodes, and sodamons
-  const visibleTabs = isAdmin
-    ? tabs
-    : tabs.filter((t) => ['catalog', 'promocodes', 'sodamons'].includes(t.id));
+  // Determine visible tabs based on role
+  const getVisibleTabs = () => {
+    if (isAdmin) return tabs;
+    if (isOwner) return tabs; // Owners see everything
+    // Economy managers see catalog, promocodes, sodamons
+    return tabs.filter((t) => ['catalog', 'promocodes', 'sodamons'].includes(t.id));
+  };
+  
+  const visibleTabs = getVisibleTabs();
 
   // Set default tab based on role
   useEffect(() => {
