@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Zap, Sparkles, ShoppingBag, ArrowRightLeft, Users, Gem, Star, Gift, Trophy } from 'lucide-react';
+import { Zap, Sparkles, ShoppingBag, ArrowRightLeft, Users, Gem, Star, Gift, Trophy, FileText, Shield } from 'lucide-react';
 
 const AuthHome = () => {
   const { user } = useAuth();
