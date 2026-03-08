@@ -8,6 +8,7 @@ import { HomeFriendsList } from '@/components/home/HomeFriendsList';
 import { HomeQuickActions } from '@/components/home/HomeQuickActions';
 import { HomeAnnouncements } from '@/components/home/HomeAnnouncements';
 import { Roblox2016Home } from '@/components/home/Roblox2016Home';
+import { Roblox2015Home } from '@/components/home/Roblox2015Home';
 import { Roblox2008Home } from '@/components/home/Roblox2008Home';
 
 const Index = () => {
@@ -75,6 +76,11 @@ const Index = () => {
   // Roblox 2008 themed home
   if (theme === 'roblox2008') {
     return <Roblox2008Home />;
+  }
+
+  // SODABLOX 2015 themed home
+  if (theme === 'roblox2015') {
+    return <Roblox2015Home />;
   }
 
   // SODABLOX 2016 themed home
