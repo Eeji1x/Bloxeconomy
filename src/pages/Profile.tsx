@@ -4,7 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { UserAvatar } from '@/components/avatar/UserAvatar';
 import { Button } from '@/components/ui/button';
-import { User, Gem, Calendar, Shield, Package, ArrowLeftRight, Settings, BadgeCheck, UserPlus, UserMinus, Gift, Clock, Check, X } from 'lucide-react';
+import { User, Gem, Calendar, Shield, Package, ArrowLeftRight, Settings, BadgeCheck, UserPlus, UserMinus, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ProfileData {
