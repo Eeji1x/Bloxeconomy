@@ -129,8 +129,8 @@ const Signup = () => {
                   required
                 />
               </div>
-              <div className="bg-[#e8f0fe] border border-[#b0c8e0] rounded p-2">
-                <span className="text-[10px] text-[#003366]">✨ New players receive 100 free Emeralds!</span>
+              <div style={{ background: '#E6E6E6', border: '1px solid #C3C3C3', borderRadius: 3, padding: 8 }}>
+                <span style={{ fontSize: 11, color: '#003399' }}>✨ New players receive 100 free Emeralds!</span>
               </div>
               <button
                 type="submit"
