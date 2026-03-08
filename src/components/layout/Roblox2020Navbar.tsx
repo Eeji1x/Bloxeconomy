@@ -4,58 +4,103 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 /* ═══════════════════════════════════════════════════
-   Roblox 2020-2021 SVG Icons (filled, material-style)
-   Matching the real roblox.com sidebar icons
+   Roblox 2020-2021 — EXACT replica icons (outline style matching real roblox.com)
    ═══════════════════════════════════════════════════ */
 
+// Roblox tilted square logo
+const RbxLogo = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <path d="M5.25 1.5L22.5 5.25L18.75 22.5L1.5 18.75L5.25 1.5Z" fill="currentColor" />
+    <path d="M10.5 9L15 10.125L13.875 14.625L9.375 13.5L10.5 9Z" fill="#232527" />
+  </svg>
+);
+
 const RbxHome = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3l9-8z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 6L4 18h4v12h8v-8h4v8h8V18h4L18 6z" fill="currentColor" stroke="none" />
+  </svg>
 );
 const RbxProfile = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4" /><path d="M12 14c-6 0-8 3-8 5v1h16v-1c0-2-2-5-8-5z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <circle cx="18" cy="12" r="6" />
+    <path d="M6 30c0-4 4-8 12-8s12 4 12 8v2H6v-2z" />
+  </svg>
 );
 const RbxAvatar = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.24 2 7 4.24 7 7v2c0 2.76 2.24 5 5 5s5-2.24 5-5V7c0-2.76-2.24-5-5-5zM8 16c-3.31 0-6 1.34-6 3v2h20v-2c0-1.66-2.69-3-6-3h-8z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M18 4c-4 0-7 3-7 7v3c0 4 3 7 7 7s7-3 7-7v-3c0-4-3-7-7-7z" />
+    <path d="M10 26c-4 0-6 2-6 4v2h24v-2c0-2-2-4-6-4H10z" />
+  </svg>
 );
 const RbxInventory = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M30 10h-4V8c0-1.5-1.5-3-3-3H13c-1.5 0-3 1.5-3 3v2H6c-1.5 0-3 1.5-3 3v16c0 1.5 1.5 3 3 3h24c1.5 0 3-1.5 3-3V13c0-1.5-1.5-3-3-3zM13 8h10v2H13V8z" />
+  </svg>
 );
 const RbxTrade = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M6 12l-4 4h3v4h2v-4h3l-4-4zm12 0l4-4h-3V4h-2v4h-3l4 4z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M10 18l-6 6h4v6h4v-6h4l-6-6zm16 0l6-6h-4V6h-4v6h-4l6 6z" />
+  </svg>
 );
 const RbxFriends = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M24 17c2.5 0 4.5-2 4.5-4.5S26.5 8 24 8s-4.5 2-4.5 4.5S21.5 17 24 17zm-12 0c2.5 0 4.5-2 4.5-4.5S14.5 8 12 8s-4.5 2-4.5 4.5S9.5 17 12 17zm0 3c-3.5 0-10.5 1.75-10.5 5.25V29h21v-3.75C22.5 21.75 15.5 20 12 20zm12 0c-.44 0-.93.03-1.46.08 1.74 1.26 2.96 2.96 2.96 5.17V29h9v-3.75C34.5 21.75 27.5 20 24 20z" />
+  </svg>
 );
 const RbxInbox = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M30 6H6c-1.65 0-3 1.35-3 3v18c0 1.65 1.35 3 3 3h24c1.65 0 3-1.35 3-3V9c0-1.65-1.35-3-3-3zm0 6l-12 7.5L6 12V9l12 7.5L30 9v3z" />
+  </svg>
 );
 const RbxLeaderboard = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M7.5 21H2V9h5.5v12zm7.25-18h-5.5v18h5.5V3zM22 11h-5.5v10H22V11z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M11 32H3V14h8v18zm11-27H14v27h8V5zM33 17h-8v15h8V17z" />
+  </svg>
 );
 const RbxCodes = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C11.04 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 12 7.4l3.38 4.6L17 10.83 14.92 8H20v6z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M30 10h-3.27c.17-.47.27-.97.27-1.5 0-2.49-2.01-4.5-4.5-4.5-1.58 0-2.94.81-3.75 2.03L18 7.1l-.75-1.02C16.44 4.81 15.08 4 13.5 4 11.01 4 9 6.01 9 8.5c0 .53.1 1.03.27 1.5H6c-1.67 0-2.99 1.34-2.99 3L3 28.5c0 1.67 1.34 3 3 3h24c1.67 0 3-1.34 3-3V13c0-1.67-1.34-3-3-3zm-7.5-3c.83 0 1.5.67 1.5 1.5S23.33 10 22.5 10 21 9.33 21 8.5 21.67 7 22.5 7zm-9 0c.83 0 1.5.67 1.5 1.5S14.33 10 13.5 10 12 9.33 12 8.5 12.67 7 13.5 7zM30 28.5H6v-3h24v3zm0-7.5H6V13h7.62l-3.12 4.25 2.43 1.78L18 11.1l5.07 7.93 2.43-1.78L22.38 13H30v8z" />
+  </svg>
 );
 const RbxSettings = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94 0 .31.02.63.06.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M29.71 19.41c.05-.46.09-.94.09-1.41s-.03-.95-.09-1.41l3.05-2.37c.27-.21.34-.6.17-.92l-2.88-4.98c-.18-.33-.54-.43-.88-.33l-3.59 1.44c-.75-.57-1.55-1.05-2.43-1.41l-.54-3.81A.72.72 0 0021.89 4h-5.76c-.36 0-.66.26-.71.61l-.54 3.81c-.88.35-1.68.84-2.43 1.41L8.86 8.39c-.33-.11-.7 0-.88.33L5.1 13.7c-.18.33-.11.7.17.92l3.05 2.37c-.05.46-.09.94-.09 1.41s.03.95.09 1.41L5.27 22.18c-.27.21-.34.6-.17.92l2.88 4.98c.18.33.54.43.88.33l3.59-1.44c.75.57 1.55 1.05 2.43 1.41l.54 3.81c.05.35.35.61.71.61h5.76c.36 0 .66-.26.71-.61l.54-3.81c.88-.35 1.68-.84 2.43-1.41l3.59 1.44c.33.11.7 0 .88-.33l2.88-4.98c.18-.33.11-.7-.17-.92l-3.01-2.37zM19.01 23.4c-2.97 0-5.4-2.43-5.4-5.4s2.43-5.4 5.4-5.4 5.4 2.43 5.4 5.4-2.43 5.4-5.4 5.4z" />
+  </svg>
 );
 const RbxAdmin = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M18 1.5L4.5 7.5v9c0 8.33 5.76 16.11 13.5 18 7.74-1.89 13.5-9.67 13.5-18v-9L18 1.5z" />
+  </svg>
 );
 const RbxSearch = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M23.25 21h-1.19l-.42-.41A9.71 9.71 0 0024 14.25a9.75 9.75 0 10-9.75 9.75c2.42 0 4.64-.88 6.34-2.36l.41.42v1.19l7.5 7.49L30.49 28.75l-7.24-7.75zm-9 0c-3.73 0-6.75-3.02-6.75-6.75S10.52 7.5 14.25 7.5 21 10.52 21 14.25 17.98 21 14.25 21z" />
+  </svg>
 );
 const RbxBell = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M18 33c1.65 0 3-1.35 3-3h-6a3 3 0 003 3zm9-9v-7.5c0-4.61-2.44-8.46-6.75-9.48V6c0-1.24-1.01-2.25-2.25-2.25S15.75 4.76 15.75 6v1.02C11.45 8.04 9 11.88 9 16.5V24l-3 3v1.5h24V27l-3-3z" />
+  </svg>
 );
-const RbxGem = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5L2 9l10 12L22 9l-3-6zm-1.18 5h-3.09l1.57-3.14L18.82 8zm-8.36-3h4.08L12 8.49 9.46 5zM6.27 5l1.64 3.27H4.18L6.27 5zM4.64 10h3.69l3.14 6.89L4.64 10zm7.86 6.89L15.64 10h3.69l-6.83 6.89z" /></svg>
+const RbxRobux = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M18 3C9.72 3 3 9.72 3 18s6.72 15 15 15 15-6.72 15-15S26.28 3 18 3zm0 27c-6.63 0-12-5.37-12-12S11.37 6 18 6s12 5.37 12 12-5.37 12-12 12z" />
+    <path d="M21 12h-6v3h-3v6h3v3h6v-3h3v-6h-3v-3zm0 6h-3v3h-3v-3h3v-3h3v3z" />
+  </svg>
 );
 const RbxLogout = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" /></svg>
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M25.5 10.5l-2.12 2.12L27.26 16.5H12v3h15.26l-3.88 3.88L25.5 25.5 33 18l-7.5-7.5zM6 7.5h12V4.5H6c-1.65 0-3 1.35-3 3v21c0 1.65 1.35 3 3 3h12v-3H6v-21z" />
+  </svg>
+);
+const RbxSodamons = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 36 36" fill="currentColor">
+    <path d="M18 3C9.72 3 3 9.72 3 18s6.72 15 15 15 15-6.72 15-15S26.28 3 18 3zm-3.75 22.5l-6-6 2.12-2.12 3.88 3.87 8.38-8.37 2.12 2.12-10.5 10.5z" />
+  </svg>
 );
 
 /* ═══════════════════════════════════════════════════
-   Layout data — matching real Roblox 2020-2021
+   Layout data — 1:1 matching real Roblox 2020-2021
    ═══════════════════════════════════════════════════ */
 
 const topTabs = [
@@ -65,17 +110,17 @@ const topTabs = [
   { to: '/sodamons', label: 'Sodamons' },
 ];
 
-const sidebarMain = [
+const sidebarLinks = [
   { to: '/', label: 'Home', Icon: RbxHome },
   { to: '/profile', label: 'Profile', Icon: RbxProfile, needsAuth: true },
+  { to: '/inbox', label: 'Messages', Icon: RbxInbox },
+  { to: '/friends', label: 'Friends', Icon: RbxFriends },
   { to: '/avatar', label: 'Avatar', Icon: RbxAvatar },
   { to: '/catalog', label: 'Inventory', Icon: RbxInventory },
   { to: '/trading', label: 'Trade', Icon: RbxTrade },
-  { to: '/friends', label: 'Friends', Icon: RbxFriends },
-  { to: '/inbox', label: 'Messages', Icon: RbxInbox },
 ];
 
-const sidebarSecondary = [
+const sidebarLinks2 = [
   { to: '/users', label: 'Players', Icon: RbxProfile },
   { to: '/leaderboards', label: 'Leaderboards', Icon: RbxLeaderboard },
   { to: '/promocodes', label: 'Promo Codes', Icon: RbxCodes },
@@ -83,7 +128,8 @@ const sidebarSecondary = [
 ];
 
 /* ═══════════════════════════════════════════════════
-   Component — pixel-perfect Roblox 2020-2021 replica
+   Component — 1:1 Roblox 2020-2021 replica
+   Topbar: #232527, 48px. Sidebar: #232527, 200px.
    ═══════════════════════════════════════════════════ */
 
 export const Roblox2020Navbar = () => {
@@ -99,13 +145,7 @@ export const Roblox2020Navbar = () => {
 
   const profileLink = profile ? `/profile/${profile.user_id}` : '/profile';
 
-  const SidebarLink = ({
-    link,
-    closeMobile = false,
-  }: {
-    link: (typeof sidebarMain)[0];
-    closeMobile?: boolean;
-  }) => {
+  const SideLink = ({ link, mobile = false }: { link: typeof sidebarLinks[0]; mobile?: boolean }) => {
     if ('needsAuth' in link && (link as any).needsAuth && !user) return null;
     const { Icon } = link;
     const to = link.label === 'Profile' ? profileLink : link.to;
@@ -114,50 +154,54 @@ export const Roblox2020Navbar = () => {
     return (
       <Link
         to={to}
-        onClick={closeMobile ? () => setSidebarOpen(false) : undefined}
+        onClick={mobile ? () => setSidebarOpen(false) : undefined}
         className={cn(
-          'rbx20-sidebar-link flex items-center gap-3 px-5 py-[10px] text-[14px] font-medium transition-colors border-l-[3px]',
+          'rbx20-nav-link flex items-center gap-3 px-4 h-[40px] text-[13px] transition-colors',
           isActive
-            ? 'border-white bg-white/[0.08] text-white'
-            : 'border-transparent text-[#bdbebe] hover:bg-white/[0.04] hover:text-white'
+            ? 'rbx20-nav-link-active font-semibold'
+            : 'font-medium'
         )}
       >
-        <Icon className="w-[20px] h-[20px] shrink-0 opacity-90" />
-        <span>{link.label}</span>
+        <Icon className="w-[24px] h-[24px] shrink-0" />
+        <span className="truncate">{link.label}</span>
       </Link>
     );
   };
 
-  const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
+  const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="flex flex-col h-full">
-      <div className="flex flex-col pt-2">
-        {sidebarMain.map((l) => (
-          <SidebarLink key={l.label} link={l} closeMobile={mobile} />
+      {/* Main links */}
+      <nav className="flex flex-col py-1">
+        {sidebarLinks.map(l => (
+          <SideLink key={l.label} link={l} mobile={mobile} />
         ))}
-      </div>
+      </nav>
 
-      <div className="mx-5 my-2 border-t border-white/10" />
+      {/* Divider */}
+      <div className="mx-4 border-t border-white/[0.12]" />
 
-      <div className="flex flex-col">
-        {sidebarSecondary.map((l) => (
-          <SidebarLink key={l.label} link={l} closeMobile={mobile} />
+      {/* Secondary links */}
+      <nav className="flex flex-col py-1">
+        {sidebarLinks2.map(l => (
+          <SideLink key={l.label} link={l} mobile={mobile} />
         ))}
-      </div>
+      </nav>
 
+      {/* Admin */}
       {(isAdmin || isOwner) && (
         <>
-          <div className="mx-5 my-2 border-t border-white/10" />
+          <div className="mx-4 border-t border-white/[0.12]" />
           <Link
             to="/admin"
             onClick={mobile ? () => setSidebarOpen(false) : undefined}
             className={cn(
-              'rbx20-sidebar-link flex items-center gap-3 px-5 py-[10px] text-[14px] font-medium transition-colors border-l-[3px]',
+              'flex items-center gap-3 px-4 h-[40px] text-[13px] font-medium transition-colors',
               location.pathname === '/admin'
-                ? 'border-[#e34d4d] bg-[#e34d4d]/10 text-[#e34d4d]'
-                : 'border-transparent text-[#e34d4d]/70 hover:bg-[#e34d4d]/5 hover:text-[#e34d4d]'
+                ? 'text-[#ff4444] bg-[#ff4444]/[0.08]'
+                : 'text-[#ff4444]/70 hover:text-[#ff4444] hover:bg-white/[0.04]'
             )}
           >
-            <RbxAdmin className="w-[20px] h-[20px] shrink-0" />
+            <RbxAdmin className="w-[24px] h-[24px] shrink-0" />
             <span>Admin Panel</span>
           </Link>
         </>
@@ -165,136 +209,127 @@ export const Roblox2020Navbar = () => {
 
       <div className="flex-1" />
 
-      <div className="px-5 py-3 border-t border-white/10">
-        <span className="text-[10px] font-semibold text-[#6b6d6f] uppercase tracking-wider">
-          SODABLOX Platform
-        </span>
-      </div>
+      {/* Logout at bottom */}
+      {user && (
+        <div className="border-t border-white/[0.12]">
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-3 px-4 h-[40px] text-[13px] font-medium text-[#bdbebe] hover:text-white hover:bg-white/[0.04] w-full transition-colors"
+          >
+            <RbxLogout className="w-[24px] h-[24px] shrink-0" />
+            <span>Logout</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 
   return (
     <>
-      {/* ─── Top Bar ─── 48px height, #393b3d (real Roblox 2020-2021) */}
-      <nav className="roblox-topbar sticky top-0 z-50 h-[48px] flex items-center px-3 gap-0">
+      {/* ─── Top Bar ─── #232527, 48px height (real Roblox 2020) */}
+      <header className="rbx20-topbar sticky top-0 z-50 h-[48px] flex items-center px-3">
         {/* Mobile hamburger */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="lg:hidden p-2 rounded hover:bg-white/[0.08] transition-colors mr-1"
+          className="lg:hidden p-2 mr-1 rounded hover:bg-white/[0.08]"
         >
-          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <svg className="w-5 h-5 text-[#bdbebe]" viewBox="0 0 24 24" fill="currentColor">
             <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
           </svg>
         </button>
 
-        {/* Logo — ROBLOX-style wordmark */}
-        <Link to="/" className="flex items-center shrink-0 mr-4">
-          <span className="font-black text-white text-[18px] tracking-tight" style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif" }}>
-            SODABLOX
-          </span>
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-1.5 shrink-0 mr-5">
+          <RbxLogo className="w-[28px] h-[28px] text-white" />
         </Link>
 
-        {/* Top tabs — center, matching real Roblox nav */}
-        <div className="hidden md:flex items-center gap-0 h-full">
-          {topTabs.map((tab) => {
+        {/* Topbar tabs */}
+        <nav className="hidden md:flex items-center h-full">
+          {topTabs.map(tab => {
             const isActive = location.pathname === tab.to;
             return (
               <Link
                 key={tab.to}
                 to={tab.to}
                 className={cn(
-                  'rbx20-topbar-tab flex items-center h-full px-3 text-[13px] font-semibold transition-colors border-b-[3px]',
+                  'rbx20-topbar-tab flex items-center h-full px-3 text-[12px] font-bold uppercase tracking-[0.5px] transition-colors',
                   isActive
-                    ? 'text-white border-white'
-                    : 'text-[#bdbebe] hover:text-white hover:bg-white/[0.06] border-transparent'
+                    ? 'text-white border-b-[3px] border-white'
+                    : 'text-[#bdbebe] hover:text-white border-b-[3px] border-transparent'
                 )}
               >
                 {tab.label}
               </Link>
             );
           })}
-        </div>
+        </nav>
 
-        {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Search bar — matching real Roblox search */}
-        <div className="hidden lg:flex max-w-[240px] mr-2">
-          <div className="flex w-full h-[30px] rounded-[4px] overflow-hidden">
+        {/* Search */}
+        <div className="hidden lg:flex items-center mr-2">
+          <div className="flex h-[32px] rounded-[4px] overflow-hidden" style={{ background: '#3e4042' }}>
             <input
               type="text"
               placeholder="Search"
-              className="w-[180px] px-3 text-[13px] text-white placeholder-[#8a8b8d] border-none outline-none"
-              style={{ background: '#606162' }}
+              className="w-[200px] px-3 text-[13px] text-white placeholder-[#bdbebe] bg-transparent border-none outline-none"
             />
-            <button
-              className="px-2.5 flex items-center justify-center transition-colors"
-              style={{ background: '#606162' }}
-            >
-              <RbxSearch className="w-[14px] h-[14px] text-[#bdbebe]" />
+            <button className="px-3 flex items-center justify-center hover:bg-white/[0.08]">
+              <RbxSearch className="w-[16px] h-[16px] text-[#bdbebe]" />
             </button>
           </div>
         </div>
 
         {/* Right controls */}
-        <div className="flex items-center gap-1">
-          {user && profile && (
+        <div className="flex items-center gap-0">
+          {user && profile ? (
             <>
-              {/* Emerald counter (Robux-style pill) */}
+              {/* Robux/Emerald pill */}
               <Link
                 to="/settings"
-                className="rbx20-robux-pill flex items-center gap-1 h-[28px] px-2.5 rounded-[4px] text-[13px] font-semibold transition-colors"
+                className="rbx20-robux-pill flex items-center gap-1.5 h-[30px] px-3 rounded-[4px] text-[13px] font-bold mr-1"
               >
-                <RbxGem className="w-[14px] h-[14px] text-[#02b757]" />
+                <RbxRobux className="w-[16px] h-[16px] text-[#00b06a]" />
                 <span className="text-white">{profile.emeralds.toLocaleString()}</span>
               </Link>
 
-              {/* Notifications */}
-              <button className="p-1.5 rounded hover:bg-white/[0.08] transition-colors">
-                <RbxBell className="w-[18px] h-[18px] text-[#bdbebe]" />
+              {/* Bell */}
+              <button className="rbx20-icon-btn w-[32px] h-[32px] flex items-center justify-center rounded hover:bg-white/[0.08]">
+                <RbxBell className="w-[20px] h-[20px] text-[#bdbebe]" />
               </button>
+
+              {/* Settings */}
+              <Link to="/settings" className="rbx20-icon-btn w-[32px] h-[32px] flex items-center justify-center rounded hover:bg-white/[0.08]">
+                <RbxSettings className="w-[20px] h-[20px] text-[#bdbebe]" />
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/settings" className="rbx20-icon-btn w-[32px] h-[32px] flex items-center justify-center rounded hover:bg-white/[0.08]">
+                <RbxSettings className="w-[20px] h-[20px] text-[#bdbebe]" />
+              </Link>
+              <Link
+                to="/login"
+                className="rbx20-login-btn ml-2 px-5 h-[32px] flex items-center rounded-[4px] text-white text-[13px] font-bold"
+              >
+                Log In
+              </Link>
             </>
           )}
-
-          {/* Settings gear */}
-          <Link to="/settings" className="p-1.5 rounded hover:bg-white/[0.08] transition-colors">
-            <RbxSettings className="w-[18px] h-[18px] text-[#bdbebe]" />
-          </Link>
-
-          {/* User auth */}
-          {user && profile ? (
-            <button
-              onClick={handleSignOut}
-              className="p-1.5 rounded hover:bg-white/[0.08] transition-colors"
-              title="Logout"
-            >
-              <RbxLogout className="w-[18px] h-[18px] text-[#bdbebe]" />
-            </button>
-          ) : (
-            <Link
-              to="/login"
-              className="rbx20-login-btn ml-1 px-4 py-1 rounded-[4px] text-white text-[13px] font-semibold transition-colors"
-            >
-              Log In
-            </Link>
-          )}
         </div>
-      </nav>
+      </header>
 
-      {/* ─── Sidebar - Desktop ─── 220px, #393b3d */}
-      <aside className="roblox-sidebar hidden lg:flex fixed left-0 top-[48px] bottom-0 w-[220px] z-40 flex-col overflow-y-auto">
-        <SidebarContent />
+      {/* ─── Sidebar Desktop ─── #232527, 200px width */}
+      <aside className="rbx20-sidebar hidden lg:flex fixed left-0 top-[48px] bottom-0 w-[200px] z-40 flex-col overflow-y-auto">
+        <Sidebar />
       </aside>
 
-      {/* ─── Sidebar - Mobile overlay ─── */}
+      {/* ─── Sidebar Mobile ─── */}
       {sidebarOpen && (
         <>
-          <div
-            className="lg:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setSidebarOpen(false)}
-          />
-          <aside className="lg:hidden roblox-sidebar fixed left-0 top-[48px] bottom-0 w-[220px] z-50 flex flex-col overflow-y-auto">
-            <SidebarContent mobile />
+          <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setSidebarOpen(false)} />
+          <aside className="lg:hidden rbx20-sidebar fixed left-0 top-[48px] bottom-0 w-[200px] z-50 flex flex-col overflow-y-auto">
+            <Sidebar mobile />
           </aside>
         </>
       )}
