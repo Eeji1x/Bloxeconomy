@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { AnnouncementBar } from './AnnouncementBar';
 import { Navbar } from './Navbar';
 import { BanRedirectWrapper } from '@/components/auth/BanRedirectWrapper';
@@ -11,8 +12,13 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const { isMaintenanceMode, isLoading } = useMaintenanceMode();
+  const location = useLocation();
 
-  if (isMaintenanceMode && !isLoading) {
+  // Allow login/signup pages even during maintenance so admins can log back in
+  const authPaths = ['/login', '/signup'];
+  const isAuthPage = authPaths.some(p => location.pathname.startsWith(p));
+
+  if (isMaintenanceMode && !isLoading && !isAuthPage) {
     return <Maintenance />;
   }
 
