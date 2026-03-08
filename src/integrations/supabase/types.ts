@@ -68,6 +68,39 @@ export type Database = {
         }
         Relationships: []
       }
+      applications: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string
+          reject_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason: string
+          reject_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string
+          reject_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          username?: string
+        }
+        Relationships: []
+      }
       catalog_items: {
         Row: {
           created_at: string

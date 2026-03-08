@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Zap, Sparkles, ShoppingBag, ArrowRightLeft, Users, Gem, Star, Gift, Trophy } from 'lucide-react';
+import { Zap, Sparkles, ShoppingBag, ArrowRightLeft, Users, Gem, Star, Gift, Trophy, FileText, Shield } from 'lucide-react';
 
 const AuthHome = () => {
   const { user } = useAuth();
@@ -105,8 +105,14 @@ const AuthHome = () => {
                 Start Playing
               </Button>
             </Link>
+            <Link to="/apply">
+              <Button variant="outline" size="xl" className="gap-2">
+                <FileText className="w-5 h-5" />
+                Apply to Join
+              </Button>
+            </Link>
             <Link to="/login">
-              <Button variant="outline" size="xl">
+              <Button variant="ghost" size="xl">
                 Already have an account?
               </Button>
             </Link>
@@ -185,8 +191,18 @@ const AuthHome = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} SODABLOX. All rights reserved.
+      <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground space-y-2">
+        <div className="flex items-center justify-center gap-4">
+          <Link to="/privacy" className="hover:text-primary transition-colors flex items-center gap-1">
+            <Shield className="w-3 h-3" />
+            Privacy Policy
+          </Link>
+          <Link to="/apply" className="hover:text-primary transition-colors flex items-center gap-1">
+            <FileText className="w-3 h-3" />
+            Apply
+          </Link>
+        </div>
+        <p>© {new Date().getFullYear()} SODABLOX. All rights reserved.</p>
       </footer>
     </div>
   );

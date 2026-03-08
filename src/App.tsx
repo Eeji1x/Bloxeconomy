@@ -10,6 +10,8 @@ import { Layout } from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import AuthHome from "./pages/AuthHome";
+import Apply from "./pages/Apply";
+import Privacy from "./pages/Privacy";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Users from "./pages/Users";
@@ -87,6 +89,8 @@ const App = () => {
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<AuthHome />} />
+                    <Route path="/apply" element={<Apply />} />
+                    <Route path="/privacy" element={<Privacy />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/users" element={<Users />} />

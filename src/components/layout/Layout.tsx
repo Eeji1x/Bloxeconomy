@@ -19,11 +19,11 @@ export const Layout = ({ children }: LayoutProps) => {
   const { theme } = useTheme();
   const location = useLocation();
 
-  const authPaths = ['/login', '/signup', '/auth'];
+  const authPaths = ['/login', '/signup', '/auth', '/apply', '/privacy'];
   const isAuthPage = authPaths.some(p => location.pathname === p || location.pathname.startsWith(p + '/'));
 
-  // Auth home page has its own full layout
-  if (location.pathname === '/auth') {
+  // These pages have their own full layout
+  if (location.pathname === '/auth' || location.pathname === '/apply' || location.pathname === '/privacy') {
     return <>{children}</>;
   }
 
