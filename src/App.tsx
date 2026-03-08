@@ -23,6 +23,9 @@ import AdminPlayers from "./pages/AdminPlayers";
 import AdminUserManagement from "./pages/AdminUserManagement";
 import Settings from "./pages/Settings";
 import Leaderboards from "./pages/Leaderboards";
+import Sodamons from "./pages/Sodamons";
+import SodamonsItem from "./pages/SodamonsItem";
+import SodamonsTop from "./pages/SodamonsTop";
 import Banned from "./pages/Banned";
 import NotFound from "./pages/NotFound";
 
