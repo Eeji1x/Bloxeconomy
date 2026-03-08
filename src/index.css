@@ -379,6 +379,8 @@
     width: 18px;
     height: 18px;
     background-size: 36px auto;
+    background-position: 0 -72px;
+    filter: brightness(0) invert(1);
   }
 
   /* ── Right area ── */
