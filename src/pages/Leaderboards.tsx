@@ -28,8 +28,8 @@ const Leaderboards = () => {
     setLoading(true);
 
     // Fetch top emerald holders
-    const { data: emeraldData } = await supabase
-      .from('public_profiles' as any)
+    const { data: emeraldData } = await (supabase as any)
+      .from('public_profiles')
       .select('user_id, username, numeric_id, emeralds, is_verified, is_online')
       .order('emeralds', { ascending: false })
       .limit(50);
