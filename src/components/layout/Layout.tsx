@@ -13,6 +13,7 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const { isMaintenanceMode, isLoading } = useMaintenanceMode();
+  const { theme } = useTheme();
   const location = useLocation();
 
   // Allow login/signup pages even during maintenance so admins can log back in
