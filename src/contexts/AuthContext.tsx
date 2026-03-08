@@ -132,6 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setProfile(null);
         setIsAdmin(false);
+        setIsOwner(false);
         setIsEconomyManager(false);
         setIsLoading(false);
       }
