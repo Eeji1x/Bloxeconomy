@@ -36,7 +36,7 @@ export const SodabloxSidebar = () => {
     navigate('/');
   };
 
-  const SidebarLink = ({ link, closeMobile = false }: { link: typeof sidebarLinks[0] & { authOnly?: boolean }; closeMobile?: boolean }) => {
+  const SidebarLink = ({ link, closeMobile = false }: { link: { to: string; label: string; icon: any; authOnly?: boolean }; closeMobile?: boolean }) => {
     if (link.authOnly && !user) return null;
     const Icon = link.icon;
     const isActive = location.pathname === link.to;
