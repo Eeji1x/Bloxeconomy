@@ -1,13 +1,11 @@
 import { Suspense, useLayoutEffect, useMemo, useRef, useEffect, useState } from 'react';
-import { Canvas, useLoader } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import * as THREE from 'three';
 
 interface EquippedItem {
   image_url: string;
   name?: string;
-  model_url?: string | null;
 }
 
 interface Avatar3DViewerProps {
@@ -15,13 +13,6 @@ interface Avatar3DViewerProps {
 }
 
 const MODEL_PATH = '/models/roblox-avatar.glb';
-
-const ObjEquippedItem = ({ url }: { url: string }) => {
-  const obj = useLoader(OBJLoader, url);
-  const model = useMemo(() => obj.clone(true), [obj]);
-
-  return <primitive object={model} />;
-};
 
 const EquippedItemOverlay = ({ imageUrl, modelHeight }: { imageUrl: string; modelHeight: number }) => {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
@@ -76,18 +67,10 @@ const AvatarModel = ({ equippedItems }: { equippedItems: EquippedItem[] }) => {
     setModelHeight(size.y);
   }, [model]);
 
-  const objItems = equippedItems.filter(i => i.model_url);
-  const pngItems = equippedItems.filter(i => !i.model_url);
-
   return (
     <group ref={groupRef}>
       <primitive object={model} scale={0.4} />
-      {objItems.map((item, i) => (
-        <Suspense key={`obj-${item.model_url}-${i}`} fallback={null}>
-          <ObjEquippedItem url={item.model_url!} />
-        </Suspense>
-      ))}
-      {pngItems.map((item, i) => (
+      {equippedItems.map((item, i) => (
         <EquippedItemOverlay key={`png-${item.image_url}-${i}`} imageUrl={item.image_url} modelHeight={modelHeight} />
       ))}
     </group>
