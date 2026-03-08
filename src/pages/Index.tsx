@@ -15,62 +15,9 @@ const Index = () => {
   const { user, profile } = useAuth();
   const { theme } = useTheme();
 
-  // Logged out view
+  // Logged out: redirect to auth home
   if (!user) {
-    return (
-      <div className="space-y-16">
-        <section className="relative py-20 text-center">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-full blur-3xl animate-pulse" />
-            </div>
-          </div>
-          <div className="relative z-10 space-y-8">
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
-                <Sparkles className="w-4 h-4" />
-                <span>Welcome to the future of virtual worlds</span>
-              </div>
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black tracking-tight">
-                <span className="gradient-text">SODA</span>
-                <span className="text-foreground">BLOX</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-body">
-                A futuristic virtual world revival. Collect items, trade limiteds, and build your legacy.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/signup">
-                <Button variant="neon" size="xl" className="group">
-                  <Zap className="w-5 h-5 group-hover:animate-pulse" />
-                  Start Playing
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button variant="outline" size="xl">
-                  Already have an account?
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-        <section className="relative overflow-hidden rounded-2xl">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20" />
-          <div className="absolute inset-0 cyber-grid opacity-30" />
-          <div className="relative p-12 text-center space-y-6">
-            <h2 className="text-3xl md:text-4xl font-display font-bold">
-              Ready to join the <span className="gradient-text">revolution</span>?
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Create your account now and receive 100 free emeralds to start your journey.
-            </p>
-            <Link to="/signup">
-              <Button variant="neon" size="xl">Create Account</Button>
-            </Link>
-          </div>
-        </section>
-      </div>
-    );
+    return <Navigate to="/auth" replace />;
   }
 
   // Roblox 2008 themed home
