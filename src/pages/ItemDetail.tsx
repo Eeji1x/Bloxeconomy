@@ -53,7 +53,7 @@ interface UserInventoryItem {
 }
 
 const ItemDetail = () => {
-  const { itemId } = useParams();
+  const { itemSlug } = useParams();
   const { user, profile, isAdmin, refreshProfile } = useAuth();
   const [item, setItem] = useState<CatalogItem | null>(null);
   const [resaleListings, setResaleListings] = useState<ResaleListing[]>([]);
@@ -67,6 +67,40 @@ const ItemDetail = () => {
   const [resellPrice, setResellPrice] = useState('');
   const [selectedInventoryId, setSelectedInventoryId] = useState<string | null>(null);
   const [creatingListing, setCreatingListing] = useState(false);
+
+  // Resolve slug to item ID
+  const [itemId, setItemId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const resolveItem = async () => {
+      if (!itemSlug) return;
+
+      // Try UUID first
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (uuidRegex.test(itemSlug)) {
+        setItemId(itemSlug);
+        return;
+      }
+
+      // Lookup by name slug
+      const { data } = await supabase
+        .from('catalog_items')
+        .select('id, name')
+        .order('created_at', { ascending: false });
+
+      if (data) {
+        const match = data.find(i => toSlug(i.name) === itemSlug);
+        if (match) {
+          setItemId(match.id);
+          return;
+        }
+      }
+      setItemId(null);
+      setLoading(false);
+    };
+
+    resolveItem();
+  }, [itemSlug]);
 
   useEffect(() => {
     if (itemId) {

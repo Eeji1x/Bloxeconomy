@@ -251,7 +251,7 @@ const Catalog = () => {
             const canBuy = saleState === 'on_sale' && !(isLimited && alreadyOwned);
 
             return (
-              <Link key={item.id} to={`/catalog/${item.id}`} className="cyber-card group">
+              <Link key={item.id} to={`/catalog/${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`} className="cyber-card group">
                 {/* Image */}
                 <div className="aspect-square rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 mb-3 overflow-hidden relative">
                   <img
