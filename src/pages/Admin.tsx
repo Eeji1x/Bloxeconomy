@@ -139,8 +139,6 @@ const CatalogPanel = () => {
   const [editingItem, setEditingItem] = useState<any | null>(null);
   const [restockingItem, setRestockingItem] = useState<string | null>(null);
   const [restockAmount, setRestockAmount] = useState('');
-  const [modelFile, setModelFile] = useState<File | null>(null);
-  const [uploadingModel, setUploadingModel] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
