@@ -3,8 +3,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useParams, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { 
-  BAD_DECISIONS_NUMERIC_ID, PROTECTED_USER_IDS, BANNED_USERNAME_PREFIX, DEFAULT_AVATAR_URL 
+  BAD_DECISIONS_NUMERIC_ID, PROTECTED_USER_IDS, BANNED_USERNAME_PREFIX, DEFAULT_AVATAR_URL,
+  SUPER_OWNER_NUMERIC_ID
 } from '@/lib/constants';
+import { isProtectedUser } from '@/hooks/useUserRoles';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -15,7 +17,7 @@ import { toast } from 'sonner';
 import {
   ChevronLeft, Shield, Ban, UserCheck, Lock, Unlock, KeyRound, RefreshCw,
   Edit, FileText, Gem, Eye, Package, Trash2, EyeOff, RotateCcw,
-  ArrowLeftRight, Store, User, Calendar, Clock, Hash
+  ArrowLeftRight, Store, User, Calendar, Clock, Hash, Crown
 } from 'lucide-react';
 
 interface UserProfile {
@@ -41,11 +43,16 @@ interface InventoryItem {
   catalog_items: { name: string; price: number; item_type: string; image_url: string } | null;
 }
 
+interface RoleInfo {
+  isAdmin: boolean;
+  isEconomyManager: boolean;
+}
+
 const AdminUserManagement = () => {
   const { userId } = useParams<{ userId: string }>();
-  const { user: authUser, isAdmin, isLoading: authLoading } = useAuth();
+  const { user: authUser, isAdmin, isLoading: authLoading, profile: authProfile } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isTargetAdmin, setIsTargetAdmin] = useState(false);
+  const [targetRoles, setTargetRoles] = useState<RoleInfo>({ isAdmin: false, isEconomyManager: false });
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [inviteKey, setInviteKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,8 +60,9 @@ const AdminUserManagement = () => {
   const [emeraldInput, setEmeraldInput] = useState('');
   const [banReasonInput, setBanReasonInput] = useState('');
 
+  const isSuperOwner = authProfile?.numeric_id === SUPER_OWNER_NUMERIC_ID;
   const isProtected = profile && (profile.numeric_id === 1);
-  const isBadDecisions = profile && (profile.numeric_id === BAD_DECISIONS_NUMERIC_ID);
+  const isOwnerAccount = profile && (profile.numeric_id === SUPER_OWNER_NUMERIC_ID);
 
   useEffect(() => {
     if (userId && authUser && isAdmin) fetchAll();
@@ -64,12 +72,18 @@ const AdminUserManagement = () => {
     setLoading(true);
     const [profileRes, rolesRes, invRes, invKeyRes] = await Promise.all([
       supabase.from('profiles').select('*').eq('user_id', userId!).maybeSingle(),
-      supabase.from('user_roles').select('role').eq('user_id', userId!).eq('role', 'admin').maybeSingle(),
+      supabase.from('user_roles').select('role').eq('user_id', userId!),
       supabase.from('user_inventory').select('id, item_id, quantity, is_equipped, catalog_items!inner(name, price, item_type, image_url)').eq('user_id', userId!),
       supabase.from('invite_keys').select('key').eq('used_by', userId!).maybeSingle(),
     ]);
     if (profileRes.data) setProfile(profileRes.data as UserProfile);
-    setIsTargetAdmin(!!rolesRes.data);
+    
+    const roles = rolesRes.data || [];
+    setTargetRoles({
+      isAdmin: roles.some((r: any) => r.role === 'admin'),
+      isEconomyManager: roles.some((r: any) => r.role === 'economy_manager'),
+    });
+    
     if (invRes.data) setInventory(invRes.data as unknown as InventoryItem[]);
     setInviteKey(invKeyRes.data?.key || null);
     setLoading(false);
@@ -84,33 +98,65 @@ const AdminUserManagement = () => {
     }]);
   };
 
+  const checkProtection = async (): Promise<boolean> => {
+    const result = await isProtectedUser(userId!, authUser!.id);
+    if (result.protected) {
+      toast.error(result.reason || 'Only the site owner can manage this account.');
+      return true;
+    }
+    return false;
+  };
+
+  // --- Permission handlers ---
+  const handleToggleAdmin = async () => {
+    if (await checkProtection()) return;
+    
+    if (targetRoles.isAdmin) {
+      await supabase.from('user_roles').delete().eq('user_id', userId!).eq('role', 'admin');
+      await logAction('remove_admin');
+      toast.success('Admin role removed');
+    } else {
+      await supabase.from('user_roles').insert({ user_id: userId!, role: 'admin' });
+      await logAction('grant_admin');
+      toast.success('Admin role granted');
+    }
+    fetchAll();
+  };
+
+  const handleToggleEconomyManager = async () => {
+    if (await checkProtection()) return;
+    
+    if (targetRoles.isEconomyManager) {
+      await supabase.from('user_roles').delete().eq('user_id', userId!).eq('role', 'economy_manager');
+      await logAction('remove_economy_manager');
+      toast.success('Economy Manager role removed');
+    } else {
+      await supabase.from('user_roles').insert({ user_id: userId!, role: 'economy_manager' });
+      await logAction('grant_economy_manager');
+      toast.success('Economy Manager role granted');
+    }
+    fetchAll();
+  };
+
   // --- Action handlers ---
   const handleBan = async () => {
-    if (!profile || isProtected) return;
-    if (PROTECTED_USER_IDS.includes(profile.numeric_id)) {
-      toast.error(`User ID #${profile.numeric_id} cannot be banned`);
+    if (!profile) return;
+    if (await checkProtection()) return;
+    if (PROTECTED_USER_IDS.includes(profile.numeric_id) && !isSuperOwner) {
+      toast.error('Only the site owner can manage this account.');
       return;
     }
 
     const reason = banReasonInput || 'Banned by admin';
     const updates: any = {
-      is_banned: true,
-      ban_reason: reason,
-      banned_at: new Date().toISOString(),
-      banned_by: authUser!.id,
-      username: `${BANNED_USERNAME_PREFIX}${profile.numeric_id}`,
+      is_banned: true, ban_reason: reason, banned_at: new Date().toISOString(),
+      banned_by: authUser!.id, username: `${BANNED_USERNAME_PREFIX}${profile.numeric_id}`,
     };
 
-    // Seize limited items to BadDecisions
-    const { data: bdProfile } = await supabase
-      .from('profiles').select('user_id').eq('numeric_id', BAD_DECISIONS_NUMERIC_ID).maybeSingle();
+    const { data: bdProfile } = await supabase.from('profiles').select('user_id').eq('numeric_id', BAD_DECISIONS_NUMERIC_ID).maybeSingle();
     const systemUserId = bdProfile?.user_id || '00000000-0000-0000-0000-000000000000';
 
-    const { data: userItems } = await supabase
-      .from('user_inventory')
-      .select('id, item_id, catalog_items!inner(item_type)')
-      .eq('user_id', userId!);
-
+    const { data: userItems } = await supabase.from('user_inventory').select('id, item_id, catalog_items!inner(item_type)').eq('user_id', userId!);
     if (userItems) {
       const limitedIds = userItems.filter((i: any) => i.catalog_items?.item_type === 'limited').map((i: any) => i.id);
       if (limitedIds.length > 0) {
@@ -123,73 +169,58 @@ const AdminUserManagement = () => {
     await supabase.from('trades').update({ status: 'cancelled' }).eq('status', 'pending').or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
     await supabase.from('profiles').update(updates).eq('user_id', userId!);
     await logAction('ban_user', { reason });
-    toast.success('User banned');
-    setBanReasonInput('');
-    fetchAll();
+    toast.success('User banned'); setBanReasonInput(''); fetchAll();
   };
 
   const handleUnban = async () => {
-    if (!profile || isProtected) return;
+    if (!profile) return;
     await supabase.from('profiles').update({ is_banned: false, ban_reason: null, banned_at: null, banned_by: null }).eq('user_id', userId!);
     await logAction('unban_user');
-    toast.success('User unbanned (items not returned)');
-    fetchAll();
+    toast.success('User unbanned (items not returned)'); fetchAll();
   };
 
   const handleGiveEmeralds = async (amount: number) => {
-    if (!profile || isProtected) return;
+    if (!profile) return;
     const newTotal = Math.max(0, profile.emeralds + amount);
     await supabase.from('profiles').update({ emeralds: newTotal }).eq('user_id', userId!);
     await logAction(amount > 0 ? 'give_emeralds' : 'remove_emeralds', { amount, new_total: newTotal });
-    toast.success(`${amount > 0 ? 'Added' : 'Removed'} ${Math.abs(amount)} emeralds`);
-    setEmeraldInput('');
-    fetchAll();
+    toast.success(`${amount > 0 ? 'Added' : 'Removed'} ${Math.abs(amount)} emeralds`); setEmeraldInput(''); fetchAll();
   };
 
   const handleResetAvatar = async () => {
-    if (!profile || isProtected) return;
+    if (!profile) return;
     await supabase.from('profiles').update({ avatar_data: {} }).eq('user_id', userId!);
-    // Unequip all items
     await supabase.from('user_inventory').update({ is_equipped: false }).eq('user_id', userId!);
-    await logAction('reset_avatar');
-    toast.success('Avatar reset to default');
-    fetchAll();
+    await logAction('reset_avatar'); toast.success('Avatar reset'); fetchAll();
   };
 
   const handleResetUsername = async () => {
-    if (!profile || isProtected) return;
+    if (!profile) return;
     const newName = `User_${profile.numeric_id}`;
     await supabase.from('profiles').update({ username: newName }).eq('user_id', userId!);
     await logAction('reset_username', { old: profile.username, new: newName });
-    toast.success(`Username reset to ${newName}`);
-    fetchAll();
+    toast.success(`Username reset to ${newName}`); fetchAll();
   };
 
   const handleClearTrades = async () => {
-    if (!profile || isProtected) return;
+    if (!profile) return;
     await supabase.from('trades').update({ status: 'cancelled' }).eq('status', 'pending').or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
-    await logAction('clear_trades');
-    toast.success('Pending trades cancelled');
+    await logAction('clear_trades'); toast.success('Pending trades cancelled');
   };
 
   const handleRemoveListings = async () => {
-    if (!profile || isProtected) return;
+    if (!profile) return;
     await supabase.from('resale_listings').delete().eq('seller_id', userId!);
-    await logAction('remove_listings');
-    toast.success('Marketplace listings removed');
+    await logAction('remove_listings'); toast.success('Marketplace listings removed');
   };
 
   const handleRemoveItem = async (invId: string, itemName: string) => {
-    if (isProtected) return;
-    const { data: bdProfile } = await supabase
-      .from('profiles').select('user_id').eq('numeric_id', BAD_DECISIONS_NUMERIC_ID).maybeSingle();
+    const { data: bdProfile } = await supabase.from('profiles').select('user_id').eq('numeric_id', BAD_DECISIONS_NUMERIC_ID).maybeSingle();
     const systemUserId = bdProfile?.user_id || '00000000-0000-0000-0000-000000000000';
-
     await supabase.from('user_inventory').update({ user_id: systemUserId, is_equipped: false }).eq('id', invId);
     await supabase.from('item_serials').update({ owner_id: systemUserId }).eq('inventory_id', invId);
     await logAction('remove_item', { inventory_id: invId, item_name: itemName });
-    toast.success(`Removed ${itemName} from inventory`);
-    fetchAll();
+    toast.success(`Removed ${itemName}`); fetchAll();
   };
 
   if (authLoading || loading) {
@@ -204,13 +235,10 @@ const AdminUserManagement = () => {
   if (!profile) return <div className="text-center py-20 text-muted-foreground">User not found</div>;
 
   const inventoryValue = inventory.reduce((sum, i) => sum + (i.catalog_items?.price || 0), 0);
+  const canManagePermissions = isSuperOwner || (!targetRoles.isAdmin && !targetRoles.isEconomyManager && !PROTECTED_USER_IDS.includes(profile.numeric_id));
+  const canBan = isSuperOwner || (!PROTECTED_USER_IDS.includes(profile.numeric_id) && !targetRoles.isAdmin && !targetRoles.isEconomyManager);
 
-  const ConfirmAction = ({ 
-    trigger, title, description, onConfirm, variant = 'destructive' 
-  }: { 
-    trigger: React.ReactNode; title: string; description: string; 
-    onConfirm: () => void; variant?: 'destructive' | 'default';
-  }) => (
+  const ConfirmAction = ({ trigger, title, description, onConfirm, variant = 'destructive' }: { trigger: React.ReactNode; title: string; description: string; onConfirm: () => void; variant?: 'destructive' | 'default' }) => (
     <AlertDialog>
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
       <AlertDialogContent>
@@ -220,9 +248,7 @@ const AdminUserManagement = () => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} className={variant === 'destructive' ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : ''}>
-            Confirm
-          </AlertDialogAction>
+          <AlertDialogAction onClick={onConfirm} className={variant === 'destructive' ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : ''}>Confirm</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -232,20 +258,16 @@ const AdminUserManagement = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Link to="/admin/players">
+        <Link to="/admin">
           <Button variant="ghost" size="icon"><ChevronLeft className="w-5 h-5" /></Button>
         </Link>
         <h1 className="text-2xl font-display font-bold">Manage User</h1>
-        {isProtected && (
-          <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded font-bold">PROTECTED</span>
-        )}
       </div>
 
       <div className="grid lg:grid-cols-[350px_1fr] gap-6">
         {/* LEFT PANEL - User Summary */}
         <div className="space-y-4">
           <div className="cyber-card p-6 space-y-4">
-            {/* Avatar */}
             <div className="w-24 h-24 mx-auto rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/30 overflow-hidden">
               <img src={DEFAULT_AVATAR_URL} alt={profile.username} className="w-full h-full object-cover" />
             </div>
@@ -255,10 +277,22 @@ const AdminUserManagement = () => {
               <p className="text-sm text-muted-foreground">#{profile.numeric_id}</p>
             </div>
 
-            {/* Badges */}
+            {/* Role Badges */}
             <div className="flex flex-wrap items-center justify-center gap-2">
-              {isTargetAdmin && (
-                <span className="admin-badge text-xs flex items-center gap-1"><Shield className="w-3 h-3" /> Admin</span>
+              {isOwnerAccount && (
+                <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded font-bold flex items-center gap-1">
+                  <Crown className="w-3 h-3" /> OWNER
+                </span>
+              )}
+              {targetRoles.isAdmin && (
+                <span className="text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded font-bold flex items-center gap-1">
+                  <Shield className="w-3 h-3" /> ADMIN
+                </span>
+              )}
+              {targetRoles.isEconomyManager && (
+                <span className="text-xs bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded font-bold flex items-center gap-1">
+                  <Gem className="w-3 h-3" /> ECONOMY
+                </span>
               )}
               {profile.is_banned ? (
                 <span className="text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded font-bold flex items-center gap-1">
@@ -292,153 +326,138 @@ const AdminUserManagement = () => {
 
         {/* RIGHT PANEL - Action Panels */}
         <div className="space-y-4">
-          {isProtected ? (
-            <div className="cyber-card p-6 text-center text-muted-foreground">
-              <Shield className="w-12 h-12 mx-auto mb-3 text-primary/50" />
-              <p className="font-display font-bold">Protected Account</p>
-              <p className="text-sm">No admin actions can be performed on User ID #1.</p>
+          {/* Permission Controls */}
+          <ActionPanel title="Permission Controls" icon={<Shield className="w-5 h-5" />}>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant={targetRoles.isAdmin ? 'destructive' : 'outline'}
+                className="gap-2"
+                onClick={handleToggleAdmin}
+                disabled={!canManagePermissions || isOwnerAccount}
+              >
+                <Shield className="w-4 h-4" />
+                {targetRoles.isAdmin ? 'Remove Admin' : 'Grant Admin'}
+              </Button>
+              <Button
+                variant={targetRoles.isEconomyManager ? 'destructive' : 'outline'}
+                className="gap-2"
+                onClick={handleToggleEconomyManager}
+                disabled={!canManagePermissions || isOwnerAccount}
+              >
+                <Gem className="w-4 h-4" />
+                {targetRoles.isEconomyManager ? 'Remove Economy' : 'Grant Economy'}
+              </Button>
             </div>
-          ) : (
-            <>
-              {/* Account Actions */}
-              <ActionPanel title="Account Actions" icon={<User className="w-5 h-5" />}>
-                <div className="grid grid-cols-2 gap-2">
-                  {!profile.is_banned ? (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="destructive" className="gap-2" disabled={PROTECTED_USER_IDS.includes(profile.numeric_id)}>
-                          <Ban className="w-4 h-4" /> Ban User
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Ban {profile.username}?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Limited items will be seized. This action cannot be fully reversed.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <Input
-                          placeholder="Ban reason..."
-                          value={banReasonInput}
-                          onChange={(e) => setBanReasonInput(e.target.value)}
-                          className="my-2"
-                        />
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleBan} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                            Ban
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  ) : (
+            {!canManagePermissions && !isSuperOwner && (
+              <p className="text-xs text-destructive mt-2">Only the site owner can manage this account.</p>
+            )}
+          </ActionPanel>
+
+          {/* Account Actions */}
+          <ActionPanel title="Account Actions" icon={<User className="w-5 h-5" />}>
+            <div className="grid grid-cols-2 gap-2">
+              {!profile.is_banned ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="gap-2" disabled={!canBan}>
+                      <Ban className="w-4 h-4" /> Ban User
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Ban {profile.username}?</AlertDialogTitle>
+                      <AlertDialogDescription>Limited items will be seized. This cannot be fully reversed.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <Input placeholder="Ban reason..." value={banReasonInput} onChange={(e) => setBanReasonInput(e.target.value)} className="my-2" />
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleBan} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Ban</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : (
+                <ConfirmAction
+                  trigger={<Button variant="default" className="gap-2"><UserCheck className="w-4 h-4" /> Unban User</Button>}
+                  title={`Unban ${profile.username}?`}
+                  description="User will regain access. Seized items will NOT be returned."
+                  onConfirm={handleUnban}
+                  variant="default"
+                />
+              )}
+              <ConfirmAction
+                trigger={<Button variant="outline" className="gap-2"><Edit className="w-4 h-4" /> Reset Username</Button>}
+                title="Reset Username?"
+                description={`Username will be changed to User_${profile.numeric_id}`}
+                onConfirm={handleResetUsername}
+              />
+            </div>
+          </ActionPanel>
+
+          {/* Economy Actions */}
+          <ActionPanel title="Economy Actions" icon={<Gem className="w-5 h-5" />}>
+            <div className="flex items-center gap-2 mb-3">
+              <Input type="number" placeholder="Amount" value={emeraldInput} onChange={(e) => setEmeraldInput(e.target.value)} className="flex-1" />
+              <Button variant="emerald" onClick={() => handleGiveEmeralds(Math.abs(parseInt(emeraldInput) || 0))} disabled={!emeraldInput} className="gap-1">
+                <Gem className="w-4 h-4" /> Give
+              </Button>
+              <Button variant="destructive" onClick={() => handleGiveEmeralds(-Math.abs(parseInt(emeraldInput) || 0))} disabled={!emeraldInput} className="gap-1">
+                <Gem className="w-4 h-4" /> Remove
+              </Button>
+            </div>
+            <Button variant="outline" className="w-full gap-2" onClick={() => setShowInventory(!showInventory)}>
+              <Package className="w-4 h-4" /> {showInventory ? 'Hide' : 'Manage'} Inventory ({inventory.length})
+            </Button>
+            {showInventory && (
+              <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
+                {inventory.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">Empty inventory</p>
+                ) : inventory.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3 p-2 bg-muted/30 rounded-lg">
+                    <div className="w-10 h-10 rounded bg-primary/10 overflow-hidden shrink-0">
+                      <img src={item.catalog_items?.image_url} alt="" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">{item.catalog_items?.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        💎 {item.catalog_items?.price} • {item.catalog_items?.item_type}
+                        {item.is_equipped && ' • Equipped'}
+                      </p>
+                    </div>
                     <ConfirmAction
-                      trigger={<Button variant="default" className="gap-2"><UserCheck className="w-4 h-4" /> Unban User</Button>}
-                      title={`Unban ${profile.username}?`}
-                      description="User will regain access. Seized items will NOT be returned."
-                      onConfirm={handleUnban}
-                      variant="default"
+                      trigger={<Button size="sm" variant="destructive"><Trash2 className="w-3 h-3" /></Button>}
+                      title={`Remove ${item.catalog_items?.name}?`}
+                      description="Item will be transferred to BadDecisions."
+                      onConfirm={() => handleRemoveItem(item.id, item.catalog_items?.name || 'Unknown')}
                     />
-                  )}
-
-                  <ConfirmAction
-                    trigger={<Button variant="outline" className="gap-2"><Edit className="w-4 h-4" /> Reset Username</Button>}
-                    title="Reset Username?"
-                    description={`Username will be changed to User_${profile.numeric_id}`}
-                    onConfirm={handleResetUsername}
-                  />
-                </div>
-              </ActionPanel>
-
-              {/* Economy Actions */}
-              <ActionPanel title="Economy Actions" icon={<Gem className="w-5 h-5" />}>
-                <div className="flex items-center gap-2 mb-3">
-                  <Input
-                    type="number"
-                    placeholder="Amount"
-                    value={emeraldInput}
-                    onChange={(e) => setEmeraldInput(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button
-                    variant="emerald"
-                    onClick={() => handleGiveEmeralds(Math.abs(parseInt(emeraldInput) || 0))}
-                    disabled={!emeraldInput}
-                    className="gap-1"
-                  >
-                    <Gem className="w-4 h-4" /> Give
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleGiveEmeralds(-Math.abs(parseInt(emeraldInput) || 0))}
-                    disabled={!emeraldInput}
-                    className="gap-1"
-                  >
-                    <Gem className="w-4 h-4" /> Remove
-                  </Button>
-                </div>
-
-                <Button
-                  variant="outline"
-                  className="w-full gap-2"
-                  onClick={() => setShowInventory(!showInventory)}
-                >
-                  <Package className="w-4 h-4" /> {showInventory ? 'Hide' : 'Manage'} Inventory ({inventory.length})
-                </Button>
-
-                {showInventory && (
-                  <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
-                    {inventory.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">Empty inventory</p>
-                    ) : inventory.map((item) => (
-                      <div key={item.id} className="flex items-center gap-3 p-2 bg-muted/30 rounded-lg">
-                        <div className="w-10 h-10 rounded bg-primary/10 overflow-hidden shrink-0">
-                          <img src={item.catalog_items?.image_url} alt="" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold truncate">{item.catalog_items?.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            💎 {item.catalog_items?.price} • {item.catalog_items?.item_type}
-                            {item.is_equipped && ' • Equipped'}
-                          </p>
-                        </div>
-                        <ConfirmAction
-                          trigger={<Button size="sm" variant="destructive"><Trash2 className="w-3 h-3" /></Button>}
-                          title={`Remove ${item.catalog_items?.name}?`}
-                          description="Item will be transferred to the BadDecisions system account."
-                          onConfirm={() => handleRemoveItem(item.id, item.catalog_items?.name || 'Unknown')}
-                        />
-                      </div>
-                    ))}
                   </div>
-                )}
-              </ActionPanel>
+                ))}
+              </div>
+            )}
+          </ActionPanel>
 
-              {/* SODABLOX Actions */}
-              <ActionPanel title="SODABLOX Actions" icon={<Shield className="w-5 h-5" />}>
-                <div className="grid grid-cols-2 gap-2">
-                  <ConfirmAction
-                    trigger={<Button variant="outline" className="gap-2"><RotateCcw className="w-4 h-4" /> Reset Avatar</Button>}
-                    title="Reset Avatar?"
-                    description="Avatar will be reset to default. All items will be unequipped."
-                    onConfirm={handleResetAvatar}
-                  />
-                  <ConfirmAction
-                    trigger={<Button variant="outline" className="gap-2"><ArrowLeftRight className="w-4 h-4" /> Clear Trades</Button>}
-                    title="Clear Pending Trades?"
-                    description="All pending trades will be cancelled."
-                    onConfirm={handleClearTrades}
-                  />
-                  <ConfirmAction
-                    trigger={<Button variant="outline" className="gap-2 col-span-2"><Store className="w-4 h-4" /> Remove Listings</Button>}
-                    title="Remove Marketplace Listings?"
-                    description="All active resale listings will be deleted."
-                    onConfirm={handleRemoveListings}
-                  />
-                </div>
-              </ActionPanel>
-            </>
-          )}
+          {/* SODABLOX Actions */}
+          <ActionPanel title="SODABLOX Actions" icon={<Shield className="w-5 h-5" />}>
+            <div className="grid grid-cols-2 gap-2">
+              <ConfirmAction
+                trigger={<Button variant="outline" className="gap-2"><RotateCcw className="w-4 h-4" /> Reset Avatar</Button>}
+                title="Reset Avatar?"
+                description="Avatar will be reset to default."
+                onConfirm={handleResetAvatar}
+              />
+              <ConfirmAction
+                trigger={<Button variant="outline" className="gap-2"><ArrowLeftRight className="w-4 h-4" /> Clear Trades</Button>}
+                title="Clear Pending Trades?"
+                description="All pending trades will be cancelled."
+                onConfirm={handleClearTrades}
+              />
+              <ConfirmAction
+                trigger={<Button variant="outline" className="gap-2 col-span-2"><Store className="w-4 h-4" /> Remove Listings</Button>}
+                title="Remove Marketplace Listings?"
+                description="All active resale listings will be deleted."
+                onConfirm={handleRemoveListings}
+              />
+            </div>
+          </ActionPanel>
         </div>
       </div>
     </div>
