@@ -53,7 +53,7 @@ const AdminUserManagement = () => {
   const { userId } = useParams<{ userId: string }>();
   const { user: authUser, isAdmin, isLoading: authLoading, profile: authProfile } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [targetRoles, setTargetRoles] = useState<RoleInfo>({ isAdmin: false, isEconomyManager: false });
+  const [targetRoles, setTargetRoles] = useState<RoleInfo>({ isAdmin: false, isOwner: false, isEconomyManager: false });
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [inviteKey, setInviteKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
