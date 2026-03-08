@@ -47,29 +47,36 @@ const AuthHome = () => {
             <span className="gradient-text">SODA</span>
             <span className="text-foreground">BLOX</span>
           </Link>
-          <form onSubmit={handleLogin} className="hidden sm:flex items-center gap-2">
-            <Input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="h-9 w-36 bg-input border-border text-sm"
-            />
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-9 w-36 bg-input border-border text-sm"
-            />
-            <Button type="submit" variant="neon" size="sm" disabled={isLoggingIn}>
-              {isLoggingIn ? '...' : 'Login'}
-            </Button>
-          </form>
-          <div className="flex sm:hidden gap-2">
-            <Link to="/login"><Button variant="outline" size="sm">Login</Button></Link>
-            <Link to="/signup"><Button variant="neon" size="sm">Sign Up</Button></Link>
-          </div>
+          {!user && (
+            <form onSubmit={handleLogin} className="hidden sm:flex items-center gap-2">
+              <Input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="h-9 w-36 bg-input border-border text-sm"
+              />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-9 w-36 bg-input border-border text-sm"
+              />
+              <Button type="submit" variant="neon" size="sm" disabled={isLoggingIn}>
+                {isLoggingIn ? '...' : 'Login'}
+              </Button>
+            </form>
+          )}
+          {!user && (
+            <div className="flex sm:hidden gap-2">
+              <Link to="/login"><Button variant="outline" size="sm">Login</Button></Link>
+              <Link to="/signup"><Button variant="neon" size="sm">Sign Up</Button></Link>
+            </div>
+          )}
+          {user && (
+            <Link to="/"><Button variant="neon" size="sm">Go to Dashboard</Button></Link>
+          )}
         </div>
       </nav>
 
