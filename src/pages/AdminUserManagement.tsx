@@ -125,6 +125,25 @@ const AdminUserManagement = () => {
     fetchAll();
   };
 
+  const handleToggleOwner = async () => {
+    if (!isSuperOwner) {
+      toast.error('Only SODABLOX (ID #1) can grant/remove the Owner role.');
+      return;
+    }
+    if (await checkProtection()) return;
+
+    if (targetRoles.isOwner) {
+      await supabase.from('user_roles').delete().eq('user_id', userId!).eq('role', 'owner');
+      await logAction('remove_owner');
+      toast.success('Owner role removed');
+    } else {
+      await supabase.from('user_roles').insert({ user_id: userId!, role: 'owner' });
+      await logAction('grant_owner');
+      toast.success('Owner role granted');
+    }
+    fetchAll();
+  };
+
   const handleToggleEconomyManager = async () => {
     if (await checkProtection()) return;
     
