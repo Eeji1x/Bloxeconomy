@@ -70,6 +70,7 @@ const AdminUserManagement = () => {
   const [banReasonInput, setBanReasonInput] = useState('');
   const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
   const [itemSearchQuery, setItemSearchQuery] = useState('');
+  const [addItemAmount, setAddItemAmount] = useState('1');
   const [showAddItem, setShowAddItem] = useState(false);
 
   const isSuperOwner = authProfile?.numeric_id === SUPER_OWNER_NUMERIC_ID;
