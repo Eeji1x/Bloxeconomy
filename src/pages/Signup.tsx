@@ -71,7 +71,7 @@ const Signup = () => {
       <div className="max-w-[400px] mx-auto py-6">
         <div className="rbx08-panel">
           <div className="rbx08-panel-header">Create a SODABLOX Account</div>
-          <div className="p-4">
+          <div className="rbx08-panel-body">
             <p className="text-[11px] text-[#666] mb-3">
               SODABLOX is free! Fill out the form below to get started. You need an invite key.
             </p>
