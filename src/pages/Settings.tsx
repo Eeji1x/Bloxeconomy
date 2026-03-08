@@ -35,11 +35,12 @@ const Settings = () => {
   const [passwordError, setPasswordError] = useState('');
 
   const USERNAME_CHANGE_COST = 1000;
+  const is2016 = theme === 'roblox2016';
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+        <div className={is2016 ? "rbx16-spinner" : "w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"} />
       </div>
     );
   }
@@ -105,6 +106,166 @@ const Settings = () => {
     toast.success(`Theme changed to ${THEMES.find(t => t.id === id)?.name}`);
   };
 
+  /* ═══════════════════════════════════════════
+     ROBLOX 2016 SETTINGS LAYOUT
+     ═══════════════════════════════════════════ */
+  if (is2016) {
+    const TABS = [
+      { key: 'username' as const, label: 'Username' },
+      { key: 'password' as const, label: 'Password' },
+      { key: 'themes' as const, label: 'Themes' },
+    ];
+
+    return (
+      <div style={{ maxWidth: 700 }}>
+        <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+          <div className="rbx16-panel-header">My Settings</div>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid #c3c3c3', marginBottom: 12 }}>
+          {TABS.map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveSection(tab.key)}
+              style={{
+                padding: '8px 16px',
+                fontSize: 14,
+                fontWeight: activeSection === tab.key ? 700 : 400,
+                color: activeSection === tab.key ? '#0074BD' : '#666',
+                background: activeSection === tab.key ? '#fff' : '#f2f2f2',
+                border: '1px solid #c3c3c3',
+                borderBottom: activeSection === tab.key ? '2px solid #fff' : '1px solid #c3c3c3',
+                marginBottom: -2,
+                cursor: 'pointer',
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Username */}
+        {activeSection === 'username' && (
+          <div className="rbx16-panel">
+            <div className="rbx16-panel-header">Change Username</div>
+            <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <p className="rbx16-text-muted">Changing your username costs <strong>{USERNAME_CHANGE_COST} emeralds</strong>.</p>
+              <div style={{ padding: '8px 12px', background: '#f8f8f8', border: '1px solid #e0e0e0' }}>
+                <span style={{ fontSize: 13, color: '#666' }}>Your balance: </span>
+                <strong style={{ color: '#02b757' }}>💎 {profile.emeralds.toLocaleString()}</strong>
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Current Username</label>
+                <input type="text" value={profile.username} disabled style={{ width: '100%', padding: '6px 8px', background: '#f2f2f2' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>New Username</label>
+                <input type="text" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} placeholder="Enter new username" maxLength={20} style={{ width: '100%', padding: '6px 8px' }} />
+              </div>
+              {usernameError && <p style={{ color: '#cc3333', fontSize: 13 }}>⚠ {usernameError}</p>}
+              <button
+                className="rbx16-btn-buy"
+                onClick={handleUsernameChange}
+                disabled={usernameLoading || profile.emeralds < USERNAME_CHANGE_COST}
+                style={{ opacity: (usernameLoading || profile.emeralds < USERNAME_CHANGE_COST) ? 0.5 : 1 }}
+              >
+                {usernameLoading ? 'Changing...' : `Change Username (${USERNAME_CHANGE_COST} 💎)`}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Password */}
+        {activeSection === 'password' && (
+          <div className="rbx16-panel">
+            <div className="rbx16-panel-header">Change Password</div>
+            <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Current Password</label>
+                <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Enter current password" style={{ width: '100%', padding: '6px 8px' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>New Password</label>
+                <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password (min 6 characters)" style={{ width: '100%', padding: '6px 8px' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Confirm New Password</label>
+                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm new password" style={{ width: '100%', padding: '6px 8px' }} />
+              </div>
+              {passwordError && <p style={{ color: '#cc3333', fontSize: 13 }}>⚠ {passwordError}</p>}
+              <button
+                className="rbx16-btn-continue"
+                onClick={handlePasswordChange}
+                disabled={passwordLoading}
+                style={{ opacity: passwordLoading ? 0.5 : 1 }}
+              >
+                {passwordLoading ? 'Changing...' : 'Change Password'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Themes */}
+        {activeSection === 'themes' && (
+          <div>
+            <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+              <div className="rbx16-panel-header">Appearance</div>
+              <div className="rbx16-panel-body">
+                <p className="rbx16-text-muted">Choose how SODABLOX looks for you.</p>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+              {THEMES.map((t) => {
+                const isActive = theme === t.id;
+                return (
+                  <div
+                    key={t.id}
+                    style={{
+                      background: '#fff',
+                      border: isActive ? '2px solid #0074BD' : '1px solid #c3c3c3',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div style={{ height: 100, position: 'relative', background: t.preview.bg }}>
+                      <div style={{ height: 28, display: 'flex', alignItems: 'center', padding: '0 8px', gap: 6, background: t.preview.navbar }}>
+                        <span style={{ fontSize: 9, fontWeight: 700, color: '#fff' }}>SODABLOX</span>
+                      </div>
+                      <div style={{ display: 'flex', height: 'calc(100% - 28px)' }}>
+                        <div style={{ width: 36, background: t.preview.navbar, padding: '6px 4px' }}>
+                          {[1,2,3].map(i => <div key={i} style={{ height: 4, marginBottom: 3, borderRadius: 1, background: i===1 ? t.preview.accent : 'rgba(255,255,255,0.15)' }} />)}
+                        </div>
+                        <div style={{ flex: 1, padding: 6 }}>
+                          <div style={{ height: 4, width: 30, borderRadius: 1, background: t.preview.text, opacity: 0.3, marginBottom: 4 }} />
+                          <div style={{ height: 4, width: 40, borderRadius: 1, background: t.preview.text, opacity: 0.15 }} />
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ padding: 12 }}>
+                      <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>{t.name}</div>
+                      <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>{t.description}</div>
+                      <button
+                        className={isActive ? 'rbx16-btn-cancel' : 'rbx16-btn-continue'}
+                        style={{ width: '100%', opacity: isActive ? 0.6 : 1 }}
+                        onClick={() => handleSelectTheme(t.id)}
+                        disabled={isActive}
+                      >
+                        {isActive ? 'Selected' : 'Select'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════════
+     DEFAULT SODABLOX LAYOUT
+     ═══════════════════════════════════════════ */
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       {/* Header */}
@@ -171,7 +332,7 @@ const Settings = () => {
         </div>
       )}
 
-      {/* Themes — Appearance section */}
+      {/* Themes */}
       {activeSection === 'themes' && (
         <div className="space-y-6">
           <div className="space-y-2">
@@ -187,9 +348,7 @@ const Settings = () => {
                   key={t.id}
                   className={`cyber-card p-0 overflow-hidden transition-all ${isActive ? 'ring-2 ring-primary' : ''}`}
                 >
-                  {/* Live mini-preview */}
                   <div className="h-[120px] relative" style={{ background: t.preview.bg }}>
-                    {/* Mini top bar */}
                     <div className="h-8 flex items-center px-3 gap-2" style={{ background: t.preview.navbar }}>
                       <span className="text-[10px] font-bold text-white">SODABLOX</span>
                       <div className="flex gap-1.5 ml-3">
@@ -199,15 +358,12 @@ const Settings = () => {
                       </div>
                       <div className="ml-auto h-2.5 w-16 rounded" style={{ background: 'rgba(255,255,255,0.15)' }} />
                     </div>
-                    {/* Mini sidebar + content */}
                     <div className="flex h-[calc(100%-32px)]">
-                      {/* Sidebar */}
                       <div className="w-12 shrink-0 pt-2 flex flex-col gap-1.5 px-1.5" style={{ background: t.preview.navbar }}>
                         {[1,2,3,4].map(i => (
                           <div key={i} className="h-1.5 w-full rounded" style={{ background: i === 1 ? t.preview.accent : 'rgba(255,255,255,0.15)' }} />
                         ))}
                       </div>
-                      {/* Content */}
                       <div className="flex-1 p-2 flex gap-1.5">
                         <div className="flex-1 rounded p-1.5" style={{ background: t.preview.card, border: '1px solid rgba(0,0,0,0.06)' }}>
                           <div className="h-1.5 w-10 rounded mb-1" style={{ background: t.preview.text, opacity: 0.4 }} />
@@ -221,7 +377,6 @@ const Settings = () => {
                     </div>
                   </div>
 
-                  {/* Info + button */}
                   <div className="p-4 space-y-3">
                     <div>
                       <h3 className="font-display font-bold text-sm">{t.name}</h3>
