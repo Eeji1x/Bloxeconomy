@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Layout } from "@/components/layout/Layout";
+import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import AuthHome from "./pages/AuthHome";
 import Login from "./pages/Login";
@@ -34,79 +36,89 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const SITE_LOCKED = true; // Set to false to reopen the site
+// Force logout key - change this value to force all users to re-login
+const FORCE_LOGOUT_VERSION = "security-patch-2026-03-08";
 
-const LockdownScreen = () => (
-  <div style={{
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: '#0a0a0a',
-    color: '#ffffff',
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    textAlign: 'center',
-    padding: '2rem',
-  }}>
-    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔧</div>
-    <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-      Fixing Stuff
-    </h1>
-    <p style={{ fontSize: '1.1rem', color: '#888', maxWidth: '400px' }}>
-      We're working on some important updates. The site will be back soon.
-    </p>
-  </div>
-);
+const ForceLogoutWrapper = ({ children }: { children: React.ReactNode }) => {
+  const [ready, setReady] = useState(false);
 
-const App = () => {
-  if (SITE_LOCKED) {
-    return <LockdownScreen />;
+  useEffect(() => {
+    const lastVersion = localStorage.getItem("force_logout_version");
+    if (lastVersion !== FORCE_LOGOUT_VERSION) {
+      // Force sign out, then mark as done
+      supabase.auth.signOut().then(() => {
+        localStorage.setItem("force_logout_version", FORCE_LOGOUT_VERSION);
+        setReady(true);
+      });
+    } else {
+      setReady(true);
+    }
+  }, []);
+
+  if (!ready) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#0a0a0a',
+        color: '#888',
+      }}>
+        Loading...
+      </div>
+    );
   }
 
+  return <>{children}</>;
+};
+
+const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ThemeProvider>
-            <AuthProvider>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<AuthHome />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/users" element={<Users />} />
-                  <Route path="/users/:username" element={<UserRedirect />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/profile/:userId" element={<Profile />} />
-                  <Route path="/catalog" element={<Catalog />} />
-                  <Route path="/catalog/:itemSlug" element={<ItemDetail />} />
-                  <Route path="/promocodes" element={<Promocodes />} />
-                  <Route path="/trading" element={<Trading />} />
-                  <Route path="/avatar" element={<Avatar />} />
-                  <Route path="/friends" element={<Friends />} />
-                  <Route path="/inbox" element={<Inbox />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/admin/players" element={<AdminPlayers />} />
-                  <Route path="/admin/players/:userId" element={<AdminUserManagement />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/leaderboards" element={<Leaderboards />} />
-                  <Route path="/sodamons" element={<Sodamons />} />
-                  <Route path="/sodamons/item/:itemId" element={<SodamonsItem />} />
-                  <Route path="/sodamons/top" element={<SodamonsTop />} />
-                  <Route path="/emeralds" element={<EmeraldShop />} />
-                  <Route path="/banned" element={<Banned />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Layout>
-            </AuthProvider>
-          </ThemeProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ForceLogoutWrapper>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ThemeProvider>
+              <AuthProvider>
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/auth" element={<AuthHome />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/users" element={<Users />} />
+                    <Route path="/users/:username" element={<UserRedirect />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/profile/:userId" element={<Profile />} />
+                    <Route path="/catalog" element={<Catalog />} />
+                    <Route path="/catalog/:itemSlug" element={<ItemDetail />} />
+                    <Route path="/promocodes" element={<Promocodes />} />
+                    <Route path="/trading" element={<Trading />} />
+                    <Route path="/avatar" element={<Avatar />} />
+                    <Route path="/friends" element={<Friends />} />
+                    <Route path="/inbox" element={<Inbox />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin/players" element={<AdminPlayers />} />
+                    <Route path="/admin/players/:userId" element={<AdminUserManagement />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/leaderboards" element={<Leaderboards />} />
+                    <Route path="/sodamons" element={<Sodamons />} />
+                    <Route path="/sodamons/item/:itemId" element={<SodamonsItem />} />
+                    <Route path="/sodamons/top" element={<SodamonsTop />} />
+                    <Route path="/emeralds" element={<EmeraldShop />} />
+                    <Route path="/banned" element={<Banned />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Layout>
+              </AuthProvider>
+            </ThemeProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ForceLogoutWrapper>
   );
 };
 
