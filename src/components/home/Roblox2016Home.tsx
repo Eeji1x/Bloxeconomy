@@ -18,10 +18,22 @@ interface Announcement {
   link_text: string | null;
 }
 
-/* ═══════════════════════════════════════════════════
-   SODABLOX 2016 Home — Based on ECS economy-simulator
-   White panels, #f2f2f2 sidebar, Bootstrap-like grid
-   ═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   2016 ROBLOX Home Page — Pixel-perfect replica
+   
+   Real 2016 home layout:
+   ┌──────────────────────────────────────────────┐
+   │ [Avatar] Welcome back, Username!             │
+   │          R$ 1,234 | Friends: 12              │
+   │          [Customize] [Shop]                  │
+   ├──────────────────────────────────────────────┤
+   │ My Feed                                       │
+   │ (announcements / activity)                    │
+   ├──────────────────────────────────────────────┤
+   │ Friends (12)                                  │
+   │ [avatar grid of friend thumbnails]            │
+   └──────────────────────────────────────────────┘
+   ═══════════════════════════════════════════════════════════════ */
 
 export const Roblox2016Home = () => {
   const { user, profile, isAdmin } = useAuth();
@@ -46,7 +58,7 @@ export const Roblox2016Home = () => {
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
-        .limit(3),
+        .limit(5),
     ]);
 
     if (announcementsRes.data) setAnnouncements(announcementsRes.data);
@@ -62,7 +74,7 @@ export const Roblox2016Home = () => {
 
       if (profiles) {
         setFriends(
-          profiles.sort((a, b) => {
+          profiles.sort((a: Friend, b: Friend) => {
             if (a.is_online && !b.is_online) return -1;
             if (!a.is_online && b.is_online) return 1;
             return 0;
@@ -77,31 +89,39 @@ export const Roblox2016Home = () => {
 
   return (
     <div className="rbx16-home">
-      {/* Welcome panel */}
+      {/* ── Welcome Panel (matching real 2016 home header) ── */}
       <div className="rbx16-panel">
-        <div className="rbx16-panel-header">Welcome back, {profile.username}!</div>
+        <div className="rbx16-panel-header">
+          <span className="rbx16-panel-header-text">Welcome back, {profile.username}!</span>
+        </div>
         <div className="rbx16-panel-body">
-          <div className="flex items-center gap-4">
-            <Link to={`/profile/${user.id}`} className="shrink-0">
-              <div className="w-[80px] h-[80px] overflow-hidden">
-                <UserAvatar userId={user.id} size="xl" className="w-full h-full" />
-              </div>
+          <div className="rbx16-welcome-row">
+            <Link to={`/profile/${user.id}`} className="rbx16-welcome-avatar">
+              <UserAvatar userId={user.id} size="xl" className="w-full h-full" />
             </Link>
-            <div className="flex-1">
-              <div className="flex items-center gap-1.5 mb-1">
+            <div className="rbx16-welcome-info">
+              <div className="rbx16-welcome-username-row">
                 {profile.is_verified && (
-                  <img src="/images/verified-badge.png" alt="Verified" className="w-4 h-4" />
+                  <img src="/images/verified-badge.png" alt="Verified" className="rbx16-verified-badge" />
                 )}
-                <span className="rbx16-username">{profile.username}</span>
+                <Link to={`/profile/${user.id}`} className="rbx16-welcome-username">{profile.username}</Link>
               </div>
-              <p className="rbx16-text-muted">
-                💎 <strong>{profile.emeralds.toLocaleString()}</strong> Emeralds · {friends.length} Friends
-              </p>
-              <div className="flex items-center gap-2 mt-3">
-                <Link to="/avatar" className="rbx16-btn-primary">Customize</Link>
-                <Link to="/catalog" className="rbx16-btn-primary">Shop</Link>
+              <div className="rbx16-welcome-stats">
+                <span className="rbx16-stat-item">
+                  <span className="icon-nav-robux" style={{ width: 16, height: 16, backgroundSize: '32px auto' }} />
+                  <strong>{profile.emeralds.toLocaleString()}</strong>
+                </span>
+                <span className="rbx16-stat-separator">|</span>
+                <span className="rbx16-stat-item">
+                  Friends: <strong>{friends.length}</strong>
+                </span>
+              </div>
+              <div className="rbx16-welcome-actions">
+                <Link to="/avatar" className="rbx16-btn-control">Customize Character</Link>
+                <Link to="/catalog" className="rbx16-btn-control">Avatar Shop</Link>
+                <Link to={`/profile/${user.id}`} className="rbx16-btn-control">My Profile</Link>
                 {isAdmin && (
-                  <Link to="/admin" className="rbx16-btn-danger">Admin</Link>
+                  <Link to="/admin" className="rbx16-btn-control rbx16-btn-control-admin">Admin</Link>
                 )}
               </div>
             </div>
@@ -109,11 +129,49 @@ export const Roblox2016Home = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
+      {/* ── My Feed / Announcements (real 2016 had "My Feed") ── */}
       <div className="rbx16-panel">
-        <div className="rbx16-panel-header">Quick Actions</div>
+        <div className="rbx16-panel-header">
+          <span className="rbx16-panel-header-text">My Feed</span>
+        </div>
         <div className="rbx16-panel-body">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+          {announcements.length === 0 ? (
+            <p className="rbx16-text-muted" style={{ textAlign: 'center', padding: '16px 0' }}>
+              No recent announcements.
+            </p>
+          ) : (
+            <div className="rbx16-feed-list">
+              {announcements.map((a, i) => (
+                <div
+                  key={a.id}
+                  className={joinCn(
+                    'rbx16-feed-item',
+                    i < announcements.length - 1 && 'rbx16-feed-item-border'
+                  )}
+                >
+                  <div className="rbx16-feed-icon">📢</div>
+                  <div className="rbx16-feed-content">
+                    <p className="rbx16-text">{a.text}</p>
+                    {a.link_url && (
+                      <a href={a.link_url} target="_blank" rel="noopener noreferrer" className="rbx16-link">
+                        {a.link_text || 'Learn more'}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Quick Actions (not in real 2016 but helpful navigation) ── */}
+      <div className="rbx16-panel">
+        <div className="rbx16-panel-header">
+          <span className="rbx16-panel-header-text">Quick Actions</span>
+        </div>
+        <div className="rbx16-panel-body">
+          <div className="rbx16-quick-grid">
             {[
               { label: 'Avatar Shop', href: '/catalog', emoji: '🛒' },
               { label: 'Trading', href: '/trading', emoji: '🔄' },
@@ -121,12 +179,8 @@ export const Roblox2016Home = () => {
               { label: 'Promo Codes', href: '/promocodes', emoji: '🎁' },
               { label: 'Leaderboards', href: '/leaderboards', emoji: '🏆' },
             ].map(item => (
-              <Link
-                key={item.href}
-                to={item.href}
-                className="rbx16-quick-action"
-              >
-                <span className="text-2xl">{item.emoji}</span>
+              <Link key={item.href} to={item.href} className="rbx16-quick-action">
+                <span className="rbx16-quick-emoji">{item.emoji}</span>
                 <span className="rbx16-quick-action-label">{item.label}</span>
               </Link>
             ))}
@@ -134,57 +188,28 @@ export const Roblox2016Home = () => {
         </div>
       </div>
 
-      {/* Announcements */}
-      {announcements.length > 0 && (
-        <div className="rbx16-panel">
-          <div className="rbx16-panel-header">Announcements</div>
-          <div className="rbx16-panel-body">
-            {announcements.map((a, i) => (
-              <div
-                key={a.id}
-                className={cn(
-                  'py-2',
-                  i < announcements.length - 1 && 'border-b border-[#c3c3c3]'
-                )}
-              >
-                <p className="rbx16-text" style={{ marginBottom: 2 }}>{a.text}</p>
-                {a.link_url && (
-                  <a
-                    href={a.link_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rbx16-link"
-                  >
-                    {a.link_text || 'Learn more'}
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Friends */}
+      {/* ── Friends Panel (real 2016 had avatar thumbnail grid) ── */}
       <div className="rbx16-panel">
-        <div className="rbx16-panel-header">Friends ({friends.length})</div>
+        <div className="rbx16-panel-header">
+          <span className="rbx16-panel-header-text">Friends ({friends.length})</span>
+          {friends.length > 0 && (
+            <Link to="/friends" className="rbx16-panel-header-link">See All</Link>
+          )}
+        </div>
         <div className="rbx16-panel-body">
           {loading ? (
-            <div className="flex justify-center py-8">
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
               <div className="rbx16-spinner" />
             </div>
           ) : friends.length === 0 ? (
-            <div className="text-center py-6">
-              <p className="rbx16-text-muted mb-2">You haven't added any friends yet.</p>
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <p className="rbx16-text-muted" style={{ marginBottom: 8 }}>You haven't added any friends yet.</p>
               <Link to="/users" className="rbx16-link">Find People</Link>
             </div>
           ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
-              {friends.slice(0, 16).map(friend => (
-                <Link
-                  key={friend.user_id}
-                  to={`/profile/${friend.user_id}`}
-                  className="rbx16-friend-tile"
-                >
+            <div className="rbx16-friends-grid">
+              {friends.slice(0, 18).map(friend => (
+                <Link key={friend.user_id} to={`/profile/${friend.user_id}`} className="rbx16-friend-tile">
                   <div className="relative">
                     <div className="rbx16-friend-avatar">
                       <UserAvatar userId={friend.user_id} size="lg" className="w-full h-full" />
@@ -202,6 +227,6 @@ export const Roblox2016Home = () => {
   );
 };
 
-function cn(...classes: (string | false | undefined)[]) {
+function joinCn(...classes: (string | false | undefined)[]) {
   return classes.filter(Boolean).join(' ');
 }
