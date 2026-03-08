@@ -82,8 +82,8 @@ const Inbox = () => {
     }
 
     const partnerIds = Array.from(convos.keys()).filter(id => id !== 'system');
-    const { data: profiles } = partnerIds.length > 0 ? await supabase.from('profiles').select('user_id, username').in('user_id', partnerIds) : { data: [] };
-    const profileMap = new Map((profiles || []).map(p => [p.user_id, p.username]));
+    const { data: profiles } = partnerIds.length > 0 ? await (supabase as any).from('public_profiles').select('user_id, username').in('user_id', partnerIds) : { data: [] };
+    const profileMap = new Map(((profiles || []) as Array<{ user_id: string; username: string }>).map(p => [p.user_id, p.username]));
 
     const previews: ConversationPreview[] = [];
     convos.forEach((data, partnerId) => {
@@ -124,7 +124,7 @@ const Inbox = () => {
 
   const startNewConversation = async () => {
     if (!newConvoUsername.trim()) return;
-    const { data: targetProfile } = await supabase.from('profiles').select('user_id, username').ilike('username', newConvoUsername.trim()).maybeSingle();
+    const { data: targetProfile } = await (supabase as any).from('public_profiles').select('user_id, username').ilike('username', newConvoUsername.trim()).maybeSingle();
     if (!targetProfile) { toast.error('User not found'); return; }
     if (targetProfile.user_id === user?.id) { toast.error('You cannot message yourself'); return; }
     setShowNewConvo(false); setNewConvoUsername('');

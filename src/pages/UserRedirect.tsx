@@ -13,8 +13,8 @@ const UserRedirect = () => {
         return;
       }
 
-      const { data } = await supabase
-        .from('profiles')
+      const { data } = await (supabase as any)
+        .from('public_profiles')
         .select('numeric_id')
         .eq('username', username)
         .maybeSingle();

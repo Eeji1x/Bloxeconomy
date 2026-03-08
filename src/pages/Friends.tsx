@@ -68,8 +68,9 @@ const Friends = () => {
     const allUserIds = [...accepted.map(a => a.friendUserId), ...incoming.map(i => i.requester_id), ...outgoing.map(o => o.addressee_id)];
 
     if (allUserIds.length > 0) {
-      const { data: profiles } = await supabase.from('profiles').select('user_id, username, is_verified, is_online').in('user_id', allUserIds);
-      const profileMap = new Map(profiles?.map(p => [p.user_id, p]));
+      const { data: profiles } = await (supabase as any).from('public_profiles').select('user_id, username, is_verified, is_online').in('user_id', allUserIds);
+      const profileRows = (profiles || []) as Array<{ user_id: string; username: string; is_verified: boolean | null; is_online: boolean | null }>;
+      const profileMap = new Map(profileRows.map(p => [p.user_id, p]));
 
       setFriends(accepted.map(a => {
         const profile = profileMap.get(a.friendUserId);

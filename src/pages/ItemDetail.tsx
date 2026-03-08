@@ -133,14 +133,15 @@ const ItemDetail = () => {
       .order('price', { ascending: true });
     if (data) {
       const sellerIds = data.map(l => l.seller_id);
-      const { data: profiles } = await supabase
-        .from('profiles')
+      const { data: profiles } = await (supabase as any)
+        .from('public_profiles')
         .select('user_id, username, is_verified')
         .in('user_id', sellerIds);
-      const profileMap = new Map(profiles?.map(p => [p.user_id, p]));
+      const profileRows = (profiles || []) as Array<{ user_id: string; username: string; is_verified: boolean | null }>;
+      const profileMap = new Map(profileRows.map(p => [p.user_id, p]));
       setResaleListings(data.map(l => ({
         ...l,
-        seller_profile: profileMap.get(l.seller_id),
+        seller_profile: profileMap.get(l.seller_id) as { username: string; is_verified: boolean | null } | undefined,
       })));
     }
   };

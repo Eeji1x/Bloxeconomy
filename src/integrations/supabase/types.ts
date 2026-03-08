@@ -778,7 +778,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_data: Json | null
+          created_at: string | null
+          emeralds: number | null
+          id: string | null
+          is_online: boolean | null
+          is_verified: boolean | null
+          last_seen: string | null
+          numeric_id: number | null
+          updated_at: string | null
+          user_id: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_data?: Json | null
+          created_at?: string | null
+          emeralds?: number | null
+          id?: string | null
+          is_online?: boolean | null
+          is_verified?: boolean | null
+          last_seen?: string | null
+          numeric_id?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_data?: Json | null
+          created_at?: string | null
+          emeralds?: number | null
+          id?: string | null
+          is_online?: boolean | null
+          is_verified?: boolean | null
+          last_seen?: string | null
+          numeric_id?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       claim_daily_emeralds: { Args: never; Returns: Json }

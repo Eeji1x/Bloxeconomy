@@ -55,8 +55,8 @@ export const Roblox2015Home = () => {
       const friendIds = friendshipsRes.data.map(f =>
         f.requester_id === user.id ? f.addressee_id : f.requester_id
       );
-      const { data: profiles } = await supabase
-        .from('profiles')
+      const { data: profiles } = await (supabase as any)
+        .from('public_profiles')
         .select('user_id, username, is_online, is_verified')
         .in('user_id', friendIds);
 
