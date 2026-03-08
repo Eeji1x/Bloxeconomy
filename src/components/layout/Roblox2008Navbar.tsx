@@ -170,7 +170,7 @@ export const Roblox2008Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            {(isAdmin || isEconomyManager) && (
+            {(isAdmin || isOwner || isEconomyManager) && (
               <Link
                 to="/admin"
                 onClick={() => setMobileMenuOpen(false)}
