@@ -588,6 +588,8 @@ const CatalogPanel = () => {
       stock: item.stock,
       is_on_sale: item.is_on_sale ?? true,
       resell_enabled: item.resell_enabled ?? true,
+      sale_start_time: item.sale_start_time ? new Date(item.sale_start_time).toISOString().slice(0, 16) : '',
+      sale_end_time: item.sale_end_time ? new Date(item.sale_end_time).toISOString().slice(0, 16) : '',
     });
     setShowForm(true);
   };
