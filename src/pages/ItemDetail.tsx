@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,6 +7,7 @@ import { updateItemRAP } from '@/lib/rap';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { OwnersPanel } from '@/components/catalog/OwnersPanel';
+import { ItemModel3DViewer } from '@/components/catalog/ItemModel3DViewer';
 import { 
   ArrowLeft, 
   Gem, 
@@ -17,7 +18,8 @@ import {
   Clock,
   ShoppingCart,
   Plus,
-  Trash2
+  Trash2,
+  Box
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -33,6 +35,7 @@ interface CatalogItem {
   is_on_sale: boolean | null;
   resell_enabled: boolean | null;
   created_at: string;
+  model_url: string | null;
 }
 
 interface ResaleListing {
@@ -70,6 +73,7 @@ const ItemDetail = () => {
   const [resellPrice, setResellPrice] = useState('');
   const [selectedInventoryId, setSelectedInventoryId] = useState<string | null>(null);
   const [creatingListing, setCreatingListing] = useState(false);
+  const [view3D, setView3D] = useState(false);
 
   const [itemId, setItemId] = useState<string | null>(null);
   const is2016 = theme === 'roblox2016';
@@ -286,14 +290,26 @@ const ItemDetail = () => {
           {/* Left — Image */}
           <div className="rbx16-item-image-col">
             <div className="rbx16-panel">
+              {item.model_url && (
+                <div className="rbx16-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Preview</span>
+                  <button onClick={() => setView3D(!view3D)} style={{ fontSize: 11, color: '#00a2ff', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                    {view3D ? '2D View' : '3D View'}
+                  </button>
+                </div>
+              )}
               <div className="rbx16-item-image-container">
-                <img src={item.image_url} alt={item.name} />
-                {isLimited && (
-                  <img
-                    src="/images/2016/limitedOverlay_small.png"
-                    alt="Limited"
-                    className="rbx16-limited-overlay-detail"
-                  />
+                {view3D && item.model_url ? (
+                  <div style={{ width: '100%', height: 300 }}>
+                    <ItemModel3DViewer modelUrl={item.model_url} height={300} />
+                  </div>
+                ) : (
+                  <>
+                    <img src={item.image_url} alt={item.name} />
+                    {isLimited && (
+                      <img src="/images/2016/limitedOverlay_small.png" alt="Limited" className="rbx16-limited-overlay-detail" />
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -472,12 +488,29 @@ const ItemDetail = () => {
       </Link>
 
       <div className="grid md:grid-cols-2 gap-8">
-        <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 overflow-hidden relative">
-          <img src={item.image_url} alt={item.name} className="w-full h-full object-contain p-8" />
-          {isLimited && (
-            <div className="absolute top-4 right-4 limited-badge">
-              <Star className="w-4 h-4" />
-              Limited
+        <div className="relative">
+          {item.model_url && (
+            <button
+              onClick={() => setView3D(!view3D)}
+              className="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-lg bg-background/80 backdrop-blur-sm border border-border text-xs font-semibold hover:bg-background transition-colors flex items-center gap-1.5"
+            >
+              <Box className="w-3.5 h-3.5" />
+              {view3D ? '2D View' : '3D View'}
+            </button>
+          )}
+          {view3D && item.model_url ? (
+            <div className="rounded-2xl overflow-hidden" style={{ aspectRatio: '1', minHeight: 350 }}>
+              <ItemModel3DViewer modelUrl={item.model_url} height={400} />
+            </div>
+          ) : (
+            <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 overflow-hidden relative">
+              <img src={item.image_url} alt={item.name} className="w-full h-full object-contain p-8" />
+              {isLimited && (
+                <div className="absolute top-4 right-4 limited-badge">
+                  <Star className="w-4 h-4" />
+                  Limited
+                </div>
+              )}
             </div>
           )}
         </div>

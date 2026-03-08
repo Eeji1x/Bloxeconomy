@@ -20,7 +20,7 @@ import ApplicationsPanel from '@/components/admin/ApplicationsPanel';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
   Plus, Trash2, Save, BadgeCheck, RefreshCw, RotateCcw, Edit,
-  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye, FileText
+  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye, FileText, Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { forceDeleteItem } from '@/lib/forceDeleteItem';
@@ -139,6 +139,8 @@ const CatalogPanel = () => {
   const [editingItem, setEditingItem] = useState<any | null>(null);
   const [restockingItem, setRestockingItem] = useState<string | null>(null);
   const [restockAmount, setRestockAmount] = useState('');
+  const [modelFile, setModelFile] = useState<File | null>(null);
+  const [uploadingModel, setUploadingModel] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -150,6 +152,7 @@ const CatalogPanel = () => {
     resell_enabled: true,
     sale_start_time: '',
     sale_end_time: '',
+    model_url: '' as string,
   });
 
   useEffect(() => { fetchItems(); }, []);
@@ -159,10 +162,23 @@ const CatalogPanel = () => {
     if (data) setItems(data);
   };
 
+  const uploadModelFile = async (file: File, itemName: string): Promise<string | null> => {
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (ext !== 'obj') { toast.error('Only .obj files are supported'); return null; }
+    const fileName = `${Date.now()}_${itemName.replace(/[^a-z0-9]/gi, '_')}.obj`;
+    setUploadingModel(true);
+    const { data, error } = await supabase.storage.from('item-models').upload(fileName, file, { contentType: 'model/obj' });
+    setUploadingModel(false);
+    if (error) { toast.error('Failed to upload model'); return null; }
+    const { data: urlData } = supabase.storage.from('item-models').getPublicUrl(data.path);
+    return urlData.publicUrl;
+  };
+
   const resetForm = () => {
-    setFormData({ name: '', description: '', image_url: '', item_type: 'normal', price: 1, stock: null, is_on_sale: true, resell_enabled: true, sale_start_time: '', sale_end_time: '' });
+    setFormData({ name: '', description: '', image_url: '', item_type: 'normal', price: 1, stock: null, is_on_sale: true, resell_enabled: true, sale_start_time: '', sale_end_time: '', model_url: '' });
     setEditingItem(null);
     setShowForm(false);
+    setModelFile(null);
   };
 
   const handleStartEdit = (item: any) => {
@@ -174,11 +190,20 @@ const CatalogPanel = () => {
       resell_enabled: item.resell_enabled ?? true,
       sale_start_time: item.sale_start_time ? new Date(item.sale_start_time).toISOString().slice(0, 16) : '',
       sale_end_time: item.sale_end_time ? new Date(item.sale_end_time).toISOString().slice(0, 16) : '',
+      model_url: item.model_url || '',
     });
+    setModelFile(null);
     setShowForm(true);
   };
 
   const handleSubmit = async () => {
+    let modelUrl = formData.model_url || null;
+    if (modelFile) {
+      const uploaded = await uploadModelFile(modelFile, formData.name);
+      if (uploaded) modelUrl = uploaded;
+      else return;
+    }
+
     if (editingItem) {
       const wasNormal = editingItem.item_type === 'normal';
       const becomingLimited = formData.item_type === 'limited';
@@ -188,6 +213,7 @@ const CatalogPanel = () => {
         is_on_sale: formData.is_on_sale, is_giftbox: false, resell_enabled: formData.resell_enabled,
         sale_start_time: formData.sale_start_time ? new Date(formData.sale_start_time).toISOString() : null,
         sale_end_time: formData.sale_end_time ? new Date(formData.sale_end_time).toISOString() : null,
+        model_url: modelUrl,
       }).eq('id', editingItem.id);
       if (error) { toast.error('Failed to update item'); } else {
         if (wasNormal && becomingLimited) {
@@ -209,6 +235,7 @@ const CatalogPanel = () => {
         is_on_sale: formData.is_on_sale, is_giftbox: false, resell_enabled: formData.resell_enabled,
         sale_start_time: formData.sale_start_time ? new Date(formData.sale_start_time).toISOString() : null,
         sale_end_time: formData.sale_end_time ? new Date(formData.sale_end_time).toISOString() : null,
+        model_url: modelUrl,
       });
       if (error) { toast.error('Failed to create item'); } else { toast.success('Item created!'); resetForm(); fetchItems(); }
     }
@@ -267,8 +294,28 @@ const CatalogPanel = () => {
             <div className="space-y-2"><Label>Sale Start Time</Label><input type="datetime-local" value={formData.sale_start_time} onChange={(e) => setFormData({ ...formData, sale_start_time: e.target.value })} className="w-full h-10 rounded-md border bg-input px-3 text-sm" /></div>
             <div className="space-y-2"><Label>Sale End Time</Label><input type="datetime-local" value={formData.sale_end_time} onChange={(e) => setFormData({ ...formData, sale_end_time: e.target.value })} className="w-full h-10 rounded-md border bg-input px-3 text-sm" /></div>
           </div>
-          <div className="space-y-2"><Label>Description</Label><Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Item description..." /></div>
-          <div className="flex gap-2"><Button onClick={handleSubmit}><Save className="w-4 h-4 mr-2" />{editingItem ? 'Update' : 'Create'}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
+          <div className="space-y-2">
+            <Label>3D Model (.obj)</Label>
+            <div className="flex items-center gap-3">
+              <input
+                type="file"
+                accept=".obj"
+                onChange={(e) => setModelFile(e.target.files?.[0] || null)}
+                className="text-sm file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
+              />
+              {(formData.model_url || modelFile) && (
+                <span className="text-xs text-accent">
+                  {modelFile ? `New: ${modelFile.name}` : '✓ Model attached'}
+                </span>
+              )}
+              {formData.model_url && !modelFile && (
+                <Button size="sm" variant="destructive" onClick={() => setFormData({ ...formData, model_url: '' })}>
+                  Remove Model
+                </Button>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-2"><Button onClick={handleSubmit} disabled={uploadingModel}><Save className="w-4 h-4 mr-2" />{uploadingModel ? 'Uploading...' : editingItem ? 'Update' : 'Create'}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
         </div>
       )}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
