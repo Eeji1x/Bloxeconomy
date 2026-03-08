@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
 
-export type ThemeId = 'sodablox' | 'roblox2016' | 'roblox2015' | 'roblox2012' | 'roblox2008';
+export type ThemeId = 'sodablox' | 'roblox2016' | 'roblox2015' | 'roblox2012' | 'roblox2008' | 'mercury';
 
-const VALID_THEMES: ThemeId[] = ['sodablox', 'roblox2016', 'roblox2015', 'roblox2012', 'roblox2008'];
+const VALID_THEMES: ThemeId[] = ['sodablox', 'roblox2016', 'roblox2015', 'roblox2012', 'roblox2008', 'mercury'];
 
 interface ThemeOption {
   id: ThemeId;
@@ -77,6 +77,18 @@ export const THEMES: ThemeOption[] = [
       accent: '#003399',
       card: '#FFFFFF',
       text: '#000000',
+    },
+  },
+  {
+    id: 'mercury',
+    name: 'Mercury',
+    description: 'Dark purple theme inspired by MercuryCore — deep blacks with violet accents',
+    preview: {
+      bg: '#101010',
+      navbar: '#0d0d0d',
+      accent: '#7733FF',
+      card: '#1a1a1a',
+      text: '#e0e0e0',
     },
   },
 ];
