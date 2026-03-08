@@ -186,7 +186,7 @@ export const Roblox2008Navbar = () => {
                   paddingTop: 10,
                 }}
               >
-                ⚡ {isAdmin ? 'Admin Panel' : 'Economy Panel'}
+                ⚡ {isAdmin ? 'Admin Panel' : isOwner ? 'Owner Panel' : 'Economy Panel'}
               </Link>
             )}
           </div>
