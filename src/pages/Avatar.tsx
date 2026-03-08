@@ -95,6 +95,7 @@ const Avatar = () => {
                     equippedItems={equippedItems.filter(i => i.catalog_items).map(i => ({
                       image_url: i.catalog_items!.image_url,
                       name: i.catalog_items!.name,
+                      model_url: i.catalog_items!.model_url,
                     }))}
                   />
                 </div>
