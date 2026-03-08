@@ -346,7 +346,22 @@ const Apply = () => {
                     <p className="text-sm text-muted-foreground">Your application is still under review. Check back later!</p>
                   )}
                   {statusResult.status === 'accepted' && (
-                    <p className="text-sm text-accent">Your application was accepted! Check your registration link to create your account.</p>
+                    <div className="space-y-2">
+                      <p className="text-sm text-accent">🎉 Your application was accepted!</p>
+                      {statusResult.registration_token && (
+                        <Link to={`/register/${statusResult.registration_token}`}>
+                          <Button variant="neon" size="sm" className="w-full gap-2">
+                            <CheckCircle className="w-4 h-4" /> Create Your Account
+                          </Button>
+                        </Link>
+                      )}
+                      {statusResult.token_used && (
+                        <p className="text-sm text-muted-foreground">Your registration link has already been used. If you already created your account, you can <Link to="/login" className="text-primary hover:underline">log in here</Link>.</p>
+                      )}
+                      {!statusResult.registration_token && !statusResult.token_used && (
+                        <p className="text-sm text-muted-foreground">Your registration link is being prepared. Check back soon!</p>
+                      )}
+                    </div>
                   )}
                   {statusResult.status === 'rejected' && (
                     <div>
