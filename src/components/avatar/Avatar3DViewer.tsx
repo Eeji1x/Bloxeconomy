@@ -66,7 +66,7 @@ const Scene = () => (
       maxDistance={8}
       minPolarAngle={Math.PI / 8}
       maxPolarAngle={Math.PI / 2}
-      target={[0, 0.9, 0]}
+      target={[0, 0.4, 0]}
       autoRotate
       autoRotateSpeed={1.2}
     />
