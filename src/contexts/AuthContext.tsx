@@ -59,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isEconomyManager, setIsEconomyManager] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshProfile = async () => {
