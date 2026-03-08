@@ -909,13 +909,14 @@
   [data-theme="roblox2016"] .rbx16-friend-avatar {
     width: 60px;
     height: 60px;
-    border-radius: 0;
+    border-radius: 50%;
     overflow: hidden;
-    border: 1px solid #ddd;
-    background: #f2f2f2;
+    border: 1px solid #c5c5c5;
+    background: #ffffff;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
   }
   [data-theme="roblox2016"] .rbx16-friend-tile:hover .rbx16-friend-avatar {
-    border-color: #0074BD;
+    box-shadow: 0 1px 6px 0 rgba(25,25,25,0.45);
   }
   [data-theme="roblox2016"] .rbx16-friend-name {
     font-size: 11px !important;
