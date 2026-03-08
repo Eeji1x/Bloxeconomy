@@ -36,6 +36,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   isAdmin: boolean;
+  isEconomyManager: boolean;
   isLoading: boolean;
   signUp: (username: string, password: string, inviteKey: string) => Promise<{ error: Error | null }>;
   signIn: (username: string, password: string) => Promise<{ error: Error | null }>;
