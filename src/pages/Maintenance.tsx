@@ -1,4 +1,6 @@
-import { AlertTriangle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { AlertTriangle, LogIn } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Maintenance = () => {
   return (
@@ -31,6 +33,13 @@ const Maintenance = () => {
           <div className="w-2 h-2 rounded-full bg-destructive animate-pulse delay-150" />
           <div className="w-2 h-2 rounded-full bg-destructive animate-pulse delay-300" />
         </div>
+
+        <Link to="/login">
+          <Button variant="outline" className="gap-2 mt-4">
+            <LogIn className="w-4 h-4" />
+            Admin Login
+          </Button>
+        </Link>
       </div>
     </div>
   );
