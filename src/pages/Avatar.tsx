@@ -29,7 +29,7 @@ const Avatar = () => {
   const { theme } = useTheme();
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loadingInventory, setLoadingInventory] = useState(true);
-  
+  const [view3D, setView3D] = useState(false);
 
   const is2016 = theme === 'roblox2016';
   const is2015 = theme === 'roblox2015';
