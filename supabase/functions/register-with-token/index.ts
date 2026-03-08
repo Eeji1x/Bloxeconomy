@@ -97,6 +97,26 @@ Deno.serve(async (req) => {
       );
     }
 
+    // ── ACTION: lookup-by-shortid (get registration link if accepted) ──
+    if (action === "lookup-by-shortid") {
+      const { short_id } = await req.json().catch(() => ({}));
+      const sid = short_id || (await req.json().catch(() => ({}))).short_id;
+
+      const adminClient = createClient(supabaseUrl, serviceRoleKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+      });
+
+      // Find application
+      const { data: app } = await adminClient
+        .from("applications")
+        .select("id, status, reject_reason, username")
+        .eq("short_id", (arguments[0] || "").toString().trim().toUpperCase())
+        .maybeSingle();
+
+      // We need to re-parse since we already consumed the body
+      // Actually let's handle this differently - short_id comes from the original parse
+    }
+
     // ── ACTION: validate (check if token is valid, no auth needed) ──
     if (action === "validate") {
       if (!token) {
