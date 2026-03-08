@@ -76,18 +76,38 @@ const Avatar = () => {
     return (
       <div style={{ display: 'flex', gap: 16 }}>
         {/* Preview */}
-        <div style={{ width: 250, flexShrink: 0 }}>
+        <div style={{ width: 280, flexShrink: 0 }}>
           <div className="rbx16-panel">
-            <div className="rbx16-panel-header">Preview</div>
-            <div className="rbx16-panel-body" style={{ padding: 8 }}>
-              <div style={{ aspectRatio: '3/4', border: '1px solid #e8e8e8', background: '#fff', position: 'relative', overflow: 'hidden' }}>
-                <img src={DEFAULT_AVATAR_URL} alt="Your Avatar" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8, position: 'absolute', inset: 0 }} />
-                {equippedItems.map((item) => (
-                  <img key={item.id} src={item.catalog_items?.image_url} alt={item.catalog_items?.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8, position: 'absolute', inset: 0, opacity: 1 }} />
-                ))}
-              </div>
-              <div style={{ textAlign: 'center', fontSize: 12, color: '#666', marginTop: 6 }}>
+            <div className="rbx16-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Preview</span>
+              <button
+                onClick={() => setView3D(!view3D)}
+                style={{ fontSize: 11, color: '#00a2ff', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+              >
+                {view3D ? '2D View' : '3D View'}
+              </button>
+            </div>
+            <div className="rbx16-panel-body" style={{ padding: 0 }}>
+              {view3D ? (
+                <div style={{ height: 350 }}>
+                  <Avatar3DViewer
+                    equippedItems={equippedItems.filter(i => i.catalog_items).map(i => ({
+                      image_url: i.catalog_items!.image_url,
+                      name: i.catalog_items!.name,
+                    }))}
+                  />
+                </div>
+              ) : (
+                <div style={{ aspectRatio: '3/4', border: '1px solid #e8e8e8', background: '#fff', position: 'relative', overflow: 'hidden', margin: 8 }}>
+                  <img src={DEFAULT_AVATAR_URL} alt="Your Avatar" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8, position: 'absolute', inset: 0 }} />
+                  {equippedItems.map((item) => (
+                    <img key={item.id} src={item.catalog_items?.image_url} alt={item.catalog_items?.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8, position: 'absolute', inset: 0, opacity: 1 }} />
+                  ))}
+                </div>
+              )}
+              <div style={{ textAlign: 'center', fontSize: 12, color: '#666', padding: '6px 0' }}>
                 {equippedItems.length > 0 ? `${equippedItems.length} item(s) equipped` : 'Default Avatar'}
+                {view3D && <div style={{ fontSize: 10, color: '#999', marginTop: 2 }}>Drag to rotate • Scroll to zoom</div>}
               </div>
             </div>
           </div>
