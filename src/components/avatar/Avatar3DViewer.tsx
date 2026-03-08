@@ -1,13 +1,11 @@
 import { Suspense, useLayoutEffect, useMemo, useRef, useEffect, useState } from 'react';
-import { Canvas, useLoader } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import * as THREE from 'three';
 
 interface EquippedItem {
   image_url: string;
   name?: string;
-  model_url?: string | null;
 }
 
 interface Avatar3DViewerProps {
