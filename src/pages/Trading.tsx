@@ -26,7 +26,7 @@ interface Profile {
   numeric_id: number;
   emeralds: number;
   is_verified: boolean | null;
-  is_banned: boolean | null;
+  is_banned?: boolean | null;
 }
 
 interface InventoryItem {
