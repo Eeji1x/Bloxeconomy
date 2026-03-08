@@ -798,6 +798,24 @@ const CatalogPanel = () => {
                 </Label>
               )}
             </div>
+            <div className="space-y-2">
+              <Label>Sale Start Time (optional)</Label>
+              <input
+                type="datetime-local"
+                value={formData.sale_start_time}
+                onChange={(e) => setFormData({ ...formData, sale_start_time: e.target.value })}
+                className="w-full h-10 rounded-md border bg-input px-3 text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Sale End Time (optional)</Label>
+              <input
+                type="datetime-local"
+                value={formData.sale_end_time}
+                onChange={(e) => setFormData({ ...formData, sale_end_time: e.target.value })}
+                className="w-full h-10 rounded-md border bg-input px-3 text-sm"
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label>Description</Label>
