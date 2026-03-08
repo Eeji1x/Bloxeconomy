@@ -1,45 +1,42 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Zap, Crown, Sparkles } from 'lucide-react';
 import { HomeLeftPanel } from '@/components/home/HomeLeftPanel';
 import { HomeFriendsList } from '@/components/home/HomeFriendsList';
 import { HomeQuickActions } from '@/components/home/HomeQuickActions';
 import { HomeAnnouncements } from '@/components/home/HomeAnnouncements';
+import { Roblox2020Home } from '@/components/home/Roblox2020Home';
 
 const Index = () => {
   const { user, profile } = useAuth();
+  const { theme } = useTheme();
 
   // Logged out view
   if (!user) {
     return (
       <div className="space-y-16">
-        {/* Hero Section */}
         <section className="relative py-20 text-center">
-          {/* Background effects */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-full blur-3xl animate-pulse" />
             </div>
           </div>
-
           <div className="relative z-10 space-y-8">
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
                 <Sparkles className="w-4 h-4" />
                 <span>Welcome to the future of virtual worlds</span>
               </div>
-              
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black tracking-tight">
                 <span className="gradient-text">SODA</span>
                 <span className="text-foreground">BLOX</span>
               </h1>
-              
               <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-body">
                 A futuristic virtual world revival. Collect items, trade limiteds, and build your legacy.
               </p>
             </div>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/signup">
                 <Button variant="neon" size="xl" className="group">
@@ -55,8 +52,6 @@ const Index = () => {
             </div>
           </div>
         </section>
-
-        {/* CTA Section */}
         <section className="relative overflow-hidden rounded-2xl">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20" />
           <div className="absolute inset-0 cyber-grid opacity-30" />
@@ -68,9 +63,7 @@ const Index = () => {
               Create your account now and receive 100 free emeralds to start your journey.
             </p>
             <Link to="/signup">
-              <Button variant="neon" size="xl">
-                Create Account
-              </Button>
+              <Button variant="neon" size="xl">Create Account</Button>
             </Link>
           </div>
         </section>
@@ -78,10 +71,14 @@ const Index = () => {
     );
   }
 
-  // Logged in Roblox-style home page
+  // Roblox 2020 themed home
+  if (theme === 'roblox2020') {
+    return <Roblox2020Home />;
+  }
+
+  // Default SODABLOX home
   return (
     <div className="space-y-6">
-      {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold">
@@ -96,22 +93,13 @@ const Index = () => {
           </Button>
         </Link>
       </div>
-
-      {/* Quick Actions */}
       <HomeQuickActions />
-
-      {/* Main Layout */}
       <div className="grid lg:grid-cols-12 gap-6">
-        {/* Left Panel - Avatar & User Info */}
         <div className="lg:col-span-3 space-y-6">
           <HomeLeftPanel />
         </div>
-
-        {/* Main Content */}
         <div className="lg:col-span-6 space-y-6">
           <HomeAnnouncements />
-          
-          {/* Stats Section */}
           <div className="cyber-card p-6">
             <h3 className="font-display font-bold mb-4">Your Stats</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -125,8 +113,6 @@ const Index = () => {
               </div>
             </div>
           </div>
-
-          {/* Getting Started */}
           <div className="cyber-card p-6 space-y-4">
             <h3 className="font-display font-bold">Getting Started</h3>
             <div className="grid md:grid-cols-2 gap-3">
@@ -149,8 +135,6 @@ const Index = () => {
             </div>
           </div>
         </div>
-
-        {/* Right Panel - Friends */}
         <div className="lg:col-span-3 space-y-6">
           <HomeFriendsList />
         </div>

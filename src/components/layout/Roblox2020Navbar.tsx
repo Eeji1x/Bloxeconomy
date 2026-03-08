@@ -58,10 +58,10 @@ const RbxLogout = ({ className }: { className?: string }) => (
    ═══════════════════════════════════════════════════ */
 
 const topTabs = [
-  { to: '/catalog', label: 'Catalog' },
-  { to: '/avatar', label: 'Create' },
+  { to: '/', label: 'Home' },
+  { to: '/catalog', label: 'Avatar Shop' },
   { to: '/trading', label: 'Trade' },
-  { to: '/leaderboards', label: 'Leaderboards' },
+  { to: '/avatar', label: 'Create' },
 ];
 
 const sidebarMain = [
