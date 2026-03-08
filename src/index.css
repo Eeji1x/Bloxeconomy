@@ -190,8 +190,8 @@
   }
 
   /* ═══════════════════════════════════════════════════
-     ICON SPRITE — navigation_02012016.svg
-     Exact positions from ECS icons.css
+     ICON SPRITE — navigation_10022018.svg (authentic 2016 Roblox)
+     From: https://images.rbxcdn.com/f4000b6d03a0df7153556d2514045629-navigation_10022018.svg
      ═══════════════════════════════════════════════════ */
   [data-theme="roblox2016"] .icon-default-navigation,
   [data-theme="roblox2016"] .icon-nav-menu,
@@ -209,8 +209,11 @@
   [data-theme="roblox2016"] .icon-nav-group,
   [data-theme="roblox2016"] .icon-nav-forum,
   [data-theme="roblox2016"] .icon-nav-blog,
-  [data-theme="roblox2016"] .icon-nav-shop {
-    background-image: url('/images/2016/navigation_02012016.svg');
+  [data-theme="roblox2016"] .icon-nav-shop,
+  [data-theme="roblox2016"] .icon-nav-notification-stream,
+  [data-theme="roblox2016"] .icon-nav-my-feed,
+  [data-theme="roblox2016"] .icon-nav-search-white {
+    background-image: url('/images/2016/navigation_10022018.svg');
     background-repeat: no-repeat;
     background-size: auto auto;
     width: 28px;
