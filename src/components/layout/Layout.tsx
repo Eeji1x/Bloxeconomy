@@ -95,7 +95,7 @@ export const Layout = ({ children }: LayoutProps) => {
   // Vapor / Test Theme layout
   if (theme === 'vapor') {
     return (
-      <div className="min-h-screen" style={{ background: '#F0F0F0' }}>
+      <div className="min-h-screen" style={{ background: '#121212', color: '#ddd' }}>
         <AnnouncementBar />
         <VaporNavbar />
         <main style={{ maxWidth: 960, margin: '0 auto', padding: '20px 16px' }}>

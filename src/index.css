@@ -2953,8 +2953,8 @@
 
 /* Navbar */
 .vapor-navbar {
-  background: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
+  background: #1a1a1a;
+  border-bottom: 1px solid #333;
   padding: 0;
   position: sticky;
   top: 0;
@@ -2978,11 +2978,12 @@
 .vapor-navbar-toggle {
   display: none;
   background: none;
-  border: 1px solid #ccc;
+  border: 1px solid #555;
   border-radius: 4px;
   padding: 4px 8px;
   cursor: pointer;
   margin-left: auto;
+  color: #ccc;
 }
 .vapor-navbar-collapse {
   display: flex;
@@ -2995,7 +2996,7 @@
   gap: 4px;
 }
 .vapor-nav-link {
-  color: rgba(0,0,0,0.55) !important;
+  color: rgba(255,255,255,0.6) !important;
   text-decoration: none !important;
   padding: 6px 12px;
   font-size: 14px;
@@ -3006,11 +3007,11 @@
   border: none;
 }
 .vapor-nav-link:hover {
-  color: rgba(0,0,0,0.8) !important;
-  background: rgba(0,0,0,0.04);
+  color: rgba(255,255,255,0.9) !important;
+  background: rgba(255,255,255,0.08);
 }
 .vapor-nav-link.active {
-  color: rgba(0,0,0,0.9) !important;
+  color: #fff !important;
   font-weight: 600;
 }
 .vapor-navbar-right {
@@ -3030,10 +3031,10 @@
   position: absolute;
   top: 100%;
   right: 0;
-  background: #fff;
-  border: 1px solid #dee2e6;
+  background: #222;
+  border: 1px solid #444;
   border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.5);
   min-width: 180px;
   z-index: 200;
   padding: 4px 0;
@@ -3043,7 +3044,7 @@
   width: 100%;
   padding: 6px 16px;
   font-size: 14px;
-  color: #212529 !important;
+  color: #ddd !important;
   text-decoration: none !important;
   background: none;
   border: none;
@@ -3051,11 +3052,11 @@
   cursor: pointer;
 }
 .vapor-dropdown-item:hover {
-  background: #f8f9fa;
+  background: #333;
 }
 .vapor-dropdown-divider {
   height: 1px;
-  background: #dee2e6;
+  background: #444;
   margin: 4px 0;
 }
 .vapor-logout-btn {
@@ -3107,19 +3108,20 @@
 
 /* Cards */
 .vapor-card {
-  background: #fff;
-  border: 1px solid #dee2e6;
+  background: #1e1e1e;
+  border: 1px solid #333;
   border-radius: 4px;
   margin-bottom: 16px;
   overflow: hidden;
+  color: #ddd;
 }
 .vapor-card-header {
   padding: 10px 16px;
   font-weight: 600;
   font-size: 15px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-  color: #212529;
+  background: #252525;
+  border-bottom: 1px solid #333;
+  color: #eee;
 }
 .vapor-card-body {
   padding: 16px;
@@ -3127,9 +3129,9 @@
 
 /* Footer */
 .vapor-footer {
-  background: #f8f9fa;
-  border-top: 1px solid #dee2e6;
-  color: #6c757d;
+  background: #1a1a1a;
+  border-top: 1px solid #333;
+  color: #888;
   font-size: 13px;
   margin-top: 40px;
 }
@@ -3160,18 +3162,18 @@
 .vapor-quick-link {
   display: block;
   padding: 10px 12px;
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
+  background: #252525;
+  border: 1px solid #333;
   border-radius: 4px;
-  color: #212529 !important;
+  color: #ddd !important;
   text-decoration: none !important;
   font-size: 14px;
   transition: background 0.15s;
 }
-.vapor-quick-link:hover { background: #e9ecef; }
+.vapor-quick-link:hover { background: #333; }
 .vapor-announcement {
   padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #333;
   font-size: 14px;
   display: flex;
   justify-content: space-between;
@@ -3197,14 +3199,15 @@
 }
 .vapor-stat-label {
   font-size: 13px;
-  color: #6c757d;
+  color: #888;
 }
 
 /* Override theme-specific suppression */
 [data-theme="vapor"] .cyber-card {
-  background: #fff !important;
-  border: 1px solid #dee2e6 !important;
+  background: #1e1e1e !important;
+  border: 1px solid #333 !important;
   box-shadow: none !important;
+  color: #ddd !important;
 }
 [data-theme="vapor"] .gradient-text {
   background: none !important;
@@ -3219,7 +3222,7 @@
   .vapor-navbar-collapse { display: none; flex-direction: column; width: 100%; align-items: flex-start; gap: 8px; padding-top: 8px; }
   .vapor-navbar-collapse.open { display: flex; }
   .vapor-navbar-links { flex-direction: column; width: 100%; }
-  .vapor-navbar-right { width: 100%; padding-top: 8px; border-top: 1px solid #dee2e6; }
+  .vapor-navbar-right { width: 100%; padding-top: 8px; border-top: 1px solid #333; }
   .vapor-home-grid { grid-template-columns: 1fr; }
   .vapor-jumbotron { padding: 24px 20px; }
   .vapor-jumbotron h1 { font-size: 22px; }
