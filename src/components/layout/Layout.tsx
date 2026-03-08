@@ -9,7 +9,6 @@ import { SodabloxSidebar } from './SodabloxSidebar';
 import { BanRedirectWrapper } from '@/components/auth/BanRedirectWrapper';
 import { useMaintenanceMode } from '@/hooks/useMaintenanceMode';
 import Maintenance from '@/pages/Maintenance';
-import Maintenance from '@/pages/Maintenance';
 
 interface LayoutProps {
   children: ReactNode;
