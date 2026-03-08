@@ -3222,7 +3222,7 @@
   .vapor-navbar-collapse { display: none; flex-direction: column; width: 100%; align-items: flex-start; gap: 8px; padding-top: 8px; }
   .vapor-navbar-collapse.open { display: flex; }
   .vapor-navbar-links { flex-direction: column; width: 100%; }
-  .vapor-navbar-right { width: 100%; padding-top: 8px; border-top: 1px solid #dee2e6; }
+  .vapor-navbar-right { width: 100%; padding-top: 8px; border-top: 1px solid #333; }
   .vapor-home-grid { grid-template-columns: 1fr; }
   .vapor-jumbotron { padding: 24px 20px; }
   .vapor-jumbotron h1 { font-size: 22px; }

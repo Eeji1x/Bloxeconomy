@@ -72,11 +72,11 @@ export const THEMES: ThemeOption[] = [
     name: 'Test Theme',
     description: 'Vapor-style — light navbar, green accents, Bootstrap-inspired cards',
     preview: {
-      bg: '#F0F0F0',
-      navbar: '#F8F9FA',
+      bg: '#121212',
+      navbar: '#1A1A1A',
       accent: '#28A745',
-      card: '#FFFFFF',
-      text: '#212529',
+      card: '#1E1E1E',
+      text: '#DDDDDD',
     },
   },
 ];
