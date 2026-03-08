@@ -135,7 +135,7 @@ const Signup = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="rbx08-btn-blue w-full py-2 text-[12px]"
+                className="rbx08-btn-primary w-full py-2"
               >
                 {isLoading ? 'Creating account...' : 'Sign Up!'}
               </button>
