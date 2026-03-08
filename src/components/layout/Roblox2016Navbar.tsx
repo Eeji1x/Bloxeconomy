@@ -143,7 +143,7 @@ export const Roblox2016Navbar = () => {
               <>
                 {/* Currency display (matching ECS: icon-nav-robux + amount) */}
                 <Link to="/settings" className="rbx16-currency">
-                  <span className="icon-nav-robux" style={{ width: 20, height: 20, backgroundSize: '20px auto' }} />
+                  <span className="icon-nav-robux" />
                   <span>{profile.emeralds.toLocaleString()}</span>
                 </Link>
 
