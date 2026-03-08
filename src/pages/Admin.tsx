@@ -162,7 +162,7 @@ const CatalogPanel = () => {
 
 
   const resetForm = () => {
-    setFormData({ name: '', description: '', image_url: '', item_type: 'normal', price: 1, stock: null, is_on_sale: true, resell_enabled: true, sale_start_time: '', sale_end_time: '', model_url: '' });
+    setFormData({ name: '', description: '', image_url: '', item_type: 'normal', price: 1, stock: null, is_on_sale: true, resell_enabled: true, sale_start_time: '', sale_end_time: '' });
     setEditingItem(null);
     setShowForm(false);
     setModelFile(null);
