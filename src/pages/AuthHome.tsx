@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { Zap, Sparkles, ShoppingBag, ArrowRightLeft, Users, Gem, Star, Gift, Trophy } from 'lucide-react';
 
 const AuthHome = () => {
   const { user } = useAuth();
@@ -13,7 +14,6 @@ const AuthHome = () => {
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // If already logged in, redirect
   if (user) {
     navigate('/');
     return null;
@@ -42,124 +42,152 @@ const AuthHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#e1e1e1]" style={{ fontFamily: "'Source Sans Pro', Arial, sans-serif" }}>
-      {/* Top navigation bar */}
-      <div className="bg-[#393b3d] border-b-[3px] border-[#2e7d32]">
-        <div className="max-w-[960px] mx-auto flex items-center justify-between px-4 h-[48px]">
-          <div className="flex items-center gap-6">
-            <span className="text-white font-bold text-lg tracking-wide">SODABLOX</span>
-          </div>
-          <form onSubmit={handleLogin} className="flex items-center gap-2">
-            <input
+    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+      {/* Navbar */}
+      <nav className="relative z-50 h-[60px] bg-card/80 backdrop-blur-xl border-b border-primary/20 shadow-[0_0_30px_hsl(var(--primary)/0.1)]">
+        <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-6">
+          <Link to="/auth" className="text-2xl font-display font-black tracking-tight">
+            <span className="gradient-text">SODA</span>
+            <span className="text-foreground">BLOX</span>
+          </Link>
+          <form onSubmit={handleLogin} className="hidden sm:flex items-center gap-2">
+            <Input
               type="text"
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="h-[30px] px-2 text-sm border border-[#666] rounded-sm bg-white w-[140px]"
+              className="h-9 w-36 bg-input border-border text-sm"
             />
-            <input
+            <Input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="h-[30px] px-2 text-sm border border-[#666] rounded-sm bg-white w-[140px]"
+              className="h-9 w-36 bg-input border-border text-sm"
             />
-            <button
-              type="submit"
-              disabled={isLoggingIn}
-              className="h-[30px] px-4 text-sm font-bold text-white bg-[#0074BD] hover:bg-[#005a94] rounded-sm border border-[#005a94]"
-            >
+            <Button type="submit" variant="neon" size="sm" disabled={isLoggingIn}>
               {isLoggingIn ? '...' : 'Login'}
-            </button>
+            </Button>
           </form>
+          <div className="flex sm:hidden gap-2">
+            <Link to="/login"><Button variant="outline" size="sm">Login</Button></Link>
+            <Link to="/signup"><Button variant="neon" size="sm">Sign Up</Button></Link>
+          </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Hero section */}
-      <div className="bg-gradient-to-b from-[#0074BD] to-[#005a94] py-16">
-        <div className="max-w-[960px] mx-auto px-4 text-center text-white">
-          <h1 className="text-5xl font-black mb-4 tracking-tight" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
-            SODABLOX
+      {/* Hero */}
+      <section className="relative py-24 md:py-32 text-center overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px]">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-full blur-3xl animate-pulse" />
+          </div>
+          <div className="absolute top-0 left-0 w-full h-full cyber-grid opacity-10" />
+        </div>
+
+        <div className="relative z-10 space-y-8 max-w-3xl mx-auto px-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
+            <Sparkles className="w-4 h-4" />
+            <span>Welcome to the future of virtual worlds</span>
+          </div>
+          <h1 className="text-6xl md:text-8xl font-display font-black tracking-tight">
+            <span className="gradient-text">SODA</span>
+            <span className="text-foreground">BLOX</span>
           </h1>
-          <p className="text-xl mb-8 opacity-90">
-            A virtual world revival. Collect items, trade limiteds, and build your legacy.
+          <p className="text-xl md:text-2xl text-muted-foreground font-body max-w-2xl mx-auto">
+            A futuristic virtual world revival. Collect items, trade limiteds, and build your legacy.
           </p>
-          <Link to="/signup">
-            <button className="px-8 py-3 text-lg font-bold text-white bg-[#2e7d32] hover:bg-[#256b28] rounded border border-[#1b5e20] shadow-lg">
-              Sign Up Now — It's Free!
-            </button>
-          </Link>
-        </div>
-      </div>
-
-      {/* Content section */}
-      <div className="max-w-[960px] mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Feature cards */}
-          <div className="bg-white border border-[#c3c3c3] p-0">
-            <div className="bg-[#e8e8e8] border-b border-[#c3c3c3] px-4 py-2 font-bold text-[#333] text-sm">
-              🛒 Catalog
-            </div>
-            <div className="p-4">
-              <p className="text-sm text-[#666]">
-                Browse and purchase items from our catalog. Find rare limiteds and exclusive gear.
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white border border-[#c3c3c3] p-0">
-            <div className="bg-[#e8e8e8] border-b border-[#c3c3c3] px-4 py-2 font-bold text-[#333] text-sm">
-              🔄 Trading
-            </div>
-            <div className="p-4">
-              <p className="text-sm text-[#666]">
-                Trade limited items with other players. Build your collection and grow your wealth.
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white border border-[#c3c3c3] p-0">
-            <div className="bg-[#e8e8e8] border-b border-[#c3c3c3] px-4 py-2 font-bold text-[#333] text-sm">
-              👥 Community
-            </div>
-            <div className="p-4">
-              <p className="text-sm text-[#666]">
-                Connect with other players, send messages, and add friends.
-              </p>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/signup">
+              <Button variant="neon" size="xl" className="group">
+                <Zap className="w-5 h-5 group-hover:animate-pulse" />
+                Start Playing
+              </Button>
+            </Link>
+            <Link to="/login">
+              <Button variant="outline" size="xl">
+                Already have an account?
+              </Button>
+            </Link>
           </div>
         </div>
+      </section>
 
-        {/* Stats / info */}
-        <div className="mt-8 bg-white border border-[#c3c3c3]">
-          <div className="bg-[#e8e8e8] border-b border-[#c3c3c3] px-4 py-2 font-bold text-[#333] text-sm">
-            Why Join SODABLOX?
-          </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="font-bold text-[#333] mb-2">💎 Free Emeralds</h3>
-              <p className="text-sm text-[#666]">Every new player receives 100 free emeralds to start their journey.</p>
-            </div>
-            <div>
-              <h3 className="font-bold text-[#333] mb-2">⭐ Limited Items</h3>
-              <p className="text-sm text-[#666]">Collect rare limited items with serial numbers. Trade them for profit!</p>
-            </div>
-            <div>
-              <h3 className="font-bold text-[#333] mb-2">🎁 Promocodes</h3>
-              <p className="text-sm text-[#666]">Redeem special codes for free emeralds and exclusive items.</p>
-            </div>
-            <div>
-              <h3 className="font-bold text-[#333] mb-2">🏆 Leaderboards</h3>
-              <p className="text-sm text-[#666]">Compete with other players and climb the rankings.</p>
-            </div>
+      {/* Features */}
+      <section className="relative py-16 px-4">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-12">
+            Everything you need to <span className="gradient-text">dominate</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: ShoppingBag, title: 'Catalog', desc: 'Browse and purchase items. Find rare limiteds and exclusive gear.', color: 'text-primary' },
+              { icon: ArrowRightLeft, title: 'Trading', desc: 'Trade limited items with other players. Grow your collection.', color: 'text-secondary' },
+              { icon: Users, title: 'Community', desc: 'Connect with players, send messages, and add friends.', color: 'text-accent' },
+            ].map((f) => (
+              <div key={f.title} className="cyber-card p-6 group hover:border-primary/40 transition-all duration-300">
+                <f.icon className={`w-10 h-10 ${f.color} mb-4 group-hover:scale-110 transition-transform`} />
+                <h3 className="font-display font-bold text-lg mb-2">{f.title}</h3>
+                <p className="text-sm text-muted-foreground">{f.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Why Join */}
+      <section className="relative py-16 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5" />
+        <div className="absolute inset-0 cyber-grid opacity-10" />
+        <div className="relative max-w-5xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-12">
+            Why join <span className="gradient-text">SODABLOX</span>?
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {[
+              { icon: Gem, title: 'Free Emeralds', desc: 'Every new player receives 100 free emeralds to start their journey.' },
+              { icon: Star, title: 'Limited Items', desc: 'Collect rare limited items with serial numbers. Trade them for profit!' },
+              { icon: Gift, title: 'Promocodes', desc: 'Redeem special codes for free emeralds and exclusive items.' },
+              { icon: Trophy, title: 'Leaderboards', desc: 'Compete with other players and climb the rankings.' },
+            ].map((f) => (
+              <div key={f.title} className="flex items-start gap-4 p-5 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm">
+                <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20 shrink-0">
+                  <f.icon className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold mb-1">{f.title}</h3>
+                  <p className="text-sm text-muted-foreground">{f.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="relative py-16 px-4">
+        <div className="max-w-3xl mx-auto relative overflow-hidden rounded-2xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20" />
+          <div className="absolute inset-0 cyber-grid opacity-30" />
+          <div className="relative p-12 text-center space-y-6">
+            <h2 className="text-3xl md:text-4xl font-display font-bold">
+              Ready to join the <span className="gradient-text">revolution</span>?
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+              Create your account now and receive 100 free emeralds to start your journey.
+            </p>
+            <Link to="/signup">
+              <Button variant="neon" size="xl">Create Account</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
-      <div className="bg-[#393b3d] text-[#999] text-center py-4 text-xs mt-8">
+      <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} SODABLOX. All rights reserved.
-      </div>
+      </footer>
     </div>
   );
 };
