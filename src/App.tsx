@@ -35,6 +35,7 @@ import SodamonsTop from "./pages/SodamonsTop";
 import Banned from "./pages/Banned";
 import EmeraldShop from "./pages/EmeraldShop";
 import Register from "./pages/Register";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -93,6 +94,7 @@ const App = () => {
                     <Route path="/apply" element={<Apply />} />
                     <Route path="/register/:token" element={<Register />} />
                     <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/terms" element={<Terms />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/users" element={<Users />} />

@@ -21,11 +21,11 @@ export const Layout = ({ children }: LayoutProps) => {
   const { theme } = useTheme();
   const location = useLocation();
 
-  const authPaths = ['/login', '/signup', '/auth', '/apply', '/privacy', '/register'];
+  const authPaths = ['/login', '/signup', '/auth', '/apply', '/privacy', '/terms', '/register'];
   const isAuthPage = authPaths.some(p => location.pathname === p || location.pathname.startsWith(p + '/'));
 
   // These pages have their own full layout
-  if (location.pathname === '/auth' || location.pathname === '/apply' || location.pathname === '/privacy' || location.pathname.startsWith('/register/')) {
+  if (location.pathname === '/auth' || location.pathname === '/apply' || location.pathname === '/privacy' || location.pathname === '/terms' || location.pathname.startsWith('/register/')) {
     return <>{children}</>;
   }
 

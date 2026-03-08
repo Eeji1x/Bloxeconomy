@@ -193,6 +193,10 @@ const AuthHome = () => {
       {/* Footer */}
       <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground space-y-2">
         <div className="flex items-center justify-center gap-4">
+          <Link to="/terms" className="hover:text-primary transition-colors flex items-center gap-1">
+            <FileText className="w-3 h-3" />
+            Terms of Service
+          </Link>
           <Link to="/privacy" className="hover:text-primary transition-colors flex items-center gap-1">
             <Shield className="w-3 h-3" />
             Privacy Policy
