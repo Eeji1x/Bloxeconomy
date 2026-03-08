@@ -52,6 +52,8 @@ interface UserInventoryItem {
   is_equipped: boolean | null;
 }
 
+const toSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
 const ItemDetail = () => {
   const { itemSlug } = useParams();
   const { user, profile, isAdmin, refreshProfile } = useAuth();
