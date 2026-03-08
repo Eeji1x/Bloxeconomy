@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 
 export type ThemeId = 'sodablox' | 'roblox2016' | 'roblox2015' | 'roblox2008';
 
-const VALID_THEMES: ThemeId[] = ['sodablox', 'roblox2016', 'roblox2008'];
+const VALID_THEMES: ThemeId[] = ['sodablox', 'roblox2016', 'roblox2015', 'roblox2008'];
 
 interface ThemeOption {
   id: ThemeId;
