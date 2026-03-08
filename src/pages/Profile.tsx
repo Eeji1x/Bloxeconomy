@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { UserAvatar } from '@/components/avatar/UserAvatar';
-import { User, Package, UserPlus, UserMinus, Check, X, ArrowLeftRight, MoreHorizontal } from 'lucide-react';
+import { User, Package, UserPlus, UserMinus, Check, X, ArrowLeftRight, MoreHorizontal, Box } from 'lucide-react';
 import { toast } from 'sonner';
+
+const Avatar3DViewer = lazy(() => import('@/components/avatar/Avatar3DViewer').then(m => ({ default: m.Avatar3DViewer })));
 
 interface ProfileData {
   id: string;
