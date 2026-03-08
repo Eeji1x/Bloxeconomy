@@ -85,7 +85,7 @@ export const Navbar = () => {
               );
             })}
             
-            {isAdmin && (
+            {(isAdmin || isOwner) && (
               <Link
                 to="/admin"
                 className={cn(
