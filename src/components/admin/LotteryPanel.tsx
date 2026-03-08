@@ -5,7 +5,7 @@ import { BAD_DECISIONS_NUMERIC_ID } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Trophy, Gift, Clock, CheckCircle, Check } from 'lucide-react';
+import { Trophy, Gift, Clock, CheckCircle, Check, StopCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -30,23 +30,28 @@ interface Prize {
 }
 
 interface BdItem {
-  id: string; // inventory id
+  id: string;
   item_id: string;
   item_name: string;
   item_image: string;
   serial_number: number | null;
 }
 
+interface ActiveLotteryData {
+  lottery: Lottery;
+  prizes: Prize[];
+  timeRemaining: string;
+}
+
 const LotteryPanel = () => {
   const { user } = useAuth();
-  const [activeLottery, setActiveLottery] = useState<Lottery | null>(null);
-  const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [activeLotteries, setActiveLotteries] = useState<ActiveLotteryData[]>([]);
   const [pastLotteries, setPastLotteries] = useState<Lottery[]>([]);
   const [durationValue, setDurationValue] = useState(24);
   const [durationUnit, setDurationUnit] = useState<'minutes' | 'hours'>('hours');
   const [creating, setCreating] = useState(false);
-  const [drawing, setDrawing] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState('');
+  const [drawingId, setDrawingId] = useState<string | null>(null);
+  const [stoppingId, setStoppingId] = useState<string | null>(null);
   const [bdItems, setBdItems] = useState<BdItem[]>([]);
   const [selectedPrizeIds, setSelectedPrizeIds] = useState<Set<string>>(new Set());
 
@@ -55,24 +60,25 @@ const LotteryPanel = () => {
     fetchBdItems();
   }, []);
 
+  // Countdown timer for all active lotteries
   useEffect(() => {
-    if (!activeLottery) return;
+    if (activeLotteries.length === 0) return;
     const interval = setInterval(() => {
-      const end = new Date(activeLottery.ends_at).getTime();
-      const now = Date.now();
-      const diff = end - now;
-      if (diff <= 0) {
-        setTimeRemaining('Ended - Draw Winners');
-        clearInterval(interval);
-      } else {
+      setActiveLotteries(prev => prev.map(ld => {
+        const end = new Date(ld.lottery.ends_at).getTime();
+        const now = Date.now();
+        const diff = end - now;
+        if (diff <= 0) {
+          return { ...ld, timeRemaining: 'Ended - Draw Winners' };
+        }
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         const s = Math.floor((diff % 60000) / 1000);
-        setTimeRemaining(`${h}h ${m}m ${s}s`);
-      }
+        return { ...ld, timeRemaining: `${h}h ${m}m ${s}s` };
+      }));
     }, 1000);
     return () => clearInterval(interval);
-  }, [activeLottery]);
+  }, [activeLotteries.length]);
 
   const fetchBdItems = async () => {
     const { data: bdProfile } = await supabase
@@ -83,7 +89,6 @@ const LotteryPanel = () => {
 
     if (!bdProfile) return;
 
-    // Get limited items from BD inventory
     const { data: items } = await supabase
       .from('user_inventory')
       .select('id, item_id, catalog_items!inner(name, image_url, item_type)')
@@ -93,7 +98,6 @@ const LotteryPanel = () => {
 
     const limited = items.filter((i: any) => i.catalog_items?.item_type === 'limited');
 
-    // Get serial numbers for these inventory items
     const inventoryIds = limited.map((i: any) => i.id);
     const { data: serials } = inventoryIds.length > 0
       ? await supabase.from('item_serials').select('inventory_id, serial_number').in('inventory_id', inventoryIds)
@@ -109,7 +113,6 @@ const LotteryPanel = () => {
       serial_number: serialMap.get(i.id) ?? null,
     }));
 
-    // Sort by item name then serial
     enriched.sort((a, b) => {
       if (a.item_name !== b.item_name) return a.item_name.localeCompare(b.item_name);
       return (a.serial_number ?? 0) - (b.serial_number ?? 0);
@@ -119,52 +122,70 @@ const LotteryPanel = () => {
   };
 
   const fetchLotteries = async () => {
-    const { data: active } = await supabase
+    // Fetch ALL active lotteries
+    const { data: activeList } = await supabase
       .from('lotteries')
       .select('*')
       .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .order('created_at', { ascending: false });
 
-    if (active) {
-      setActiveLottery(active);
+    if (activeList && activeList.length > 0) {
+      const lotteryDataList: ActiveLotteryData[] = [];
 
-      const { data: prizeData } = await supabase
-        .from('lottery_prizes')
-        .select('*')
-        .eq('lottery_id', active.id);
+      for (const active of activeList) {
+        const { data: prizeData } = await supabase
+          .from('lottery_prizes')
+          .select('*')
+          .eq('lottery_id', active.id);
 
-      if (prizeData) {
-        const itemIds = prizeData.map(p => p.item_id);
-        const invIds = prizeData.map(p => p.inventory_id);
-        const winnerIds = prizeData.filter(p => p.winner_id).map(p => p.winner_id!);
+        let enrichedPrizes: Prize[] = [];
 
-        const [{ data: items }, { data: serials }, { data: winners }] = await Promise.all([
-          supabase.from('catalog_items').select('id, name, image_url').in('id', itemIds),
-          invIds.length > 0
-            ? supabase.from('item_serials').select('inventory_id, serial_number').in('inventory_id', invIds)
-            : Promise.resolve({ data: [] }),
-          winnerIds.length > 0
-            ? supabase.from('profiles').select('user_id, username').in('user_id', winnerIds)
-            : Promise.resolve({ data: [] }),
-        ]);
+        if (prizeData && prizeData.length > 0) {
+          const itemIds = prizeData.map(p => p.item_id);
+          const invIds = prizeData.map(p => p.inventory_id);
+          const winnerIds = prizeData.filter(p => p.winner_id).map(p => p.winner_id!);
 
-        const itemMap = new Map((items || []).map(i => [i.id, i]));
-        const serialMap = new Map((serials || []).map(s => [s.inventory_id, s.serial_number]));
-        const winnerMap = new Map((winners || []).map(w => [w.user_id, w.username]));
+          const [{ data: items }, { data: serials }, { data: winners }] = await Promise.all([
+            supabase.from('catalog_items').select('id, name, image_url').in('id', itemIds),
+            invIds.length > 0
+              ? supabase.from('item_serials').select('inventory_id, serial_number').in('inventory_id', invIds)
+              : Promise.resolve({ data: [] }),
+            winnerIds.length > 0
+              ? supabase.from('profiles').select('user_id, username').in('user_id', winnerIds)
+              : Promise.resolve({ data: [] }),
+          ]);
 
-        setPrizes(prizeData.map(p => ({
-          ...p,
-          item_name: itemMap.get(p.item_id)?.name || 'Unknown',
-          item_image: itemMap.get(p.item_id)?.image_url || '',
-          serial_number: serialMap.get(p.inventory_id) ?? undefined,
-          winner_name: p.winner_id ? (winnerMap.get(p.winner_id) || 'Unknown') : undefined,
-        })));
+          const itemMap = new Map((items || []).map(i => [i.id, i]));
+          const serialMap = new Map((serials || []).map(s => [s.inventory_id, s.serial_number]));
+          const winnerMap = new Map((winners || []).map(w => [w.user_id, w.username]));
+
+          enrichedPrizes = prizeData.map(p => ({
+            ...p,
+            item_name: itemMap.get(p.item_id)?.name || 'Unknown',
+            item_image: itemMap.get(p.item_id)?.image_url || '',
+            serial_number: serialMap.get(p.inventory_id) ?? undefined,
+            winner_name: p.winner_id ? (winnerMap.get(p.winner_id) || 'Unknown') : undefined,
+          }));
+        }
+
+        const end = new Date(active.ends_at).getTime();
+        const diff = end - Date.now();
+        let timeRemaining: string;
+        if (diff <= 0) {
+          timeRemaining = 'Ended - Draw Winners';
+        } else {
+          const h = Math.floor(diff / 3600000);
+          const m = Math.floor((diff % 3600000) / 60000);
+          const s = Math.floor((diff % 60000) / 1000);
+          timeRemaining = `${h}h ${m}m ${s}s`;
+        }
+
+        lotteryDataList.push({ lottery: active, prizes: enrichedPrizes, timeRemaining });
       }
+
+      setActiveLotteries(lotteryDataList);
     } else {
-      setActiveLottery(null);
-      setPrizes([]);
+      setActiveLotteries([]);
     }
 
     const { data: past } = await supabase
@@ -180,11 +201,8 @@ const LotteryPanel = () => {
   const togglePrize = (inventoryId: string) => {
     setSelectedPrizeIds(prev => {
       const next = new Set(prev);
-      if (next.has(inventoryId)) {
-        next.delete(inventoryId);
-      } else {
-        next.add(inventoryId);
-      }
+      if (next.has(inventoryId)) next.delete(inventoryId);
+      else next.add(inventoryId);
       return next;
     });
   };
@@ -255,10 +273,11 @@ const LotteryPanel = () => {
     }
   };
 
-  const drawWinners = async () => {
-    if (!activeLottery || !user) return;
+  const drawWinnersForLottery = async (lotteryData: ActiveLotteryData) => {
+    if (!user) return;
+    const { lottery, prizes } = lotteryData;
 
-    setDrawing(true);
+    setDrawingId(lottery.id);
     try {
       const { data: activeUsers } = await supabase
         .from('profiles')
@@ -329,12 +348,12 @@ const LotteryPanel = () => {
       await supabase
         .from('lotteries')
         .update({ status: 'completed' })
-        .eq('id', activeLottery.id);
+        .eq('id', lottery.id);
 
       await supabase.from('admin_logs').insert({
         admin_id: user.id,
         action: 'lottery_drawn',
-        details: { lottery_id: activeLottery.id, winners: winners.map(w => ({ user: w.username, item: w.itemName, serial: w.serial })) },
+        details: { lottery_id: lottery.id, winners: winners.map(w => ({ user: w.username, item: w.itemName, serial: w.serial })) },
       });
 
       toast.success(`Drew ${winners.length} winners!`);
@@ -344,7 +363,40 @@ const LotteryPanel = () => {
       console.error('Error drawing winners:', error);
       toast.error('Failed to draw winners');
     } finally {
-      setDrawing(false);
+      setDrawingId(null);
+    }
+  };
+
+  const stopLottery = async (lotteryData: ActiveLotteryData) => {
+    if (!user) return;
+    const { lottery } = lotteryData;
+
+    setStoppingId(lottery.id);
+    try {
+      // End the lottery now by updating ends_at to now
+      await supabase
+        .from('lotteries')
+        .update({ ends_at: new Date().toISOString() })
+        .eq('id', lottery.id);
+
+      await supabase.from('admin_logs').insert({
+        admin_id: user.id,
+        action: 'lottery_stopped_early',
+        details: { lottery_id: lottery.id },
+      });
+
+      toast.success('Lottery stopped! Drawing winners now...');
+
+      // Refresh to get updated data, then draw
+      await fetchLotteries();
+
+      // Draw winners immediately with current data
+      await drawWinnersForLottery(lotteryData);
+    } catch (error) {
+      console.error('Error stopping lottery:', error);
+      toast.error('Failed to stop lottery');
+    } finally {
+      setStoppingId(null);
     }
   };
 
@@ -364,144 +416,172 @@ const LotteryPanel = () => {
         Lottery Control
       </h2>
 
-      {/* Active Lottery */}
-      {activeLottery ? (
-        <div className="p-6 bg-muted/30 rounded-lg space-y-4 neon-border">
-          <div className="flex items-center justify-between">
-            <h3 className="font-display font-bold text-lg flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary" />
-              Active Lottery
-            </h3>
-            <span className="text-sm font-mono text-primary">{timeRemaining}</span>
-          </div>
+      {/* Active Lotteries */}
+      {activeLotteries.map((ld) => {
+        const ended = new Date(ld.lottery.ends_at).getTime() <= Date.now();
+        const isDrawing = drawingId === ld.lottery.id;
+        const isStopping = stoppingId === ld.lottery.id;
 
-          <div className="text-sm text-muted-foreground">
-            Started: {new Date(activeLottery.starts_at).toLocaleString()} •
-            Ends: {new Date(activeLottery.ends_at).toLocaleString()} •
-            Duration: {formatDuration(activeLottery.duration_minutes)}
-          </div>
+        return (
+          <div key={ld.lottery.id} className="p-6 bg-muted/30 rounded-lg space-y-4 neon-border">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display font-bold text-lg flex items-center gap-2">
+                <Clock className="w-5 h-5 text-primary" />
+                Active Lottery
+              </h3>
+              <span className="text-sm font-mono text-primary">{ld.timeRemaining}</span>
+            </div>
 
-          <div className="space-y-2">
-            <h4 className="font-bold text-sm">Prize Pool ({prizes.length} items)</h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {prizes.map((p) => (
-                <div key={p.id} className="p-2 bg-muted/30 rounded flex items-center gap-2">
-                  <img src={p.item_image} alt="" className="w-8 h-8 object-contain" />
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold truncate">
-                      {p.serial_number != null && <span className="text-primary">#{p.serial_number}</span>}{' '}
-                      {p.item_name}
-                    </p>
-                    {p.winner_name && (
-                      <p className="text-xs text-accent">Won by: {p.winner_name}</p>
-                    )}
+            <div className="text-sm text-muted-foreground">
+              Started: {new Date(ld.lottery.starts_at).toLocaleString()} •
+              Ends: {new Date(ld.lottery.ends_at).toLocaleString()} •
+              Duration: {formatDuration(ld.lottery.duration_minutes)}
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="font-bold text-sm">Prize Pool ({ld.prizes.length} items)</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {ld.prizes.map((p) => (
+                  <div key={p.id} className="p-2 bg-muted/30 rounded flex items-center gap-2">
+                    <img src={p.item_image} alt="" className="w-8 h-8 object-contain" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold truncate">
+                        {p.serial_number != null && <span className="text-primary">#{p.serial_number}</span>}{' '}
+                        {p.item_name}
+                      </p>
+                      {p.winner_name && (
+                        <p className="text-xs text-accent">Won by: {p.winner_name}</p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              {!ended && (
+                <Button
+                  variant="destructive"
+                  onClick={() => stopLottery(ld)}
+                  disabled={isStopping || isDrawing}
+                  className="gap-2"
+                >
+                  {isStopping ? (
+                    <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  ) : (
+                    <StopCircle className="w-4 h-4" />
+                  )}
+                  Stop & Draw Winners
+                </Button>
+              )}
+              {ended && (
+                <Button
+                  onClick={() => drawWinnersForLottery(ld)}
+                  disabled={isDrawing}
+                  className="gap-2"
+                >
+                  {isDrawing ? (
+                    <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  ) : (
+                    <Gift className="w-4 h-4" />
+                  )}
+                  Draw Winners
+                </Button>
+              )}
             </div>
           </div>
+        );
+      })}
 
-          {new Date(activeLottery.ends_at).getTime() <= Date.now() && (
-            <Button onClick={drawWinners} disabled={drawing} className="gap-2">
-              {drawing ? (
-                <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-              ) : (
-                <Gift className="w-4 h-4" />
-              )}
-              Draw Winners
+      {/* Create New Lottery - always visible */}
+      <div className="p-6 bg-muted/30 rounded-lg space-y-4">
+        <h3 className="font-display font-bold">Start New Lottery</h3>
+
+        <p className="text-sm text-muted-foreground">
+          Available limited items from BadDecisions: <strong className="text-accent">{bdItems.length}</strong>
+        </p>
+
+        {/* Duration */}
+        <div className="space-y-2">
+          <Label>Duration</Label>
+          <div className="flex gap-2 max-w-sm">
+            <Input
+              type="number"
+              min={1}
+              max={9999}
+              value={durationValue}
+              onChange={(e) => setDurationValue(Math.max(1, parseInt(e.target.value) || 1))}
+              className="flex-1"
+              placeholder="e.g. 10"
+            />
+            <select
+              value={durationUnit}
+              onChange={(e) => setDurationUnit(e.target.value as 'minutes' | 'hours')}
+              className="w-28 h-10 rounded-md border bg-input px-3"
+            >
+              <option value="minutes">Minutes</option>
+              <option value="hours">Hours</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Prize Selection */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label>Select Prizes ({selectedPrizeIds.size} selected)</Label>
+            <Button variant="ghost" size="sm" onClick={selectAll}>
+              {selectedPrizeIds.size === bdItems.length ? 'Deselect All' : 'Select All'}
             </Button>
+          </div>
+
+          {bdItems.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-4 text-center">No limited items in BadDecisions inventory</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+              {bdItems.map((item) => {
+                const selected = selectedPrizeIds.has(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => togglePrize(item.id)}
+                    className={cn(
+                      "flex items-center gap-2 p-2 rounded-lg border text-left transition-all",
+                      selected
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-muted/20 hover:border-muted-foreground/50"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-5 h-5 rounded border flex items-center justify-center shrink-0",
+                      selected ? "bg-primary border-primary" : "border-muted-foreground/30"
+                    )}>
+                      {selected && <Check className="w-3 h-3 text-primary-foreground" />}
+                    </div>
+                    <img src={item.item_image} alt="" className="w-8 h-8 object-contain shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold truncate">
+                        {item.serial_number != null && (
+                          <span className="text-primary">#{item.serial_number} </span>
+                        )}
+                        {item.item_name}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           )}
         </div>
-      ) : (
-        <div className="p-6 bg-muted/30 rounded-lg space-y-4">
-          <h3 className="font-display font-bold">Start New Lottery</h3>
 
-          <p className="text-sm text-muted-foreground">
-            Available limited items from BadDecisions: <strong className="text-accent">{bdItems.length}</strong>
-          </p>
-
-          {/* Duration */}
-          <div className="space-y-2">
-            <Label>Duration</Label>
-            <div className="flex gap-2 max-w-sm">
-              <Input
-                type="number"
-                min={1}
-                max={9999}
-                value={durationValue}
-                onChange={(e) => setDurationValue(Math.max(1, parseInt(e.target.value) || 1))}
-                className="flex-1"
-                placeholder="e.g. 10"
-              />
-              <select
-                value={durationUnit}
-                onChange={(e) => setDurationUnit(e.target.value as 'minutes' | 'hours')}
-                className="w-28 h-10 rounded-md border bg-input px-3"
-              >
-                <option value="minutes">Minutes</option>
-                <option value="hours">Hours</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Prize Selection */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Select Prizes ({selectedPrizeIds.size} selected)</Label>
-              <Button variant="ghost" size="sm" onClick={selectAll}>
-                {selectedPrizeIds.size === bdItems.length ? 'Deselect All' : 'Select All'}
-              </Button>
-            </div>
-
-            {bdItems.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">No limited items in BadDecisions inventory</p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
-                {bdItems.map((item) => {
-                  const selected = selectedPrizeIds.has(item.id);
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => togglePrize(item.id)}
-                      className={cn(
-                        "flex items-center gap-2 p-2 rounded-lg border text-left transition-all",
-                        selected
-                          ? "border-primary bg-primary/10"
-                          : "border-border bg-muted/20 hover:border-muted-foreground/50"
-                      )}
-                    >
-                      <div className={cn(
-                        "w-5 h-5 rounded border flex items-center justify-center shrink-0",
-                        selected ? "bg-primary border-primary" : "border-muted-foreground/30"
-                      )}>
-                        {selected && <Check className="w-3 h-3 text-primary-foreground" />}
-                      </div>
-                      <img src={item.item_image} alt="" className="w-8 h-8 object-contain shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold truncate">
-                          {item.serial_number != null && (
-                            <span className="text-primary">#{item.serial_number} </span>
-                          )}
-                          {item.item_name}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          <Button onClick={createLottery} disabled={creating || selectedPrizeIds.size === 0} className="gap-2">
-            {creating ? (
-              <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-            ) : (
-              <Trophy className="w-4 h-4" />
-            )}
-            Start Lottery ({selectedPrizeIds.size} prizes)
-          </Button>
-        </div>
-      )}
+        <Button onClick={createLottery} disabled={creating || selectedPrizeIds.size === 0} className="gap-2">
+          {creating ? (
+            <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+          ) : (
+            <Trophy className="w-4 h-4" />
+          )}
+          Start Lottery ({selectedPrizeIds.size} prizes)
+        </Button>
+      </div>
 
       {/* Past Lotteries */}
       {pastLotteries.length > 0 && (
