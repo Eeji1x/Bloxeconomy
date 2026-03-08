@@ -35,6 +35,38 @@ const Apply = () => {
   const [submitted, setSubmitted] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
 
+  // Status checker state
+  const [showStatusChecker, setShowStatusChecker] = useState(false);
+  const [statusInput, setStatusInput] = useState('');
+  const [statusResult, setStatusResult] = useState<{ status: string; reject_reason?: string; username?: string } | null>(null);
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [statusError, setStatusError] = useState('');
+
+  const checkStatus = async () => {
+    if (!statusInput.trim()) {
+      setStatusError('Please enter your Application ID');
+      return;
+    }
+    setStatusLoading(true);
+    setStatusError('');
+    setStatusResult(null);
+    try {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('status, reject_reason, username')
+        .eq('short_id', statusInput.trim().toUpperCase())
+        .maybeSingle();
+      if (error || !data) {
+        setStatusError('Application not found. Check your ID and try again.');
+      } else {
+        setStatusResult(data);
+      }
+    } catch {
+      setStatusError('Something went wrong.');
+    }
+    setStatusLoading(false);
+  };
+
   // Custom captcha state
   const [captchaCode, setCaptchaCode] = useState(generateCaptcha);
   const [captchaInput, setCaptchaInput] = useState('');
