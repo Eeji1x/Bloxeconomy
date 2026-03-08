@@ -103,23 +103,34 @@ const AuthHome = () => {
             A futuristic virtual world revival. Collect items, trade limiteds, and build your legacy.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/signup">
-              <Button variant="neon" size="xl" className="group">
-                <Zap className="w-5 h-5 group-hover:animate-pulse" />
-                Start Playing
-              </Button>
-            </Link>
-            <Link to="/apply">
-              <Button variant="outline" size="xl" className="gap-2">
-                <FileText className="w-5 h-5" />
-                Apply to Join
-              </Button>
-            </Link>
-            <Link to="/login">
-              <Button variant="ghost" size="xl">
-                Already have an account?
-              </Button>
-            </Link>
+            {!user ? (
+              <>
+                <Link to="/signup">
+                  <Button variant="neon" size="xl" className="group">
+                    <Zap className="w-5 h-5 group-hover:animate-pulse" />
+                    Start Playing
+                  </Button>
+                </Link>
+                <Link to="/apply">
+                  <Button variant="outline" size="xl" className="gap-2">
+                    <FileText className="w-5 h-5" />
+                    Apply to Join
+                  </Button>
+                </Link>
+                <Link to="/login">
+                  <Button variant="ghost" size="xl">
+                    Already have an account?
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Link to="/">
+                <Button variant="neon" size="xl" className="group">
+                  <Zap className="w-5 h-5 group-hover:animate-pulse" />
+                  Go to Dashboard
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </section>
