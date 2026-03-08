@@ -426,6 +426,16 @@ const AdminUserManagement = () => {
                 onConfirm={handleResetUsername}
               />
             </div>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <Button
+                variant={profile.is_verified ? 'destructive' : 'outline'}
+                className="gap-2"
+                onClick={handleToggleVerify}
+              >
+                <BadgeCheck className="w-4 h-4" />
+                {profile.is_verified ? 'Remove Verified' : 'Grant Verified'}
+              </Button>
+            </div>
           </ActionPanel>
 
           {/* Economy Actions */}
