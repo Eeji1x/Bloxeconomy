@@ -74,18 +74,10 @@ const AvatarModel = ({ equippedItems }: { equippedItems: EquippedItem[] }) => {
     setModelHeight(size.y);
   }, [model]);
 
-  const objItems = equippedItems.filter(i => i.model_url);
-  const pngItems = equippedItems.filter(i => !i.model_url);
-
   return (
     <group ref={groupRef}>
       <primitive object={model} scale={0.4} />
-      {objItems.map((item, i) => (
-        <Suspense key={`obj-${item.model_url}-${i}`} fallback={null}>
-          <ObjEquippedItem url={item.model_url!} />
-        </Suspense>
-      ))}
-      {pngItems.map((item, i) => (
+      {equippedItems.map((item, i) => (
         <EquippedItemOverlay key={`png-${item.image_url}-${i}`} imageUrl={item.image_url} modelHeight={modelHeight} />
       ))}
     </group>
