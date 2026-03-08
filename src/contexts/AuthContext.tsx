@@ -2,6 +2,16 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase, checkIsAdmin, getProfile, updateOnlineStatus } from '@/lib/supabase';
 
+const checkIsEconomyManager = async (userId: string): Promise<boolean> => {
+  const { data, error } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userId)
+    .eq('role', 'economy_manager')
+    .maybeSingle();
+  return !error && data !== null;
+};
+
 interface Profile {
   id: string;
   user_id: string;
@@ -26,6 +36,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   isAdmin: boolean;
+  isEconomyManager: boolean;
   isLoading: boolean;
   signUp: (username: string, password: string, inviteKey: string) => Promise<{ error: Error | null }>;
   signIn: (username: string, password: string) => Promise<{ error: Error | null }>;
@@ -48,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isEconomyManager, setIsEconomyManager] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshProfile = async () => {
@@ -63,6 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       const adminStatus = await checkIsAdmin(user.id);
       setIsAdmin(adminStatus);
+      const econStatus = await checkIsEconomyManager(user.id);
+      setIsEconomyManager(econStatus);
     } catch (error) {
       console.error('Error refreshing profile:', error);
     }
@@ -92,6 +106,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             const adminStatus = await checkIsAdmin(session.user.id);
             setIsAdmin(adminStatus);
+            const econStatus = await checkIsEconomyManager(session.user.id);
+            setIsEconomyManager(econStatus);
           } catch (error) {
             console.error('Error in auth state change:', error);
           }
@@ -100,6 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setProfile(null);
         setIsAdmin(false);
+        setIsEconomyManager(false);
         setIsLoading(false);
       }
     });
@@ -226,6 +243,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
     setProfile(null);
     setIsAdmin(false);
+    setIsEconomyManager(false);
   };
 
   return (
@@ -235,6 +253,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         session,
         profile,
         isAdmin,
+        isEconomyManager,
         isLoading,
         signUp,
         signIn,

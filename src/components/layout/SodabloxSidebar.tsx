@@ -30,7 +30,7 @@ const secondaryLinks = [
 ];
 
 export const SodabloxSidebar = () => {
-  const { user, profile, isAdmin, signOut } = useAuth();
+  const { user, profile, isAdmin, isEconomyManager, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -78,7 +78,7 @@ export const SodabloxSidebar = () => {
         ))}
       </div>
 
-      {isAdmin && (
+      {(isAdmin || isEconomyManager) && (
         <>
           <div className="mx-5 my-2 border-t border-border" />
           <Link
@@ -92,7 +92,7 @@ export const SodabloxSidebar = () => {
             )}
           >
             <Shield className="w-[18px] h-[18px] shrink-0" />
-            <span>Admin Panel</span>
+            <span>{isAdmin ? 'Admin Panel' : 'Economy Panel'}</span>
           </Link>
         </>
       )}

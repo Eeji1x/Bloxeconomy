@@ -40,8 +40,22 @@ const tabs: Tab[] = [
 ];
 
 const Admin = () => {
-  const { user, isAdmin, isLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState('players');
+  const { user, isAdmin, isEconomyManager, isLoading } = useAuth();
+  const [activeTab, setActiveTab] = useState('');
+
+  const isStaff = isAdmin || isEconomyManager;
+
+  // Economy managers only see catalog + promocodes
+  const visibleTabs = isAdmin
+    ? tabs
+    : tabs.filter((t) => t.id === 'catalog' || t.id === 'promocodes');
+
+  // Set default tab based on role
+  useEffect(() => {
+    if (!activeTab && visibleTabs.length > 0) {
+      setActiveTab(isAdmin ? 'players' : 'catalog');
+    }
+  }, [isAdmin, isEconomyManager]);
 
   if (isLoading) {
     return (
@@ -51,7 +65,7 @@ const Admin = () => {
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!user || !isStaff) {
     return <Navigate to="/" replace />;
   }
 
@@ -61,14 +75,16 @@ const Admin = () => {
       <div className="space-y-1">
         <h1 className="text-3xl font-display font-bold flex items-center gap-3">
           <Shield className="w-8 h-8 text-destructive" />
-          Admin Panel
+          {isAdmin ? 'Admin Panel' : 'Economy Panel'}
         </h1>
-        <p className="text-muted-foreground">Manage players, catalog, site settings</p>
+        <p className="text-muted-foreground">
+          {isAdmin ? 'Manage players, catalog, site settings' : 'Manage catalog items and promocodes'}
+        </p>
       </div>
 
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-border pb-4">
-        {tabs.map((tab) => (
+        {visibleTabs.map((tab) => (
           <Button
             key={tab.id}
             variant={activeTab === tab.id ? 'default' : 'ghost'}
@@ -83,16 +99,16 @@ const Admin = () => {
 
       {/* Tab Content */}
       <div>
-        {activeTab === 'players' && <AdminPlayers embedded />}
+        {activeTab === 'players' && isAdmin && <AdminPlayers embedded />}
         {activeTab === 'catalog' && <div className="cyber-card p-6"><CatalogPanel /></div>}
-        {activeTab === 'create-user' && <div className="cyber-card p-6"><AdminCreateUserPanel /></div>}
+        {activeTab === 'create-user' && isAdmin && <div className="cyber-card p-6"><AdminCreateUserPanel /></div>}
         {activeTab === 'promocodes' && <div className="cyber-card p-6"><PromocodesPanel /></div>}
-        {activeTab === 'announcements' && <div className="cyber-card p-6"><AnnouncementsPanel /></div>}
-        {activeTab === 'invite-keys' && <div className="cyber-card p-6"><InviteKeysPanel /></div>}
-        {activeTab === 'maintenance' && <div className="cyber-card p-6"><MaintenancePanel /></div>}
-        {activeTab === 'messaging' && <div className="cyber-card p-6"><GlobalMessagePanel /></div>}
-        {activeTab === 'lottery' && <div className="cyber-card p-6"><LotteryPanel /></div>}
-        {activeTab === 'wipe' && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
+        {activeTab === 'announcements' && isAdmin && <div className="cyber-card p-6"><AnnouncementsPanel /></div>}
+        {activeTab === 'invite-keys' && isAdmin && <div className="cyber-card p-6"><InviteKeysPanel /></div>}
+        {activeTab === 'maintenance' && isAdmin && <div className="cyber-card p-6"><MaintenancePanel /></div>}
+        {activeTab === 'messaging' && isAdmin && <div className="cyber-card p-6"><GlobalMessagePanel /></div>}
+        {activeTab === 'lottery' && isAdmin && <div className="cyber-card p-6"><LotteryPanel /></div>}
+        {activeTab === 'wipe' && isAdmin && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
       </div>
     </div>
   );
