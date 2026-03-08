@@ -822,6 +822,10 @@ export type Database = {
       }
     }
     Functions: {
+      adjust_emeralds: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: undefined
+      }
       claim_daily_emeralds: { Args: never; Returns: Json }
       get_next_serial: { Args: { p_item_id: string }; Returns: number }
       has_role: {
