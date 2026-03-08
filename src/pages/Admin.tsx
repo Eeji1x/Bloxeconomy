@@ -54,6 +54,9 @@ const tabs: Tab[] = [
   { id: 'promocodes', label: 'Promocodes', icon: <Gift className="w-4 h-4" /> },
   { id: 'announcements', label: 'Announcements', icon: <Megaphone className="w-4 h-4" /> },
   { id: 'invite-keys', label: 'Invite Keys', icon: <Shield className="w-4 h-4" /> },
+  { id: 'maintenance', label: 'Maintenance', icon: <Wrench className="w-4 h-4" /> },
+  { id: 'messaging', label: 'Messaging', icon: <Mail className="w-4 h-4" /> },
+  { id: 'lottery', label: 'Lottery', icon: <Trophy className="w-4 h-4" /> },
   { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
