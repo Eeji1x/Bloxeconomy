@@ -33,6 +33,7 @@ interface CatalogItem {
   is_on_sale: boolean | null;
   resell_enabled: boolean | null;
   created_at: string;
+  model_url: string | null;
 }
 
 interface ResaleListing {

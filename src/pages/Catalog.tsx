@@ -21,6 +21,7 @@ interface CatalogItem {
   sale_start_time: string | null;
   sale_end_time: string | null;
   created_at: string;
+  model_url: string | null;
 }
 
 type SaleState = 'on_sale' | 'off_sale' | 'sold_out';
