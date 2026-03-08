@@ -1136,6 +1136,230 @@
     color: #6e5494 !important;
   }
 
+  /* ═══ CATALOG PAGE — 2016 ECS layout with sidebar ═══ */
+  [data-theme="roblox2016"] .rbx16-catalog-page {
+    display: flex;
+    gap: 16px;
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-sidebar {
+    width: 180px;
+    flex-shrink: 0;
+  }
+  @media (max-width: 768px) {
+    [data-theme="roblox2016"] .rbx16-catalog-page {
+      flex-direction: column;
+    }
+    [data-theme="roblox2016"] .rbx16-catalog-sidebar {
+      width: 100%;
+    }
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-main {
+    flex: 1;
+    min-width: 0;
+  }
+  [data-theme="roblox2016"] .rbx16-cat-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 14px !important;
+    color: #0055b3;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #e8e8e8;
+    cursor: pointer;
+  }
+  [data-theme="roblox2016"] .rbx16-cat-link:hover {
+    background: #f2f2f2;
+  }
+  [data-theme="roblox2016"] .rbx16-cat-link-active {
+    background: #0074BD !important;
+    color: #fff !important;
+    font-weight: 600;
+  }
+  [data-theme="roblox2016"] .rbx16-search-catalog {
+    height: 28px;
+    padding: 0 8px;
+    font-size: 13px !important;
+    border: 1px solid #c3c3c3;
+    background: #fff;
+    width: 180px;
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-item {
+    background: #fff;
+    border: 1px solid #c3c3c3;
+    padding: 8px;
+    text-decoration: none !important;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.15s;
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-item:hover {
+    border-color: #0074BD;
+    text-decoration: none !important;
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-item-img {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px;
+  }
+  [data-theme="roblox2016"] .rbx16-limited-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  [data-theme="roblox2016"] .rbx16-offsale-tag {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    font-size: 10px !important;
+    font-weight: 700;
+    background: #999;
+    color: #fff;
+    padding: 1px 5px;
+  }
+  [data-theme="roblox2016"] .rbx16-soldout-tag {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    font-size: 10px !important;
+    font-weight: 700;
+    background: #cc3333;
+    color: #fff;
+    padding: 1px 5px;
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-item-name {
+    font-size: 13px !important;
+    font-weight: 600;
+    color: #0055b3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-item-price {
+    font-size: 13px !important;
+    font-weight: 700;
+    color: #02b757;
+  }
+  [data-theme="roblox2016"] .rbx16-catalog-item-stock {
+    font-size: 11px !important;
+    color: #999;
+  }
+
+  /* ═══ ITEM DETAIL PAGE — 2016 ECS layout ═══ */
+  [data-theme="roblox2016"] .rbx16-item-page {
+    max-width: 100%;
+  }
+  [data-theme="roblox2016"] .rbx16-breadcrumb {
+    font-size: 13px !important;
+    margin-bottom: 12px;
+    color: #666;
+  }
+  [data-theme="roblox2016"] .rbx16-item-layout {
+    display: flex;
+    gap: 16px;
+  }
+  @media (max-width: 768px) {
+    [data-theme="roblox2016"] .rbx16-item-layout {
+      flex-direction: column;
+    }
+  }
+  [data-theme="roblox2016"] .rbx16-item-image-col {
+    width: 350px;
+    flex-shrink: 0;
+  }
+  @media (max-width: 768px) {
+    [data-theme="roblox2016"] .rbx16-item-image-col {
+      width: 100%;
+    }
+  }
+  [data-theme="roblox2016"] .rbx16-item-info-col {
+    flex: 1;
+    min-width: 0;
+  }
+  [data-theme="roblox2016"] .rbx16-item-image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    padding: 12px;
+  }
+  [data-theme="roblox2016"] .rbx16-item-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  [data-theme="roblox2016"] .rbx16-limited-overlay-detail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  [data-theme="roblox2016"] .rbx16-item-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  [data-theme="roblox2016"] .rbx16-item-stats-table td {
+    padding: 6px 0;
+    font-size: 14px !important;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  [data-theme="roblox2016"] .rbx16-stat-label {
+    color: #666;
+    width: 100px;
+    font-weight: 600;
+  }
+  [data-theme="roblox2016"] .rbx16-stat-value {
+    color: #1e1e1f;
+  }
+
+  /* ═══ INBOX — 2016 style override ═══ */
+  [data-theme="roblox2016"] .cyber-card.p-0 {
+    background: #fff !important;
+    border: 1px solid #c3c3c3 !important;
+  }
+
+  /* ═══ AVATAR EDITOR — 2016 style override ═══ */
+  [data-theme="roblox2016"] .aspect-\[3\/4\] {
+    border: 1px solid #c3c3c3 !important;
+    background: #fff !important;
+    border-radius: 0 !important;
+  }
+
+  /* ═══ EMERALD SHOP — 2016 style ═══ */
+  [data-theme="roblox2016"] .rbx16-emerald-card {
+    background: #fff;
+    border: 1px solid #c3c3c3;
+    padding: 16px;
+    text-align: center;
+  }
+
   /* ═══════════════════════════════════════════════════
      ROBLOX 2008 THEME — 1:1 recreation based on madblox source
      Banner: background image + #6e99c9 nav bar
