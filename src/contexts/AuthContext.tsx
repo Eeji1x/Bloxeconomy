@@ -65,23 +65,9 @@ export const useAuth = () => {
   return context;
 };
 
-  const autoGrantDailyEmeralds = async (userId: string, profileData: any) => {
+  const autoGrantDailyEmeralds = async () => {
     try {
-      const lastClaim = profileData.last_daily_claim ? new Date(profileData.last_daily_claim) : null;
-      const now = new Date();
-      
-      if (lastClaim) {
-        const hoursSince = (now.getTime() - lastClaim.getTime()) / (1000 * 60 * 60);
-        if (hoursSince < 24) return;
-      }
-
-      await supabase
-        .from('profiles')
-        .update({ 
-          emeralds: profileData.emeralds + 100,
-          last_daily_claim: now.toISOString()
-        })
-        .eq('user_id', userId);
+      await supabase.rpc('claim_daily_emeralds');
     } catch (error) {
       console.error('Error granting daily emeralds:', error);
     }
