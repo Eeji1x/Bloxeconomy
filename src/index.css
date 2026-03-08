@@ -152,6 +152,9 @@
 
   /* ── Font: Source Sans Pro (matching ECS globals.css) ── */
   [data-theme="roblox2016"] body,
+  /* Source Sans Pro — authentic 2016 Roblox font */
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap');
+
   [data-theme="roblox2016"] * {
     font-family: "Source Sans Pro", Arial, Helvetica, sans-serif !important;
     letter-spacing: 0 !important;
@@ -168,24 +171,27 @@
     letter-spacing: 0 !important;
   }
 
-  /* ── Links (ECS globals.css) ── */
+  /* ── Links (real 2016: #00a2ff on hover, not the darker blue) ── */
   [data-theme="roblox2016"] a {
-    color: #0055b3;
+    color: #00a2ff;
     text-decoration: none !important;
   }
   [data-theme="roblox2016"] a:hover {
-    color: #0055b3;
+    color: #00a2ff;
+    text-decoration: none !important;
   }
 
   /* ── Body bg (real 2016: #e3e3e3) ── */
   [data-theme="roblox2016"] body {
     background: #e3e3e3 !important;
-    font-size: 14px !important;
+    font-size: 16px !important;
+    font-weight: 300 !important;
+    color: #191919 !important;
   }
 
   /* ═══════════════════════════════════════════════════
-     ICON SPRITE — navigation_02012016.svg
-     Exact positions from ECS icons.css
+     ICON SPRITE — navigation_10022018.svg (authentic 2016 Roblox)
+     From: https://images.rbxcdn.com/f4000b6d03a0df7153556d2514045629-navigation_10022018.svg
      ═══════════════════════════════════════════════════ */
   [data-theme="roblox2016"] .icon-default-navigation,
   [data-theme="roblox2016"] .icon-nav-menu,
@@ -203,8 +209,11 @@
   [data-theme="roblox2016"] .icon-nav-group,
   [data-theme="roblox2016"] .icon-nav-forum,
   [data-theme="roblox2016"] .icon-nav-blog,
-  [data-theme="roblox2016"] .icon-nav-shop {
-    background-image: url('/images/2016/navigation_02012016.svg');
+  [data-theme="roblox2016"] .icon-nav-shop,
+  [data-theme="roblox2016"] .icon-nav-notification-stream,
+  [data-theme="roblox2016"] .icon-nav-my-feed,
+  [data-theme="roblox2016"] .icon-nav-search-white {
+    background-image: url('/images/2016/navigation_10022018.svg');
     background-repeat: no-repeat;
     background-size: auto auto;
     width: 28px;
@@ -511,6 +520,7 @@
   }
   [data-theme="roblox2016"] .rbx16-sidebar-link:hover {
     color: #00a2ff;
+    text-decoration: none !important;
   }
   [data-theme="roblox2016"] .rbx16-sidebar-link-active {
     color: #00a2ff;
@@ -580,11 +590,12 @@
   }
   [data-theme="roblox2016"] .rbx16-panel {
     background: #fff;
-    border: 1px solid #c3c3c3;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
     overflow: hidden;
+    border: none;
   }
   [data-theme="roblox2016"] .rbx16-panel-header {
-    border-bottom: 1px solid #c3c3c3;
+    border-bottom: 1px solid #e3e3e3;
     padding: 8px 12px;
     display: flex;
     align-items: center;
@@ -598,7 +609,7 @@
   }
   [data-theme="roblox2016"] .rbx16-panel-header-link {
     font-size: 12px !important;
-    color: #0074BD !important;
+    color: #00a2ff !important;
     text-decoration: none !important;
     font-weight: 600;
   }
@@ -644,7 +655,7 @@
     text-decoration: none !important;
   }
   [data-theme="roblox2016"] .rbx16-welcome-username:hover {
-    color: #0074BD !important;
+    color: #00a2ff !important;
   }
   [data-theme="roblox2016"] .rbx16-welcome-stats {
     display: flex;
@@ -899,18 +910,19 @@
   [data-theme="roblox2016"] .rbx16-friend-avatar {
     width: 60px;
     height: 60px;
-    border-radius: 0;
+    border-radius: 50%;
     overflow: hidden;
-    border: 1px solid #ddd;
-    background: #f2f2f2;
+    border: 1px solid #c5c5c5;
+    background: #ffffff;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
   }
   [data-theme="roblox2016"] .rbx16-friend-tile:hover .rbx16-friend-avatar {
-    border-color: #0074BD;
+    box-shadow: 0 1px 6px 0 rgba(25,25,25,0.45);
   }
   [data-theme="roblox2016"] .rbx16-friend-name {
     font-size: 11px !important;
     font-weight: 500;
-    color: #0074BD;
+    color: #00a2ff;
     text-align: center;
     width: 60px;
     overflow: hidden;
@@ -951,20 +963,19 @@
   [data-theme="roblox2016"] .cyber-card {
     background: #fff;
     border: none;
-    box-shadow: none;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
     border-radius: 0;
     padding: 2px 8px;
   }
   [data-theme="roblox2016"] .cyber-card:hover {
-    border-color: transparent;
-    box-shadow: none;
+    box-shadow: 0 1px 6px 0 rgba(25,25,25,0.45);
     transform: none;
   }
   [data-theme="roblox2016"] .neon-border,
   [data-theme="roblox2016"] .neon-border-pink,
   [data-theme="roblox2016"] .neon-border-green {
-    border: 1px solid #c3c3c3;
-    box-shadow: none;
+    border: none;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
   }
   [data-theme="roblox2016"] .glow-cyan,
   [data-theme="roblox2016"] .glow-pink,
@@ -1025,15 +1036,15 @@
 
   /* Flatten cards — ECS style (no rounded corners, minimal borders) */
   [data-theme="roblox2016"] .rounded-lg.border {
-    border-color: #c3c3c3;
-    box-shadow: none;
-    border-radius: 0 !important;
+    border-color: transparent;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
+    border-radius: 3px !important;
   }
   [data-theme="roblox2016"] .rounded-lg,
   [data-theme="roblox2016"] .rounded-md,
   [data-theme="roblox2016"] .rounded-sm,
   [data-theme="roblox2016"] .rounded {
-    border-radius: 0 !important;
+    border-radius: 3px !important;
   }
   /* Keep rounded-full for avatars/dots */
 
@@ -1053,13 +1064,15 @@
   [data-theme="roblox2016"] .grid a.cyber-card,
   [data-theme="roblox2016"] .grid .cyber-card {
     background: #fff !important;
-    border: 1px solid #c3c3c3 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
     padding: 8px !important;
-    transition: border-color 0.15s !important;
+    transition: box-shadow 0.15s !important;
+    border-radius: 3px !important;
   }
   [data-theme="roblox2016"] .grid a.cyber-card:hover,
   [data-theme="roblox2016"] .grid .cyber-card:hover {
-    border-color: #0074BD !important;
+    box-shadow: 0 1px 6px 0 rgba(25,25,25,0.45) !important;
     transform: none !important;
   }
 
@@ -1100,8 +1113,9 @@
   /* Item detail info panel */
   [data-theme="roblox2016"] .max-w-4xl .cyber-card {
     background: #fff !important;
-    border: 1px solid #c3c3c3 !important;
-    border-radius: 0 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
+    border-radius: 3px !important;
     padding: 12px !important;
   }
   /* Price display */
@@ -1117,7 +1131,8 @@
   [data-theme="roblox2016"] .max-w-4xl .cyber-card.p-8,
   [data-theme="roblox2016"] .max-w-4xl .cyber-card.p-6 {
     background: #fff !important;
-    border: 1px solid #c3c3c3 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
     padding: 16px !important;
   }
   /* Profile header username */
@@ -1128,7 +1143,8 @@
   /* Profile stats grid */
   [data-theme="roblox2016"] .grid.grid-cols-2.md\:grid-cols-4 .cyber-card {
     background: #fff !important;
-    border: 1px solid #c3c3c3 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
     padding: 12px 8px !important;
   }
   [data-theme="roblox2016"] .grid.grid-cols-2.md\:grid-cols-4 .text-2xl {
@@ -1143,9 +1159,9 @@
   /* Emerald display on profile */
   [data-theme="roblox2016"] .emerald-display {
     background: #f8f8f8 !important;
-    border: 1px solid #c3c3c3 !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
+    border-radius: 3px !important;
     padding: 4px 8px !important;
   }
   [data-theme="roblox2016"] .emerald-display span {
@@ -1155,8 +1171,9 @@
   /* ═══ SETTINGS PAGE — 2016 ECS settings style ═══ */
   [data-theme="roblox2016"] .max-w-2xl .cyber-card {
     background: #fff !important;
-    border: 1px solid #c3c3c3 !important;
-    border-radius: 0 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
+    border-radius: 3px !important;
   }
   /* Settings tabs — flat 2016 style */
   [data-theme="roblox2016"] .border-b.border-border {
@@ -1265,19 +1282,22 @@
   [data-theme="roblox2016"] .grid.grid-cols-2.sm\:grid-cols-3 .cyber-card,
   [data-theme="roblox2016"] .grid.grid-cols-2.sm\:grid-cols-4 .cyber-card {
     background: #fff !important;
-    border: 1px solid #c3c3c3 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
     padding: 8px !important;
   }
 
   /* ═══ LEADERBOARD — 2016 style ═══ */
   [data-theme="roblox2016"] .cyber-card.p-0 {
-    border: 1px solid #c3c3c3 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
   }
 
   /* ═══ USERS PAGE — 2016 style ═══ */
   [data-theme="roblox2016"] .grid a[class*="cyber-card"] {
     background: #fff !important;
-    border: 1px solid #c3c3c3 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
   }
 
   /* ═══ GENERAL — Page headings ═══ */
@@ -1342,8 +1362,8 @@
   }
   [data-theme="roblox2016"] .rbx16-dropdown-item:hover {
     background: #f2f2f2;
-    border-left: 3px solid #0074BD;
-    padding-left: 11px;
+    box-shadow: 4px 0 0 0 #00a2ff inset;
+    cursor: pointer;
   }
 
   /* Notification badge */
@@ -1358,20 +1378,23 @@
 
   /* ═══ DIALOG/MODAL — 2016 flat style ═══ */
   [data-theme="roblox2016"] [role="dialog"] {
-    border-radius: 0 !important;
-    border: 1px solid #c3c3c3 !important;
+    border-radius: 3px !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25) !important;
+    border: none !important;
   }
 
   /* ═══ TOAST — 2016 style ═══ */
   [data-theme="roblox2016"] [data-sonner-toast] {
-    border-radius: 0 !important;
-    border: 1px solid #c3c3c3 !important;
+    border-radius: 3px !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
   }
 
   /* ═══ TRADING PAGE — 2016 style ═══ */
   [data-theme="roblox2016"] .cyber-card[class*="p-"] {
     background: #fff !important;
-    border: 1px solid #c3c3c3 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
   }
 
   /* ═══ GRADIENT BACKGROUNDS — kill them all ═══ */
