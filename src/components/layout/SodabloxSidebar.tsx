@@ -250,7 +250,10 @@ export const SodabloxSidebar = () => {
             className="lg:hidden fixed inset-0 bg-black/50 z-40"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="lg:hidden fixed left-0 top-[60px] bottom-0 w-[200px] z-50 flex flex-col overflow-y-auto bg-card border-r border-border">
+          <aside
+            className="lg:hidden fixed left-0 bottom-0 w-[200px] z-50 flex flex-col overflow-y-auto bg-card border-r border-border"
+            style={{ top: `${headerOffset}px` }}
+          >
             <SidebarContent mobile />
           </aside>
         </>
