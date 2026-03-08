@@ -36,6 +36,11 @@ const Index = () => {
     return <Roblox2016Home />;
   }
 
+  // Vapor / Test Theme home
+  if (theme === 'vapor') {
+    return <VaporHome />;
+  }
+
   // Default SODABLOX home
   return (
     <div className="space-y-6">
