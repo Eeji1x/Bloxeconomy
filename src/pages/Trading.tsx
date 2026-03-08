@@ -128,13 +128,13 @@ const Trading = () => {
 
   const fetchUserById = async (userId: string) => {
     const { data } = await supabase
-      .from('profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified, is_banned')
+      .from('public_profiles')
+      .select('user_id, username, numeric_id, emeralds, is_verified')
       .eq('user_id', userId)
       .single();
 
-    if (data && !data.is_banned) {
-      setSelectedUser(data);
+    if (data) {
+      setSelectedUser({ ...data, is_banned: false } as Profile);
       fetchTheirInventory(userId);
     }
   };
