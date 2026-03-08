@@ -75,6 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       const adminStatus = await checkIsAdmin(user.id);
       setIsAdmin(adminStatus);
+      const econStatus = await checkIsEconomyManager(user.id);
+      setIsEconomyManager(econStatus);
     } catch (error) {
       console.error('Error refreshing profile:', error);
     }
