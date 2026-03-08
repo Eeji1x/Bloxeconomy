@@ -88,7 +88,7 @@ const sidebarSecondary = [
    ═══════════════════════════════════════════════════ */
 
 export const Roblox2020Navbar = () => {
-  const { user, profile, isAdmin, signOut } = useAuth();
+  const { user, profile, isAdmin, isOwner, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
