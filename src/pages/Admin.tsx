@@ -108,17 +108,18 @@ const Admin = () => {
 
       {/* Tab Content */}
       <div>
-        {activeTab === 'players' && isAdmin && <AdminPlayers embedded />}
+        {activeTab === 'cmd' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AdminCMD /></div>}
+        {activeTab === 'players' && (isAdmin || isOwner) && <AdminPlayers embedded />}
         {activeTab === 'catalog' && <div className="cyber-card p-6"><CatalogPanel /></div>}
-        {activeTab === 'create-user' && isAdmin && <div className="cyber-card p-6"><AdminCreateUserPanel /></div>}
+        {activeTab === 'create-user' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AdminCreateUserPanel /></div>}
         {activeTab === 'promocodes' && <div className="cyber-card p-6"><PromocodesPanel /></div>}
-        {activeTab === 'announcements' && isAdmin && <div className="cyber-card p-6"><AnnouncementsPanel /></div>}
-        {activeTab === 'invite-keys' && isAdmin && <div className="cyber-card p-6"><InviteKeysPanel /></div>}
-        {activeTab === 'maintenance' && isAdmin && <div className="cyber-card p-6"><MaintenancePanel /></div>}
-        {activeTab === 'messaging' && isAdmin && <div className="cyber-card p-6"><GlobalMessagePanel /></div>}
-        {activeTab === 'lottery' && isAdmin && <div className="cyber-card p-6"><LotteryPanel /></div>}
-        {activeTab === 'sodamons' && isAdmin && <div className="cyber-card p-6"><SodamonsValueManager /></div>}
-        {activeTab === 'wipe' && isAdmin && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
+        {activeTab === 'announcements' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AnnouncementsPanel /></div>}
+        {activeTab === 'invite-keys' && (isAdmin || isOwner) && <div className="cyber-card p-6"><InviteKeysPanel /></div>}
+        {activeTab === 'maintenance' && (isAdmin || isOwner) && <div className="cyber-card p-6"><MaintenancePanel /></div>}
+        {activeTab === 'messaging' && (isAdmin || isOwner) && <div className="cyber-card p-6"><GlobalMessagePanel /></div>}
+        {activeTab === 'lottery' && (isAdmin || isOwner) && <div className="cyber-card p-6"><LotteryPanel /></div>}
+        {activeTab === 'sodamons' && (isAdmin || isOwner || isEconomyManager) && <div className="cyber-card p-6"><SodamonsValueManager /></div>}
+        {activeTab === 'wipe' && (isAdmin || isOwner) && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
       </div>
     </div>
   );
