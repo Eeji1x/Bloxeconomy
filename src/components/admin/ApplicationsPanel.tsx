@@ -27,21 +27,17 @@ const ApplicationsPanel = () => {
 
   const handleAccept = async (app: any) => {
     try {
-      // Generate a one-time registration token
-      const token = generateToken();
-      
-      // Insert the token
-      const { error: tokenError } = await supabase
-        .from('registration_tokens')
-        .insert({
-          token,
+      // Generate token server-side via secure edge function
+      const res = await supabase.functions.invoke('register-with-token', {
+        body: {
+          action: 'generate-token',
           application_id: app.id,
           username: app.username,
-        });
+        },
+      });
 
-      if (tokenError) {
-        console.error('Token creation error:', tokenError);
-        toast.error('Failed to generate registration link');
+      if (!res.data?.success || !res.data?.token) {
+        toast.error(res.data?.message || 'Failed to generate registration link');
         return;
       }
 
@@ -56,7 +52,7 @@ const ApplicationsPanel = () => {
         return;
       }
 
-      const link = `${window.location.origin}/register/${token}`;
+      const link = `${window.location.origin}/register/${res.data.token}`;
       setGeneratedLinks(prev => ({ ...prev, [app.id]: link }));
       toast.success('Application accepted! Registration link generated.');
       fetchApplications();
