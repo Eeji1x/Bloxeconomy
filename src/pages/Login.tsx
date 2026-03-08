@@ -82,7 +82,7 @@ const Login = () => {
 
             <p className="text-[10px] text-[#666] mt-3 text-center">
               Don't have an account?{' '}
-              <Link to="/signup" className="text-[#0055BF] hover:underline">Sign up for FREE!</Link>
+              <Link to="/signup" style={{ color: '#003399' }}>Sign up for FREE!</Link>
             </p>
           </div>
         </div>
