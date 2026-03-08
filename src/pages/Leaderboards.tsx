@@ -29,9 +29,8 @@ const Leaderboards = () => {
 
     // Fetch top emerald holders
     const { data: emeraldData } = await supabase
-      .from('profiles')
+      .from('public_profiles' as any)
       .select('user_id, username, numeric_id, emeralds, is_verified, is_online')
-      .eq('is_banned', false)
       .order('emeralds', { ascending: false })
       .limit(50);
 
