@@ -589,11 +589,12 @@
   }
   [data-theme="roblox2016"] .rbx16-panel {
     background: #fff;
-    border: 1px solid #c3c3c3;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
     overflow: hidden;
+    border: none;
   }
   [data-theme="roblox2016"] .rbx16-panel-header {
-    border-bottom: 1px solid #c3c3c3;
+    border-bottom: 1px solid #e3e3e3;
     padding: 8px 12px;
     display: flex;
     align-items: center;
@@ -607,7 +608,7 @@
   }
   [data-theme="roblox2016"] .rbx16-panel-header-link {
     font-size: 12px !important;
-    color: #0074BD !important;
+    color: #00a2ff !important;
     text-decoration: none !important;
     font-weight: 600;
   }
