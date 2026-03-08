@@ -70,7 +70,7 @@ const Avatar = () => {
   /* ═══════════════════════════════════════════
      ROBLOX 2016 AVATAR EDITOR LAYOUT
      ═══════════════════════════════════════════ */
-  if (is2016) {
+  if (isClassic) {
     return (
       <div style={{ display: 'flex', gap: 16 }}>
         {/* Preview */}

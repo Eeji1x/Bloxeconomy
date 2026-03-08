@@ -199,7 +199,7 @@ const Catalog = () => {
   /* ═══════════════════════════════════════════
      ROBLOX 2016 CATALOG LAYOUT
      ═══════════════════════════════════════════ */
-  if (is2016) {
+  if (isClassic) {
     const CATEGORIES = [
       { label: 'All Items', value: 'all' as const },
       { label: 'Normal', value: 'normal' as const },

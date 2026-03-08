@@ -124,7 +124,7 @@ const Friends = () => {
   /* ═══════════════════════════════════════════
      ROBLOX 2016 FRIENDS LAYOUT
      ═══════════════════════════════════════════ */
-  if (is2016) {
+  if (isClassic) {
     return (
       <div style={{ maxWidth: 800 }}>
         {/* Incoming requests */}

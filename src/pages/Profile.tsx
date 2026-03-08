@@ -206,7 +206,7 @@ const Profile = () => {
   /* ═══════════════════════════════════════════
      ROBLOX 2016 PROFILE LAYOUT
      ═══════════════════════════════════════════ */
-  if (is2016) {
+  if (isClassic) {
     return (
       <div style={{ maxWidth: 960 }}>
         {/* Profile header */}

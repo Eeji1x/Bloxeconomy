@@ -271,7 +271,7 @@ const ItemDetail = () => {
   /* ═══════════════════════════════════════════
      ROBLOX 2016 ITEM DETAIL
      ═══════════════════════════════════════════ */
-  if (is2016) {
+  if (isClassic) {
     return (
       <div className="rbx16-item-page">
         {/* Breadcrumb */}

@@ -144,7 +144,7 @@ const Inbox = () => {
   /* ═══════════════════════════════════════════
      ROBLOX 2016 INBOX LAYOUT
      ═══════════════════════════════════════════ */
-  if (is2016) {
+  if (isClassic) {
     return (
       <div style={{ maxWidth: 800 }}>
         <div className="rbx16-panel" style={{ marginBottom: 12 }}>
