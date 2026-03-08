@@ -124,7 +124,7 @@ const Inbox = () => {
 
   const startNewConversation = async () => {
     if (!newConvoUsername.trim()) return;
-    const { data: targetProfile } = await supabase.from('profiles').select('user_id, username').ilike('username', newConvoUsername.trim()).maybeSingle();
+    const { data: targetProfile } = await supabase.from('public_profiles' as any).select('user_id, username').ilike('username', newConvoUsername.trim()).maybeSingle();
     if (!targetProfile) { toast.error('User not found'); return; }
     if (targetProfile.user_id === user?.id) { toast.error('You cannot message yourself'); return; }
     setShowNewConvo(false); setNewConvoUsername('');

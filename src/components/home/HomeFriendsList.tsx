@@ -45,7 +45,7 @@ export const HomeFriendsList = () => {
 
     // Fetch friend profiles
     const { data: profiles } = await supabase
-      .from('profiles')
+      .from('public_profiles' as any)
       .select('user_id, username, is_online, is_verified')
       .in('user_id', friendIds);
 

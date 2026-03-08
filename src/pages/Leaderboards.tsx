@@ -40,9 +40,8 @@ const Leaderboards = () => {
 
     // Fetch profiles for limited count
     const { data: profiles } = await supabase
-      .from('profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified, is_online')
-      .eq('is_banned', false);
+      .from('public_profiles' as any)
+      .select('user_id, username, numeric_id, emeralds, is_verified, is_online');
 
     if (profiles) {
       // Get all limited items

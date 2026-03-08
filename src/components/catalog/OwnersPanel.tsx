@@ -46,7 +46,7 @@ export const OwnersPanel = ({ itemId, itemType }: OwnersPanelProps) => {
       const ownerIds = [...new Set(serialsData.map(s => s.owner_id))];
       
       const { data: profiles } = await supabase
-        .from('profiles')
+        .from('public_profiles' as any)
         .select('user_id, username, is_verified')
         .in('user_id', ownerIds);
 

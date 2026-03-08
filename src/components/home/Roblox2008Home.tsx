@@ -50,7 +50,7 @@ export const Roblox2008Home = () => {
         f.requester_id === user.id ? f.addressee_id : f.requester_id
       );
       const { data: profiles } = await supabase
-        .from('profiles')
+        .from('public_profiles' as any)
         .select('user_id, username, is_online')
         .in('user_id', friendIds);
       if (profiles) setFriends(profiles);
