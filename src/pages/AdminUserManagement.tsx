@@ -499,9 +499,49 @@ const AdminUserManagement = () => {
                 <Gem className="w-4 h-4" /> Remove
               </Button>
             </div>
-            <Button variant="outline" className="w-full gap-2" onClick={() => setShowInventory(!showInventory)}>
-              <Package className="w-4 h-4" /> {showInventory ? 'Hide' : 'Manage'} Inventory ({inventory.length})
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1 gap-2" onClick={() => { setShowInventory(!showInventory); setShowAddItem(false); }}>
+                <Package className="w-4 h-4" /> {showInventory ? 'Hide' : 'Manage'} Inventory ({inventory.length})
+              </Button>
+              <Button variant="emerald" className="gap-2" onClick={() => { setShowAddItem(!showAddItem); setShowInventory(false); }}>
+                <Plus className="w-4 h-4" /> Add Item
+              </Button>
+            </div>
+
+            {/* Add Item Panel */}
+            {showAddItem && (
+              <div className="mt-3 space-y-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search catalog items..."
+                    value={itemSearchQuery}
+                    onChange={(e) => setItemSearchQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <div className="max-h-60 overflow-y-auto space-y-1">
+                  {filteredCatalogItems.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">No items found</p>
+                  ) : filteredCatalogItems.map((item) => (
+                    <div key={item.id} className="flex items-center gap-3 p-2 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="w-10 h-10 rounded bg-primary/10 overflow-hidden shrink-0">
+                        <img src={item.image_url} alt="" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate">{item.name}</p>
+                        <p className="text-xs text-muted-foreground">💎 {item.price} • {item.item_type}</p>
+                      </div>
+                      <Button size="sm" variant="emerald" onClick={() => handleAddItem(item)}>
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Existing Inventory */}
             {showInventory && (
               <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
                 {inventory.length === 0 ? (
