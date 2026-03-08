@@ -182,13 +182,6 @@ const CatalogPanel = () => {
   };
 
   const handleSubmit = async () => {
-    let modelUrl = formData.model_url || null;
-    if (modelFile) {
-      const uploaded = await uploadModelFile(modelFile, formData.name);
-      if (uploaded) modelUrl = uploaded;
-      else return;
-    }
-
     if (editingItem) {
       const wasNormal = editingItem.item_type === 'normal';
       const becomingLimited = formData.item_type === 'limited';
