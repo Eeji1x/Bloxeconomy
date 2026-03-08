@@ -8,6 +8,7 @@ import { HomeFriendsList } from '@/components/home/HomeFriendsList';
 import { HomeQuickActions } from '@/components/home/HomeQuickActions';
 import { HomeAnnouncements } from '@/components/home/HomeAnnouncements';
 import { Roblox2020Home } from '@/components/home/Roblox2020Home';
+import { Roblox2008Home } from '@/components/home/Roblox2008Home';
 
 const Index = () => {
   const { user, profile } = useAuth();
