@@ -46,7 +46,7 @@ const Scene = () => (
       maxDistance={8}
       minPolarAngle={Math.PI / 8}
       maxPolarAngle={Math.PI / 2}
-      target={[0, 0, 0]}
+      target={[0, 0.2, 0]}
       autoRotate
       autoRotateSpeed={1.2}
     />
@@ -66,7 +66,7 @@ export const Avatar3DViewer = ({ equippedItems }: Avatar3DViewerProps) => {
       }}
     >
       <Canvas
-        camera={{ position: [0, 0.3, 5], fov: 32 }}
+        camera={{ position: [0, 0.5, 5], fov: 32 }}
         shadows
         gl={{ antialias: true, alpha: false }}
         style={{ width: '100%', height: '100%' }}
