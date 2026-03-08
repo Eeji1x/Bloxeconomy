@@ -62,21 +62,11 @@ export const isProtectedUser = async (targetUserId: string, actingUserId: string
 
   const targetNumId = targetProfile.data?.numeric_id;
   const actingNumId = actingProfile.data?.numeric_id;
+  const isSuperOwner = actingNumId === SUPER_OWNER_NUMERIC_ID;
 
-  // Check if target has protected roles (admin or economy_manager)
-  const { data: targetRoles } = await supabase
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', targetUserId);
-
-  const hasProtectedRole = targetRoles?.some(r => r.role === 'admin' || r.role === 'economy_manager');
-
-  // If target is in PROTECTED_USER_IDS or has protected roles
-  if (targetNumId && (PROTECTED_USER_IDS.includes(targetNumId) || hasProtectedRole)) {
-    // Only Super Owner (ID 5) can manage them
-    if (actingNumId !== SUPER_OWNER_NUMERIC_ID) {
-      return { protected: true, reason: 'Only the site owner can manage this account.' };
-    }
+  // Protected IDs (1 and 5) can only be managed by Super Owner (ID 1)
+  if (targetNumId && PROTECTED_USER_IDS.includes(targetNumId) && !isSuperOwner) {
+    return { protected: true, reason: 'Only the site owner can manage this account.' };
   }
 
   return { protected: false };
