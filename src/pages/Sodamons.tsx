@@ -75,7 +75,7 @@ const Sodamons = () => {
     ]);
 
     const valuesMap = new Map<string, { value: number; demand: string; trend: string; rap: number }>();
-    valuesRes.data?.forEach(v => valuesMap.set(v.item_id, { value: v.value, demand: v.demand, trend: v.trend }));
+    valuesRes.data?.forEach(v => valuesMap.set(v.item_id, { value: v.value, demand: v.demand, trend: v.trend, rap: v.rap }));
 
     const tagsMap = new Map<string, string[]>();
     tagsRes.data?.forEach(t => {
