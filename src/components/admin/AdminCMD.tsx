@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { forceDeleteItem } from '@/lib/forceDeleteItem';
 
 const AdminCMD = () => {
   const { profile } = useAuth();
@@ -151,6 +152,46 @@ const AdminCMD = () => {
       return;
     }
 
+    // Force delete item command
+    const deleteMatch = trimmed.match(/^force\s+delete\s+item\s+(.+)$/);
+    if (deleteMatch) {
+      const searchName = cmd.trim().replace(/^force\s+delete\s+item\s+/i, '');
+      setLines([...newLines, `  Searching for "${searchName}"...`]);
+
+      const { data: items } = await supabase
+        .from('catalog_items')
+        .select('id, name, item_type')
+        .ilike('name', `%${searchName}%`);
+
+      if (!items || items.length === 0) {
+        setLines([...newLines, `  \x1b[31mError:\x1b[0m No item found matching "${searchName}".`]);
+        return;
+      }
+
+      if (items.length > 1) {
+        setLines([
+          ...newLines, '',
+          `  Found ${items.length} items matching "${searchName}":`, '',
+          ...items.map(i => `  \x1b[36m${i.name}\x1b[0m (${i.item_type}) — ${i.id}`),
+          '', '  Please use a more specific name.',
+        ]);
+        return;
+      }
+
+      const target = items[0];
+      const { success, error } = await forceDeleteItem(target.id);
+      if (success) {
+        setLines([
+          ...newLines, '',
+          `  \x1b[32m✓\x1b[0m Force-deleted \x1b[33m${target.name}\x1b[0m (${target.item_type})`,
+          '  Removed: inventory, serials, listings, values, tags, history', '',
+        ]);
+      } else {
+        setLines([...newLines, `  \x1b[31mError:\x1b[0m ${error}`]);
+      }
+      return;
+    }
+
     if (trimmed === 'neofetch') {
       await fetchStats();
       setLines([...newLines, '', ...getNeofetch(), '']);
@@ -159,14 +200,15 @@ const AdminCMD = () => {
         '',
         '  Available commands:',
         '',
-        '  \x1b[36mneofetch\x1b[0m                  - Display system information',
-        '  \x1b[36mstats\x1b[0m                     - Show live site statistics',
-        '  \x1b[36musers\x1b[0m                     - List online users',
-        '  \x1b[36mwhoami\x1b[0m                    - Show current user info',
-        '  \x1b[36mdate\x1b[0m                      - Show current date/time',
-        '  \x1b[36mgenerate inv keys <N>\x1b[0m     - Generate N invite keys (max 50)',
-        '  \x1b[36mclear\x1b[0m                     - Clear terminal',
-        '  \x1b[36mhelp\x1b[0m                      - Show this message',
+        '  \x1b[36mneofetch\x1b[0m                    - Display system information',
+        '  \x1b[36mstats\x1b[0m                       - Show live site statistics',
+        '  \x1b[36musers\x1b[0m                       - List online users',
+        '  \x1b[36mwhoami\x1b[0m                      - Show current user info',
+        '  \x1b[36mdate\x1b[0m                        - Show current date/time',
+        '  \x1b[36mgenerate inv keys <N>\x1b[0m       - Generate N invite keys (max 50)',
+        '  \x1b[36mforce delete item <name>\x1b[0m    - Force-delete item & all related data',
+        '  \x1b[36mclear\x1b[0m                       - Clear terminal',
+        '  \x1b[36mhelp\x1b[0m                        - Show this message',
         '',
       ]);
     } else if (trimmed === 'clear') {
