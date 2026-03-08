@@ -203,7 +203,7 @@ const Users = () => {
 
 /* Roblox 2020 circular avatar card */
 const RbxUserCard = ({ user, isAdminUser }: { user: UserProfile; isAdminUser: boolean }) => (
-  <Link to={`/profile/${user.user_id}`} className="flex flex-col items-center gap-1.5 group">
+  <Link to={`/profile/${user.numeric_id}`} className="flex flex-col items-center gap-1.5 group">
     <div className="relative">
       <div className="w-[68px] h-[68px] rounded-full overflow-hidden border-2 border-border bg-muted group-hover:border-primary/40 transition-colors">
         <img
