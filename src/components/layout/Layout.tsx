@@ -81,7 +81,7 @@ export const Layout = ({ children }: LayoutProps) => {
   // SODABLOX 2016 layout (based on ECS economy-simulator)
   if (theme === 'roblox2016') {
     return (
-      <div className="min-h-screen" style={{ background: '#e8e8e8' }}>
+      <div className="min-h-screen" style={{ background: '#e3e3e3' }}>
         <AnnouncementBar />
         <Roblox2016Navbar />
         <main className="lg:ml-[175px] min-h-[calc(100vh-46px)]">

@@ -1282,7 +1282,7 @@
   }
 
   /* ═══ SCROLLBAR — 2016 ═══ */
-  [data-theme="roblox2016"] ::-webkit-scrollbar-track { background: #e8e8e8; }
+  [data-theme="roblox2016"] ::-webkit-scrollbar-track { background: #e3e3e3; }
   [data-theme="roblox2016"] ::-webkit-scrollbar-thumb { background: #b0b0b0; border-radius: 4px; }
   [data-theme="roblox2016"] ::-webkit-scrollbar-thumb:hover { background: #999; }
   [data-theme="roblox2016"] ::selection { background: rgba(0,116,189,0.2); color: #1e1e1f; }
