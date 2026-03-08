@@ -129,12 +129,12 @@ const Trading = () => {
   const fetchUserById = async (userId: string) => {
     const { data } = await supabase
       .from('public_profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified')
+      .select('user_id, username, numeric_id, is_verified')
       .eq('user_id', userId)
       .single();
 
     if (data) {
-      setSelectedUser({ ...data, is_banned: false } as Profile);
+      setSelectedUser({ ...data, emeralds: 0, is_banned: false } as Profile);
       fetchTheirInventory(userId);
     }
   };
@@ -214,10 +214,10 @@ const Trading = () => {
 
     const { data: profiles } = await supabase
       .from('public_profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified')
+      .select('user_id, username, numeric_id, is_verified')
       .in('user_id', Array.from(allUserIds));
 
-    const profileMap = new Map(profiles?.map(p => [p.user_id, p]));
+    const profileMap = new Map(profiles?.map(p => [p.user_id!, { ...p, emeralds: 0 }]));
 
     const addProfiles = (trades: Trade[]) => trades.map(t => ({
       ...t,
@@ -235,13 +235,13 @@ const Trading = () => {
     setSearching(true);
     const { data } = await supabase
       .from('public_profiles')
-      .select('user_id, username, numeric_id, emeralds, is_verified')
+      .select('user_id, username, numeric_id, is_verified')
       .neq('user_id', user?.id)
       .or(`username.ilike.%${searchQuery}%,numeric_id.eq.${parseInt(searchQuery) || 0}`)
       .limit(10);
 
     if (data) {
-      setSearchResults(data.map(d => ({ ...d, is_banned: false })) as Profile[]);
+      setSearchResults(data.map(d => ({ ...d, emeralds: 0, is_banned: false })) as Profile[]);
     }
     setSearching(false);
   };
