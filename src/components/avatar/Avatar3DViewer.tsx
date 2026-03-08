@@ -53,7 +53,7 @@ const Scene = () => (
     <AvatarModel />
 
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-      <circleGeometry args={[1.6, 64]} />
+      <circleGeometry args={[0.8, 64]} />
       <meshStandardMaterial color="#b8b8b8" roughness={0.85} />
     </mesh>
 
