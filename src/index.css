@@ -1393,7 +1393,8 @@
   /* ═══ TRADING PAGE — 2016 style ═══ */
   [data-theme="roblox2016"] .cyber-card[class*="p-"] {
     background: #fff !important;
-    border: 1px solid #c3c3c3 !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    border: none !important;
   }
 
   /* ═══ GRADIENT BACKGROUNDS — kill them all ═══ */
