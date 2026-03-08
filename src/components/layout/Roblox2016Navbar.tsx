@@ -133,7 +133,7 @@ export const Roblox2016Navbar = () => {
               className="rbx16-search-input"
             />
             <span className="rbx16-search-icon">
-              <span className="icon-nav-search" style={{ width: 16, height: 16, backgroundSize: '16px auto' }} />
+              <span className="icon-nav-search" />
             </span>
           </div>
 
