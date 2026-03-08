@@ -278,9 +278,6 @@ const Catalog = () => {
                       {saleState === 'sold_out' && (
                         <span className="rbx16-soldout-tag">SOLD OUT</span>
                       )}
-                      {item.model_url && (
-                        <span style={{ position: 'absolute', bottom: 2, right: 2, background: '#00a2ff', color: '#fff', fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 2, textTransform: 'uppercase' }}>3D</span>
-                      )}
                     </div>
                     {/* Info */}
                     <div className="rbx16-catalog-item-info">
