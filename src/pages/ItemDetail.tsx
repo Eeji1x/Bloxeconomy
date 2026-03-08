@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,6 +7,7 @@ import { updateItemRAP } from '@/lib/rap';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { OwnersPanel } from '@/components/catalog/OwnersPanel';
+import { ItemModel3DViewer } from '@/components/catalog/ItemModel3DViewer';
 import { 
   ArrowLeft, 
   Gem, 
@@ -17,7 +18,8 @@ import {
   Clock,
   ShoppingCart,
   Plus,
-  Trash2
+  Trash2,
+  Box
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
