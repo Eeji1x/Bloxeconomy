@@ -84,11 +84,12 @@ const Profile = () => {
       if (!viewingUserId) { setIsLoading(false); return; }
       setIsLoading(true);
       const isOwn = viewingUserId === user?.id;
+      const table = isOwn ? 'profiles' : 'public_profiles';
       const publicColumns = 'id,user_id,username,numeric_id,avatar_data,is_online,is_verified,created_at,updated_at';
       const ownColumns = 'id,user_id,username,numeric_id,emeralds,avatar_data,is_online,is_banned,ban_reason,last_seen,created_at,updated_at,is_verified,last_daily_claim';
       const selectColumns = isOwn ? ownColumns : publicColumns;
       
-      const { data: profileResult, error: profileError } = await supabase.from('profiles').select(selectColumns).eq('user_id', viewingUserId).maybeSingle();
+      const { data: profileResult, error: profileError } = await supabase.from(table).select(selectColumns).eq('user_id', viewingUserId).maybeSingle();
       if (profileError || !profileResult) { setProfileData(null); setIsLoading(false); return; }
 
       const safeProfile: ProfileData = isOwn
