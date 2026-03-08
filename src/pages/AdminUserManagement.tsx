@@ -43,6 +43,14 @@ interface InventoryItem {
   catalog_items: { name: string; price: number; item_type: string; image_url: string } | null;
 }
 
+interface CatalogItem {
+  id: string;
+  name: string;
+  price: number;
+  item_type: string;
+  image_url: string;
+}
+
 interface RoleInfo {
   isAdmin: boolean;
   isOwner: boolean;
