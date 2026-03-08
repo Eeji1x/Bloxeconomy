@@ -21,6 +21,7 @@ import {
   AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { forceDeleteItem } from '@/lib/forceDeleteItem';
 
 interface Tab {
   id: string;
