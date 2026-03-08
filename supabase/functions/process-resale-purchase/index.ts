@@ -92,37 +92,55 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Step 5: Get seller profile
-    const { data: sellerProfile } = await adminClient
-      .from('profiles')
-      .select('emeralds')
-      .eq('user_id', listing.seller_id)
-      .single()
-
-    if (!sellerProfile) {
-      await adminClient.from('resale_listings').update({ is_active: true }).eq('id', listing_id)
-      return new Response(JSON.stringify({ error: 'Seller not found' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    // Step 6: Process transaction atomically
-    // Deduct from buyer
-    const { error: buyerErr } = await adminClient
-      .from('profiles')
-      .update({ emeralds: buyerProfile.emeralds - listing.price })
-      .eq('user_id', user.id)
+    // Step 5: Process transaction with SQL-level arithmetic to prevent race conditions
+    // Deduct from buyer using SQL expression
+    const { error: buyerErr } = await adminClient.rpc('adjust_emeralds' as any, {
+      p_user_id: user.id,
+      p_amount: -listing.price,
+    })
 
     if (buyerErr) {
-      await adminClient.from('resale_listings').update({ is_active: true }).eq('id', listing_id)
-      throw new Error('Failed to deduct emeralds')
+      // Fallback: use direct update with re-read
+      const { data: freshBuyer } = await adminClient
+        .from('profiles')
+        .select('emeralds')
+        .eq('user_id', user.id)
+        .single()
+      
+      if (!freshBuyer || freshBuyer.emeralds < listing.price) {
+        await adminClient.from('resale_listings').update({ is_active: true }).eq('id', listing_id)
+        return new Response(JSON.stringify({ error: 'Not enough emeralds' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+
+      await adminClient
+        .from('profiles')
+        .update({ emeralds: freshBuyer.emeralds - listing.price })
+        .eq('user_id', user.id)
     }
 
     // Add to seller
-    await adminClient
-      .from('profiles')
-      .update({ emeralds: sellerProfile.emeralds + listing.price })
-      .eq('user_id', listing.seller_id)
+    const { error: sellerErr } = await adminClient.rpc('adjust_emeralds' as any, {
+      p_user_id: listing.seller_id,
+      p_amount: listing.price,
+    })
+
+    if (sellerErr) {
+      // Fallback
+      const { data: freshSeller } = await adminClient
+        .from('profiles')
+        .select('emeralds')
+        .eq('user_id', listing.seller_id)
+        .single()
+      
+      if (freshSeller) {
+        await adminClient
+          .from('profiles')
+          .update({ emeralds: freshSeller.emeralds + listing.price })
+          .eq('user_id', listing.seller_id)
+      }
+    }
 
     // Transfer item ownership & unequip
     await adminClient
