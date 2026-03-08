@@ -141,6 +141,10 @@ const AdminUserManagement = () => {
   // --- Action handlers ---
   const handleBan = async () => {
     if (!profile) return;
+    if (authUser?.id === userId) {
+      toast.error('You cannot ban yourself.');
+      return;
+    }
     if (await checkProtection()) return;
     if (PROTECTED_USER_IDS.includes(profile.numeric_id) && !isSuperOwner) {
       toast.error('Only the site owner can manage this account.');
