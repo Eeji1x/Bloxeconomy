@@ -230,7 +230,7 @@ export const Roblox2020Navbar = () => {
             />
             <button
               className="px-3 flex items-center justify-center transition-colors"
-              style={{ background: '#335FFF' }}
+              style={{ background: '#0074BD' }}
             >
               <RbxSearch className="w-[14px] h-[14px] text-white" />
             </button>
