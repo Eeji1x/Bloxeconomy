@@ -781,6 +781,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_daily_emeralds: { Args: never; Returns: Json }
       get_next_serial: { Args: { p_item_id: string }; Returns: number }
       has_role: {
         Args: {
