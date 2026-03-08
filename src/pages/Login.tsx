@@ -41,7 +41,7 @@ const Login = () => {
       <div className="max-w-[320px] mx-auto py-6">
         <div className="rbx08-panel">
           <div className="rbx08-panel-header">Member Login</div>
-          <div className="p-4">
+          <div className="rbx08-panel-body">
             {error && (
               <div className="bg-[#fee] border border-[#c00] rounded p-2 mb-3">
                 <span className="text-[11px] text-[#c00] font-bold">{error}</span>
@@ -56,7 +56,7 @@ const Login = () => {
                   placeholder="Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full border border-[#b0b8c0] rounded-[3px] px-2 py-1.5 text-[11px] bg-white focus:border-[#0055BF] outline-none"
+                  className="w-full border border-[#C3C3C3] rounded-[3px] px-2 py-1.5 text-[12px] bg-white focus:border-[#4A6EA9] outline-none"
                   required
                 />
               </div>
@@ -67,14 +67,14 @@ const Login = () => {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-[#b0b8c0] rounded-[3px] px-2 py-1.5 text-[11px] bg-white focus:border-[#0055BF] outline-none"
+                  className="w-full border border-[#C3C3C3] rounded-[3px] px-2 py-1.5 text-[12px] bg-white focus:border-[#4A6EA9] outline-none"
                   required
                 />
               </div>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="rbx08-btn-blue w-full py-1.5 text-[11px]"
+                className="rbx08-btn-primary w-full py-1.5"
               >
                 {isLoading ? 'Logging in...' : 'Login'}
               </button>
@@ -82,7 +82,7 @@ const Login = () => {
 
             <p className="text-[10px] text-[#666] mt-3 text-center">
               Don't have an account?{' '}
-              <Link to="/signup" className="text-[#0055BF] hover:underline">Sign up for FREE!</Link>
+              <Link to="/signup" style={{ color: '#003399' }}>Sign up for FREE!</Link>
             </p>
           </div>
         </div>

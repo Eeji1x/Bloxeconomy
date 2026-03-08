@@ -71,7 +71,7 @@ const Signup = () => {
       <div className="max-w-[400px] mx-auto py-6">
         <div className="rbx08-panel">
           <div className="rbx08-panel-header">Create a SODABLOX Account</div>
-          <div className="p-4">
+          <div className="rbx08-panel-body">
             <p className="text-[11px] text-[#666] mb-3">
               SODABLOX is free! Fill out the form below to get started. You need an invite key.
             </p>
@@ -90,7 +90,7 @@ const Signup = () => {
                   placeholder="INV-XXXXX-XXXXX"
                   value={inviteKey}
                   onChange={(e) => setInviteKey(e.target.value.toUpperCase())}
-                  className="w-full border border-[#b0b8c0] rounded-[3px] px-2 py-1.5 text-[11px] font-mono bg-white focus:border-[#0055BF] outline-none"
+                  className="w-full border border-[#C3C3C3] rounded-[3px] px-2 py-1.5 text-[12px] font-mono bg-white focus:border-[#4A6EA9] outline-none"
                   required
                 />
               </div>
@@ -101,7 +101,7 @@ const Signup = () => {
                   placeholder="Choose a username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full border border-[#b0b8c0] rounded-[3px] px-2 py-1.5 text-[11px] bg-white focus:border-[#0055BF] outline-none"
+                  className="w-full border border-[#C3C3C3] rounded-[3px] px-2 py-1.5 text-[12px] bg-white focus:border-[#4A6EA9] outline-none"
                   required
                   maxLength={20}
                 />
@@ -114,7 +114,7 @@ const Signup = () => {
                   placeholder="Create a password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-[#b0b8c0] rounded-[3px] px-2 py-1.5 text-[11px] bg-white focus:border-[#0055BF] outline-none"
+                  className="w-full border border-[#C3C3C3] rounded-[3px] px-2 py-1.5 text-[12px] bg-white focus:border-[#4A6EA9] outline-none"
                   required
                 />
               </div>
@@ -125,17 +125,17 @@ const Signup = () => {
                   placeholder="Confirm password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full border border-[#b0b8c0] rounded-[3px] px-2 py-1.5 text-[11px] bg-white focus:border-[#0055BF] outline-none"
+                  className="w-full border border-[#C3C3C3] rounded-[3px] px-2 py-1.5 text-[12px] bg-white focus:border-[#4A6EA9] outline-none"
                   required
                 />
               </div>
-              <div className="bg-[#e8f0fe] border border-[#b0c8e0] rounded p-2">
-                <span className="text-[10px] text-[#003366]">✨ New players receive 100 free Emeralds!</span>
+              <div style={{ background: '#E6E6E6', border: '1px solid #C3C3C3', borderRadius: 3, padding: 8 }}>
+                <span style={{ fontSize: 11, color: '#003399' }}>✨ New players receive 100 free Emeralds!</span>
               </div>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="rbx08-btn-blue w-full py-2 text-[12px]"
+                className="rbx08-btn-primary w-full py-2"
               >
                 {isLoading ? 'Creating account...' : 'Sign Up!'}
               </button>
@@ -143,7 +143,7 @@ const Signup = () => {
 
             <p className="text-[10px] text-[#666] mt-3 text-center">
               Already have an account?{' '}
-              <Link to="/login" className="text-[#0055BF] hover:underline">Log in here</Link>
+              <Link to="/login" style={{ color: '#003399' }}>Log in here</Link>
             </p>
           </div>
         </div>
