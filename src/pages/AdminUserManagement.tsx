@@ -270,6 +270,34 @@ const AdminUserManagement = () => {
     toast.success(`Removed ${itemName}`); fetchAll();
   };
 
+  const handleAddItem = async (catalogItem: CatalogItem) => {
+    // Check if user already owns this item (unique constraint)
+    const existing = inventory.find(i => i.item_id === catalogItem.id);
+    if (existing) {
+      toast.error(`${profile?.username} already owns ${catalogItem.name}`);
+      return;
+    }
+    const { error } = await supabase.from('user_inventory').insert({
+      user_id: userId!,
+      item_id: catalogItem.id,
+    });
+    if (error) {
+      toast.error('Failed to add item: ' + error.message);
+      return;
+    }
+    await logAction('add_item', { item_id: catalogItem.id, item_name: catalogItem.name });
+    toast.success(`Added ${catalogItem.name} to inventory`);
+    setItemSearchQuery('');
+    setShowAddItem(false);
+    fetchAll();
+  };
+
+  const filteredCatalogItems = useMemo(() => {
+    if (!itemSearchQuery.trim()) return catalogItems.slice(0, 20);
+    const q = itemSearchQuery.toLowerCase();
+    return catalogItems.filter(i => i.name.toLowerCase().includes(q)).slice(0, 20);
+  }, [catalogItems, itemSearchQuery]);
+
   if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
