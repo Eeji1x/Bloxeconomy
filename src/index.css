@@ -1317,9 +1317,9 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 100%;
-    height: auto;
+    right: 0;
     pointer-events: none;
+    display: block;
   }
   [data-theme="roblox2016"] .rbx16-item-stats-table {
     width: 100%;
