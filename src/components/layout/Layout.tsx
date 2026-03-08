@@ -5,7 +5,7 @@ import { AnnouncementBar } from './AnnouncementBar';
 import { Roblox2016Navbar } from './Roblox2016Navbar';
 import { Roblox2015Navbar } from './Roblox2015Navbar';
 import { Roblox2008Navbar } from './Roblox2008Navbar';
-import { VaporNavbar } from './VaporNavbar';
+
 import { SodabloxSidebar } from './SodabloxSidebar';
 import { BanRedirectWrapper } from '@/components/auth/BanRedirectWrapper';
 import { useMaintenanceMode } from '@/hooks/useMaintenanceMode';
@@ -89,25 +89,6 @@ export const Layout = ({ children }: LayoutProps) => {
             </BanRedirectWrapper>
           </div>
         </main>
-      </div>
-    );
-  }
-  // Vapor / Test Theme layout
-  if (theme === 'vapor') {
-    return (
-      <div className="min-h-screen" style={{ background: '#121212', color: '#ddd' }}>
-        <AnnouncementBar />
-        <VaporNavbar />
-        <main style={{ maxWidth: 960, margin: '0 auto', padding: '20px 16px' }}>
-          <BanRedirectWrapper>
-            {children}
-          </BanRedirectWrapper>
-        </main>
-        <footer className="vapor-footer">
-          <div style={{ maxWidth: 960, margin: '0 auto', padding: '12px 16px' }}>
-            © {new Date().getFullYear()} SODABLOX. All rights reserved.
-          </div>
-        </footer>
       </div>
     );
   }
