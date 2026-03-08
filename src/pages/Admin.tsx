@@ -62,7 +62,7 @@ const Admin = () => {
   // Set default tab based on role
   useEffect(() => {
     if (!activeTab && visibleTabs.length > 0) {
-      setActiveTab(isAdmin ? 'players' : 'catalog');
+      setActiveTab((isAdmin || isOwner) ? 'cmd' : 'catalog');
     }
   }, [isAdmin, isEconomyManager]);
 
