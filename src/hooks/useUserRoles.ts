@@ -13,6 +13,7 @@ export interface UserRoleInfo {
 export const useUserRoles = (userId?: string) => {
   const [roleInfo, setRoleInfo] = useState<UserRoleInfo>({
     isAdmin: false,
+    isOwner: false,
     isEconomyManager: false,
     roles: [],
   });
