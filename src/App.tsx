@@ -10,6 +10,8 @@ import { Layout } from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import AuthHome from "./pages/AuthHome";
+import Apply from "./pages/Apply";
+import Privacy from "./pages/Privacy";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Users from "./pages/Users";
