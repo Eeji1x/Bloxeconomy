@@ -68,7 +68,22 @@ const Promocodes = () => {
         body: { code: code.trim() },
       });
 
-      if (error) throw new Error(error.message || 'Failed to redeem code');
+      if (error) {
+        // For FunctionsHttpError, parse the response body for the actual message
+        let message = 'Failed to redeem code';
+        try {
+          const context = error.context;
+          if (context && typeof context.json === 'function') {
+            const body = await context.json();
+            message = body?.error || message;
+          } else {
+            message = error.message || message;
+          }
+        } catch {
+          message = error.message || message;
+        }
+        throw new Error(message);
+      }
       if (data?.error) throw new Error(data.error);
 
       await refreshProfile();

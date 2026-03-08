@@ -19,10 +19,20 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!username.trim()) {
+      setError('Please enter a username');
+      return;
+    }
+    if (!password) {
+      setError('Please enter a password');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const { error } = await signIn(username, password);
+      const { error } = await signIn(username.trim(), password);
       if (error) {
         setError(error.message);
       } else {
