@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import {
   ChevronLeft, Shield, Ban, UserCheck, Lock, Unlock, KeyRound, RefreshCw,
   Edit, FileText, Gem, Eye, Package, Trash2, EyeOff, RotateCcw,
-  ArrowLeftRight, Store, User, Calendar, Clock, Hash, Crown
+  ArrowLeftRight, Store, User, Calendar, Clock, Hash, Crown, BadgeCheck
 } from 'lucide-react';
 
 interface UserProfile {
@@ -239,6 +239,15 @@ const AdminUserManagement = () => {
     await logAction('remove_listings'); toast.success('Marketplace listings removed');
   };
 
+  const handleToggleVerify = async () => {
+    if (!profile) return;
+    const newVerified = !profile.is_verified;
+    await supabase.from('profiles').update({ is_verified: newVerified }).eq('user_id', userId!);
+    await logAction(newVerified ? 'verify_user' : 'unverify_user');
+    toast.success(newVerified ? 'User verified' : 'Verification removed');
+    fetchAll();
+  };
+
   const handleRemoveItem = async (invId: string, itemName: string) => {
     const { data: bdProfile } = await supabase.from('profiles').select('user_id').eq('numeric_id', BAD_DECISIONS_NUMERIC_ID).maybeSingle();
     const systemUserId = bdProfile?.user_id || '00000000-0000-0000-0000-000000000000';
@@ -425,6 +434,16 @@ const AdminUserManagement = () => {
                 description={`Username will be changed to User_${profile.numeric_id}`}
                 onConfirm={handleResetUsername}
               />
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <Button
+                variant={profile.is_verified ? 'destructive' : 'outline'}
+                className="gap-2"
+                onClick={handleToggleVerify}
+              >
+                <BadgeCheck className="w-4 h-4" />
+                {profile.is_verified ? 'Remove Verified' : 'Grant Verified'}
+              </Button>
             </div>
           </ActionPanel>
 

@@ -28,6 +28,7 @@ import Sodamons from "./pages/Sodamons";
 import SodamonsItem from "./pages/SodamonsItem";
 import SodamonsTop from "./pages/SodamonsTop";
 import Banned from "./pages/Banned";
+import EmeraldShop from "./pages/EmeraldShop";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
                 <Route path="/sodamons" element={<Sodamons />} />
                 <Route path="/sodamons/item/:itemId" element={<SodamonsItem />} />
                 <Route path="/sodamons/top" element={<SodamonsTop />} />
+                <Route path="/emeralds" element={<EmeraldShop />} />
                 <Route path="/banned" element={<Banned />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

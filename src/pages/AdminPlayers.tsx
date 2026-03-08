@@ -81,7 +81,7 @@ const AdminPlayers = ({ embedded = false }: AdminPlayersProps) => {
       const userIds = data.map((p: any) => p.user_id);
       const { data: invData } = await supabase
         .from('user_inventory')
-        .select('user_id, catalog_items!inner(price)')
+        .select('user_id, catalog_items(price)')
         .in('user_id', userIds);
 
       if (invData) {
