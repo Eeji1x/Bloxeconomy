@@ -191,8 +191,18 @@ const AuthHome = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} SODABLOX. All rights reserved.
+      <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground space-y-2">
+        <div className="flex items-center justify-center gap-4">
+          <Link to="/privacy" className="hover:text-primary transition-colors flex items-center gap-1">
+            <Shield className="w-3 h-3" />
+            Privacy Policy
+          </Link>
+          <Link to="/apply" className="hover:text-primary transition-colors flex items-center gap-1">
+            <FileText className="w-3 h-3" />
+            Apply
+          </Link>
+        </div>
+        <p>© {new Date().getFullYear()} SODABLOX. All rights reserved.</p>
       </footer>
     </div>
   );
