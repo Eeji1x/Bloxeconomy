@@ -4,9 +4,10 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Navigate, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { DEFAULT_AVATAR_URL } from '@/lib/constants';
-import { User, Package, Check } from 'lucide-react';
+import { User, Package, Check, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { Avatar3DViewer } from '@/components/avatar/Avatar3DViewer';
 
 interface InventoryItem {
   id: string;
