@@ -74,7 +74,7 @@ const Sodamons = () => {
       supabase.from('user_inventory').select('item_id').in('item_id', itemIds),
     ]);
 
-    const valuesMap = new Map<string, { value: number; demand: string; trend: string }>();
+    const valuesMap = new Map<string, { value: number; demand: string; trend: string; rap: number }>();
     valuesRes.data?.forEach(v => valuesMap.set(v.item_id, { value: v.value, demand: v.demand, trend: v.trend }));
 
     const tagsMap = new Map<string, string[]>();
