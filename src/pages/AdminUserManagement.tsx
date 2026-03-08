@@ -45,6 +45,7 @@ interface InventoryItem {
 
 interface RoleInfo {
   isAdmin: boolean;
+  isOwner: boolean;
   isEconomyManager: boolean;
 }
 
@@ -52,7 +53,7 @@ const AdminUserManagement = () => {
   const { userId } = useParams<{ userId: string }>();
   const { user: authUser, isAdmin, isLoading: authLoading, profile: authProfile } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [targetRoles, setTargetRoles] = useState<RoleInfo>({ isAdmin: false, isEconomyManager: false });
+  const [targetRoles, setTargetRoles] = useState<RoleInfo>({ isAdmin: false, isOwner: false, isEconomyManager: false });
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [inviteKey, setInviteKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -81,6 +82,7 @@ const AdminUserManagement = () => {
     const roles = rolesRes.data || [];
     setTargetRoles({
       isAdmin: roles.some((r: any) => r.role === 'admin'),
+      isOwner: roles.some((r: any) => r.role === 'owner'),
       isEconomyManager: roles.some((r: any) => r.role === 'economy_manager'),
     });
     
@@ -119,6 +121,25 @@ const AdminUserManagement = () => {
       await supabase.from('user_roles').insert({ user_id: userId!, role: 'admin' });
       await logAction('grant_admin');
       toast.success('Admin role granted');
+    }
+    fetchAll();
+  };
+
+  const handleToggleOwner = async () => {
+    if (!isSuperOwner) {
+      toast.error('Only SODABLOX (ID #1) can grant/remove the Owner role.');
+      return;
+    }
+    if (await checkProtection()) return;
+
+    if (targetRoles.isOwner) {
+      await supabase.from('user_roles').delete().eq('user_id', userId!).eq('role', 'owner');
+      await logAction('remove_owner');
+      toast.success('Owner role removed');
+    } else {
+      await supabase.from('user_roles').insert({ user_id: userId!, role: 'owner' });
+      await logAction('grant_owner');
+      toast.success('Owner role granted');
     }
     fetchAll();
   };
@@ -284,7 +305,7 @@ const AdminUserManagement = () => {
 
             {/* Role Badges */}
             <div className="flex flex-wrap items-center justify-center gap-2">
-              {isOwnerAccount && (
+              {(isOwnerAccount || targetRoles.isOwner) && (
                 <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded font-bold flex items-center gap-1">
                   <Crown className="w-3 h-3" /> OWNER
                 </span>
@@ -333,7 +354,16 @@ const AdminUserManagement = () => {
         <div className="space-y-4">
           {/* Permission Controls */}
           <ActionPanel title="Permission Controls" icon={<Shield className="w-5 h-5" />}>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant={targetRoles.isOwner ? 'destructive' : 'outline'}
+                className="gap-2"
+                onClick={handleToggleOwner}
+                disabled={!isSuperOwner || isOwnerAccount}
+              >
+                <Crown className="w-4 h-4" />
+                {targetRoles.isOwner ? 'Remove Owner' : 'Grant Owner'}
+              </Button>
               <Button
                 variant={targetRoles.isAdmin ? 'destructive' : 'outline'}
                 className="gap-2"
