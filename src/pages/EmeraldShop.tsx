@@ -1,23 +1,22 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
-import { Gem, Sparkles, Crown, Zap, Star } from 'lucide-react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { Gem, Sparkles, Crown, Zap, Star, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 
 const packages = [
-  { id: '100', amount: 100, label: '100', price: '$0.99', icon: Gem, color: 'from-blue-400 to-blue-600', popular: false },
-  { id: '500', amount: 500, label: '500', price: '$4.99', icon: Zap, color: 'from-green-400 to-emerald-600', popular: false },
-  { id: '1000', amount: 1000, label: '1,000', price: '$9.99', icon: Star, color: 'from-purple-400 to-purple-600', popular: true },
-  { id: '2500', amount: 2500, label: '2,500', price: '$19.99', icon: Sparkles, color: 'from-amber-400 to-orange-600', popular: false },
-  { id: '5000', amount: 5000, label: '5,000', price: '$39.99', icon: Crown, color: 'from-pink-400 to-rose-600', popular: false },
-  { id: '10000', amount: 10000, label: '10,000', price: '$74.99', icon: Crown, color: 'from-yellow-300 to-yellow-600', popular: false },
+  { id: '400', amount: 400, price: '$4.99', icon: Gem, color: 'from-blue-400 to-blue-600', popular: false },
+  { id: '800', amount: 800, price: '$9.99', icon: Zap, color: 'from-green-400 to-emerald-600', popular: false },
+  { id: '1700', amount: 1700, price: '$19.99', icon: Star, color: 'from-purple-400 to-purple-600', popular: true },
+  { id: '4500', amount: 4500, price: '$49.99', icon: Sparkles, color: 'from-amber-400 to-orange-600', popular: false },
+  { id: '10000', amount: 10000, price: '$99.99', icon: Crown, color: 'from-pink-400 to-rose-600', popular: false },
+  { id: '22500', amount: 22500, price: '$199.99', icon: Crown, color: 'from-yellow-300 to-yellow-600', popular: false },
 ];
 
 const EmeraldShop = () => {
-  const { user, profile, isLoading, refreshProfile } = useAuth();
-  const [buying, setBuying] = useState<string | null>(null);
+  const { user, profile, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const [showNope, setShowNope] = useState(false);
 
   if (isLoading) {
     return (
@@ -29,26 +28,26 @@ const EmeraldShop = () => {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  const handleBuy = async (pkg: typeof packages[0]) => {
-    if (!user || !profile) return;
-    setBuying(pkg.id);
-    
-    try {
-      // Fake purchase — just give the emeralds
-      const { error } = await supabase
-        .from('profiles')
-        .update({ emeralds: profile.emeralds + pkg.amount })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-      await refreshProfile();
-      toast.success(`Purchased ${pkg.label} Emeralds! 💎`);
-    } catch {
-      toast.error('Purchase failed');
-    } finally {
-      setBuying(null);
-    }
-  };
+  // The "you can't buy" screen
+  if (showNope) {
+    return (
+      <div className="max-w-lg mx-auto text-center py-20 space-y-6">
+        <div className="w-24 h-24 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
+          <ShieldAlert className="w-12 h-12 text-destructive" />
+        </div>
+        <h1 className="text-3xl font-display font-bold">You can't buy Emeralds lol</h1>
+        <p className="text-muted-foreground text-lg">
+          Nice try. This is a virtual economy — Emeralds can't be purchased with real money.
+        </p>
+        <p className="text-muted-foreground">
+          Earn them by logging in daily, trading, or using promo codes!
+        </p>
+        <Button variant="outline" onClick={() => setShowNope(false)}>
+          Go Back
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -91,37 +90,25 @@ const EmeraldShop = () => {
               <div>
                 <div className="flex items-center justify-center gap-1.5">
                   <Gem className="w-5 h-5 text-primary" />
-                  <span className="text-2xl font-display font-bold">{pkg.label}</span>
+                  <span className="text-2xl font-display font-bold">{pkg.amount.toLocaleString()}</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">Emeralds</p>
               </div>
 
-              <div className="text-lg font-bold text-muted-foreground line-through">{pkg.price}</div>
-              <div className="text-sm text-accent font-bold">FREE — It's fake!</div>
+              <div className="text-2xl font-bold text-foreground">{pkg.price}</div>
 
               <Button
                 className="w-full gap-2"
                 variant="emerald"
-                onClick={() => handleBuy(pkg)}
-                disabled={buying === pkg.id}
+                onClick={() => setShowNope(true)}
               >
-                {buying === pkg.id ? (
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <Gem className="w-4 h-4" />
-                    Get Emeralds
-                  </>
-                )}
+                <Gem className="w-4 h-4" />
+                Buy Now
               </Button>
             </div>
           );
         })}
       </div>
-
-      <p className="text-center text-xs text-muted-foreground">
-        This is a virtual currency with no real-world value. All purchases are free and instant.
-      </p>
     </div>
   );
 };
