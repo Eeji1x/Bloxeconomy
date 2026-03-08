@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.redeem-promocode]
 verify_jwt = false
+
+[functions.register-with-token]
+verify_jwt = false

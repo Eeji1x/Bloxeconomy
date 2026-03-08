@@ -76,6 +76,7 @@ export type Database = {
           reject_reason: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          short_id: string | null
           status: string
           username: string
         }
@@ -86,6 +87,7 @@ export type Database = {
           reject_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          short_id?: string | null
           status?: string
           username: string
         }
@@ -96,6 +98,7 @@ export type Database = {
           reject_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          short_id?: string | null
           status?: string
           username?: string
         }
@@ -597,6 +600,47 @@ export type Database = {
             columns: ["item_reward_id"]
             isOneToOne: false
             referencedRelation: "catalog_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      registration_tokens: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          is_used: boolean
+          token: string
+          used_at: string | null
+          used_by: string | null
+          username: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          is_used?: boolean
+          token: string
+          used_at?: string | null
+          used_by?: string | null
+          username: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          is_used?: boolean
+          token?: string
+          used_at?: string | null
+          used_by?: string | null
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registration_tokens_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
             referencedColumns: ["id"]
           },
         ]
