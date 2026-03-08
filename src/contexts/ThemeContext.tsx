@@ -56,6 +56,18 @@ export const THEMES: ThemeOption[] = [
     },
   },
   {
+    id: 'roblox2012',
+    name: 'SODABLOX 2012',
+    description: 'Classic 2012 style — dark blue header, gray tab navigation',
+    preview: {
+      bg: '#E1E1E1',
+      navbar: '#1A3352',
+      accent: '#0066CC',
+      card: '#FFFFFF',
+      text: '#333333',
+    },
+  },
+  {
     id: 'roblox2008',
     name: 'Roblox 2008',
     description: 'Classic nostalgic 2008 layout — blue gradient header, grey sidebar, white panels',
