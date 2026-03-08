@@ -1,5 +1,5 @@
-import { Suspense, useLayoutEffect, useMemo, useRef } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Suspense, useLayoutEffect, useMemo, useRef, useEffect, useState } from 'react';
+import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -9,9 +9,41 @@ interface Avatar3DViewerProps {
 
 const MODEL_PATH = '/models/roblox-avatar.glb';
 
-const AvatarModel = () => {
+const EquippedItemOverlay = ({ imageUrl, modelHeight }: { imageUrl: string; modelHeight: number }) => {
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  const [aspect, setAspect] = useState(1);
+
+  useEffect(() => {
+    const loader = new THREE.TextureLoader();
+    loader.crossOrigin = 'anonymous';
+    loader.load(imageUrl, (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.needsUpdate = true;
+      const img = tex.image as HTMLImageElement;
+      if (img.width && img.height) {
+        setAspect(img.width / img.height);
+      }
+      setTexture(tex);
+    });
+  }, [imageUrl]);
+
+  if (!texture) return null;
+
+  const height = modelHeight * 0.85;
+  const width = height * aspect;
+
+  return (
+    <mesh position={[0, modelHeight * 0.45, 0.01]}>
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial map={texture} transparent depthTest={true} depthWrite={false} />
+    </mesh>
+  );
+};
+
+const AvatarModel = ({ equippedItems }: { equippedItems: { image_url: string; name?: string }[] }) => {
   const { scene } = useGLTF(MODEL_PATH);
   const groupRef = useRef<THREE.Group>(null);
+  const [modelHeight, setModelHeight] = useState(1);
 
   const model = useMemo(() => scene.clone(true), [scene]);
 
@@ -20,24 +52,29 @@ const AvatarModel = () => {
 
     const box = new THREE.Box3().setFromObject(groupRef.current);
     const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
     const min = box.min;
 
-    // Center horizontally and place feet on y=0
     groupRef.current.position.x -= center.x;
     groupRef.current.position.z -= center.z;
     groupRef.current.position.y -= min.y;
+
+    setModelHeight(size.y);
   }, [model]);
 
   return (
     <group ref={groupRef}>
       <primitive object={model} scale={0.4} />
+      {equippedItems.map((item, i) => (
+        <EquippedItemOverlay key={`${item.image_url}-${i}`} imageUrl={item.image_url} modelHeight={modelHeight} />
+      ))}
     </group>
   );
 };
 
 useGLTF.preload(MODEL_PATH);
 
-const Scene = () => (
+const Scene = ({ equippedItems }: { equippedItems: { image_url: string; name?: string }[] }) => (
   <>
     <ambientLight intensity={0.5} />
     <directionalLight
@@ -50,7 +87,7 @@ const Scene = () => (
     <directionalLight position={[-2, 3, -2]} intensity={0.3} />
     <hemisphereLight args={['#aadcff', '#ffe8a0', 0.25]} />
 
-    <AvatarModel />
+    <AvatarModel equippedItems={equippedItems} />
 
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
       <circleGeometry args={[0.8, 64]} />
@@ -94,7 +131,7 @@ export const Avatar3DViewer = ({ equippedItems }: Avatar3DViewerProps) => {
         <color attach="background" args={['#e8eef4']} />
         <fog attach="fog" args={['#e8eef4', 10, 20]} />
         <Suspense fallback={null}>
-          <Scene />
+          <Scene equippedItems={equippedItems} />
         </Suspense>
       </Canvas>
     </div>
