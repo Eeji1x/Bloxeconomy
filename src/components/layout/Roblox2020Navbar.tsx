@@ -62,6 +62,7 @@ const topTabs = [
   { to: '/catalog', label: 'Avatar Shop' },
   { to: '/trading', label: 'Trade' },
   { to: '/avatar', label: 'Create' },
+  { to: '/leaderboards', label: 'Charts' },
 ];
 
 const sidebarMain = [
