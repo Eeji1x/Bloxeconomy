@@ -230,7 +230,7 @@ const Sodamons = () => {
                         </div>
                       )}
                     </td>
-                    <td className="px-3 py-2 font-mono text-xs">💎 {item.price.toLocaleString()}</td>
+                    <td className="px-3 py-2 font-mono text-xs">💎 {(item.item_values?.rap || item.price).toLocaleString()}</td>
                     <td className="px-3 py-2 font-mono text-xs font-bold">
                       {item.item_values ? `💎 ${item.item_values.value.toLocaleString()}` : '—'}
                     </td>
