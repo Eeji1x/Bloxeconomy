@@ -74,7 +74,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="rbx08-btn-blue w-full py-1.5 text-[11px]"
+                className="rbx08-btn-primary w-full py-1.5"
               >
                 {isLoading ? 'Logging in...' : 'Login'}
               </button>
