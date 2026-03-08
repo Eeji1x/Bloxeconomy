@@ -111,7 +111,15 @@ const Settings = () => {
   /* ═══════════════════════════════════════════
      ROBLOX 2016 SETTINGS LAYOUT
      ═══════════════════════════════════════════ */
-  if (is2016) {
+  if (isClassic) {
+    const accentColor = is2015 ? '#E2231A' : '#0074BD';
+    const panelClass = is2015 ? 'rbx15-panel' : 'rbx16-panel';
+    const panelHeaderClass = is2015 ? 'rbx15-panel-header' : 'rbx16-panel-header';
+    const panelBodyClass = is2015 ? 'rbx15-panel-body' : 'rbx16-panel-body';
+    const textMutedClass = is2015 ? 'rbx15-text-muted' : 'rbx16-text-muted';
+    const btnBuyClass = is2015 ? 'rbx15-btn-buy' : 'rbx16-btn-buy';
+    const btnContinueClass = is2015 ? 'rbx15-btn-continue' : 'rbx16-btn-continue';
+    const btnCancelClass = is2015 ? 'rbx15-btn-cancel' : 'rbx16-btn-cancel';
     const TABS = [
       { key: 'username' as const, label: 'Username' },
       { key: 'password' as const, label: 'Password' },
