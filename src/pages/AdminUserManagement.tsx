@@ -45,6 +45,7 @@ interface InventoryItem {
 
 interface RoleInfo {
   isAdmin: boolean;
+  isOwner: boolean;
   isEconomyManager: boolean;
 }
 
