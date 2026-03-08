@@ -115,6 +115,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               // Only update online status if not banned
               if (!profileData.is_banned) {
                 await updateOnlineStatus(session.user.id, true);
+                // Auto-grant 100 daily emeralds
+                await autoGrantDailyEmeralds(session.user.id, profileData);
               }
             }
             

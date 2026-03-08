@@ -401,21 +401,6 @@ const Profile = () => {
                       Edit Avatar
                     </Button>
                   </Link>
-                  <Button 
-                    variant={canClaimDaily() ? "emerald" : "outline"} 
-                    size="sm"
-                    onClick={handleClaimDaily}
-                    disabled={claimingDaily || !canClaimDaily()}
-                  >
-                    {claimingDaily ? (
-                      <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <Gift className="w-4 h-4" />
-                        {canClaimDaily() ? 'Claim 50 Daily Emeralds' : 'Daily Claimed'}
-                      </>
-                    )}
-                  </Button>
                 </>
               ) : (
                 <>
