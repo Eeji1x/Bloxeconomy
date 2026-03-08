@@ -119,7 +119,7 @@ const Sodamons = () => {
           cmp = (a.item_values?.value || 0) - (b.item_values?.value || 0);
           break;
         case 'rap':
-          cmp = a.price - b.price;
+          cmp = (a.item_values?.rap || a.price) - (b.item_values?.rap || b.price);
           break;
         case 'demand':
           cmp = (demandOrder[a.item_values?.demand || 'Normal'] || 0) - (demandOrder[b.item_values?.demand || 'Normal'] || 0);
