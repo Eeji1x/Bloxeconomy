@@ -79,7 +79,7 @@ export const SodabloxSidebar = () => {
         ))}
       </div>
 
-      {(isAdmin || isEconomyManager) && (
+      {(isAdmin || isOwner || isEconomyManager) && (
         <>
           <div className="mx-5 my-2 border-t border-border" />
           <Link
