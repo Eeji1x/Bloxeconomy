@@ -233,7 +233,7 @@ const RbxUserCard = ({ user, isAdminUser }: { user: UserProfile; isAdminUser: bo
 
 /* Default cyberpunk user card */
 const UserCard = ({ user, isAdmin }: { user: UserProfile; isAdmin: boolean }) => (
-  <Link to={`/profile/${user.user_id}`}>
+  <Link to={`/profile/${user.numeric_id}`}>
     <div className="cyber-card text-center group cursor-pointer">
       <div className="w-20 h-20 mx-auto mb-3 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/30 flex items-center justify-center overflow-hidden">
         <img src={DEFAULT_AVATAR} alt={user.username} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }} />
