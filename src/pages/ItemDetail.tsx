@@ -133,8 +133,8 @@ const ItemDetail = () => {
       .order('price', { ascending: true });
     if (data) {
       const sellerIds = data.map(l => l.seller_id);
-      const { data: profiles } = await supabase
-        .from('public_profiles' as any)
+      const { data: profiles } = await (supabase as any)
+        .from('public_profiles')
         .select('user_id, username, is_verified')
         .in('user_id', sellerIds);
       const profileMap = new Map(profiles?.map(p => [p.user_id, p]));

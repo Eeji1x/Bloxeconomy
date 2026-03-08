@@ -39,8 +39,8 @@ const Leaderboards = () => {
     }
 
     // Fetch profiles for limited count
-    const { data: profiles } = await supabase
-      .from('public_profiles' as any)
+    const { data: profiles } = await (supabase as any)
+      .from('public_profiles')
       .select('user_id, username, numeric_id, emeralds, is_verified, is_online');
 
     if (profiles) {
