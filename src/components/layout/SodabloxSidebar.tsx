@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Home, ShoppingBag, User, ArrowLeftRight, Gift, Users,
   Shield, Menu, X, Gem, LogOut, LogIn, Trophy, Settings,
@@ -35,11 +35,31 @@ export const SodabloxSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [headerOffset, setHeaderOffset] = useState(60);
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
+
+  useEffect(() => {
+    const computeOffset = () => {
+      const announcement = document.querySelector('[data-announcement-bar="true"]') as HTMLElement | null;
+      const announcementHeight = announcement?.offsetHeight ?? 0;
+      setHeaderOffset(60 + announcementHeight);
+    };
+
+    computeOffset();
+    window.addEventListener('resize', computeOffset);
+
+    const observer = new MutationObserver(computeOffset);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
+    return () => {
+      window.removeEventListener('resize', computeOffset);
+      observer.disconnect();
+    };
+  }, []);
 
   const SidebarLink = ({ link, closeMobile = false }: { link: { to: string; label: string; icon: any; authOnly?: boolean }; closeMobile?: boolean }) => {
     if (link.authOnly && !user) return null;
@@ -216,7 +236,10 @@ export const SodabloxSidebar = () => {
       </nav>
 
       {/* ─── Sidebar - Desktop ─── */}
-      <aside className="sodablox-sidebar hidden lg:flex fixed left-0 top-[60px] bottom-0 w-[200px] z-40 flex-col overflow-y-auto bg-card border-r border-border">
+      <aside
+        className="sodablox-sidebar hidden lg:flex fixed left-0 bottom-0 w-[200px] z-40 flex-col overflow-y-auto bg-card border-r border-border"
+        style={{ top: `${headerOffset}px` }}
+      >
         <SidebarContent />
       </aside>
 
@@ -227,7 +250,10 @@ export const SodabloxSidebar = () => {
             className="lg:hidden fixed inset-0 bg-black/50 z-40"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="lg:hidden fixed left-0 top-[60px] bottom-0 w-[200px] z-50 flex flex-col overflow-y-auto bg-card border-r border-border">
+          <aside
+            className="lg:hidden fixed left-0 bottom-0 w-[200px] z-50 flex flex-col overflow-y-auto bg-card border-r border-border"
+            style={{ top: `${headerOffset}px` }}
+          >
             <SidebarContent mobile />
           </aside>
         </>

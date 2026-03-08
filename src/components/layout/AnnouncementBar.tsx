@@ -60,7 +60,7 @@ export const AnnouncementBar = () => {
   if (!announcement || isDismissed) return null;
 
   return (
-    <div className="relative bg-gradient-to-r from-secondary/20 via-primary/20 to-secondary/20 border-b border-primary/30">
+    <div data-announcement-bar="true" className="relative bg-gradient-to-r from-secondary/20 via-primary/20 to-secondary/20 border-b border-primary/30">
       <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 via-primary/10 to-secondary/10 animate-pulse" />
       <div className="container mx-auto px-4 py-2 relative">
         <div className="flex items-center justify-center gap-3">
