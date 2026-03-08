@@ -93,7 +93,7 @@ export const SodabloxSidebar = () => {
             )}
           >
             <Shield className="w-[18px] h-[18px] shrink-0" />
-            <span>{isAdmin ? 'Admin Panel' : 'Economy Panel'}</span>
+            <span>{isAdmin ? 'Admin Panel' : isOwner ? 'Owner Panel' : 'Economy Panel'}</span>
           </Link>
         </>
       )}

@@ -145,7 +145,7 @@ export const Roblox2020Navbar = () => {
         ))}
       </div>
 
-      {isAdmin && (
+      {(isAdmin || isOwner) && (
         <>
           <div className="mx-5 my-2 border-t border-white/10" />
           <Link
