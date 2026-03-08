@@ -544,19 +544,47 @@
     text-decoration: none !important;
   }
 
-  /* ═══ PANELS (real 2016 white card style) ═══ */
+  /* ═══ PANELS (real 2016 white card style — no border-radius) ═══ */
   [data-theme="roblox2016"] .rbx16-home {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+  }
+  /* Two-column home layout like real 2016 */
+  [data-theme="roblox2016"] .rbx16-home-two-col {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  [data-theme="roblox2016"] .rbx16-home-left {
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  [data-theme="roblox2016"] .rbx16-home-right {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  @media (max-width: 768px) {
+    [data-theme="roblox2016"] .rbx16-home-two-col {
+      flex-direction: column;
+    }
+    [data-theme="roblox2016"] .rbx16-home-left {
+      width: 100%;
+    }
   }
   [data-theme="roblox2016"] .rbx16-panel {
     background: #fff;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #c3c3c3;
     overflow: hidden;
   }
   [data-theme="roblox2016"] .rbx16-panel-header {
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #c3c3c3;
     padding: 8px 12px;
     display: flex;
     align-items: center;
