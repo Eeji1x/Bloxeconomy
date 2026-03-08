@@ -14,13 +14,6 @@ interface Avatar3DViewerProps {
 
 const MODEL_PATH = '/models/roblox-avatar.glb';
 
-const ObjEquippedItem = ({ url }: { url: string }) => {
-  const obj = useLoader(OBJLoader, url);
-  const model = useMemo(() => obj.clone(true), [obj]);
-
-  return <primitive object={model} />;
-};
-
 const EquippedItemOverlay = ({ imageUrl, modelHeight }: { imageUrl: string; modelHeight: number }) => {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const [aspect, setAspect] = useState(1);
