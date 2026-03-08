@@ -163,20 +163,13 @@ const ItemDetail = () => {
     }
     setBuyingItem(true);
     try {
-      await supabase.from('profiles').update({ emeralds: profile.emeralds - item.price }).eq('user_id', user.id);
-      const { error: invError } = await supabase.from('user_inventory').insert({ user_id: user.id, item_id: item.id, quantity: 1 });
-      if (invError) {
-        if (invError.code === '23505') {
-          await supabase.from('profiles').update({ emeralds: profile.emeralds }).eq('user_id', user.id);
-          toast.error('You already own this item');
-          setBuyingItem(false);
-          return;
-        }
-        throw invError;
-      }
-      if (item.stock !== null) {
-        const newStock = item.stock - 1;
-        await supabase.from('catalog_items').update({ stock: newStock, is_on_sale: newStock > 0 }).eq('id', item.id);
+      const { data, error } = await supabase.rpc('purchase_item', { p_item_id: item.id });
+      if (error) throw error;
+      const result = data as Record<string, unknown> | null;
+      if (result?.error) {
+        toast.error(String(result.error));
+        setBuyingItem(false);
+        return;
       }
       await refreshProfile();
       await fetchItem();

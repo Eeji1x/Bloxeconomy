@@ -2,3 +2,6 @@ project_id = "jebsbtapavndwoqyeiet"
 
 [functions.validate-invite-key]
 verify_jwt = false
+
+[functions.log-ip]
+verify_jwt = false

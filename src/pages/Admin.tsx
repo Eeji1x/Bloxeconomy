@@ -15,10 +15,11 @@ import LotteryPanel from '@/components/admin/LotteryPanel';
 import SodamonsValueManager from '@/components/admin/SodamonsValueManager';
 import AdminCMD from '@/components/admin/AdminCMD';
 import AdminPlayers from '@/pages/AdminPlayers';
+import AltDetectionPanel from '@/components/admin/AltDetectionPanel';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
   Plus, Trash2, Save, BadgeCheck, RefreshCw, RotateCcw, Edit,
-  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal
+  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { forceDeleteItem } from '@/lib/forceDeleteItem';
@@ -41,6 +42,7 @@ const tabs: Tab[] = [
   { id: 'messaging', label: 'Messaging', icon: <Mail className="w-4 h-4" /> },
   { id: 'lottery', label: 'Lottery', icon: <Trophy className="w-4 h-4" /> },
   { id: 'sodamons', label: 'Sodamons Values', icon: <Gem className="w-4 h-4" /> },
+  { id: 'alt-detection', label: 'Alt Detection', icon: <Eye className="w-4 h-4" /> },
   { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
@@ -120,6 +122,7 @@ const Admin = () => {
         {activeTab === 'messaging' && (isAdmin || isOwner) && <div className="cyber-card p-6"><GlobalMessagePanel /></div>}
         {activeTab === 'lottery' && (isAdmin || isOwner) && <div className="cyber-card p-6"><LotteryPanel /></div>}
         {activeTab === 'sodamons' && (isAdmin || isOwner || isEconomyManager) && <div className="cyber-card p-6"><SodamonsValueManager /></div>}
+        {activeTab === 'alt-detection' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AltDetectionPanel /></div>}
         {activeTab === 'wipe' && (isAdmin || isOwner) && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
       </div>
     </div>

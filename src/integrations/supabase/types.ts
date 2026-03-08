@@ -190,6 +190,27 @@ export type Database = {
         }
         Relationships: []
       }
+      ip_hashes: {
+        Row: {
+          created_at: string
+          id: string
+          ip_hash: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_hash: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_hash?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       item_serials: {
         Row: {
           created_at: string
@@ -772,6 +793,7 @@ export type Database = {
       is_economy_manager: { Args: { _user_id: string }; Returns: boolean }
       is_owner: { Args: { _user_id: string }; Returns: boolean }
       next_profile_numeric_id: { Args: never; Returns: number }
+      purchase_item: { Args: { p_item_id: string }; Returns: Json }
       reset_profiles_numeric_id_seq: { Args: never; Returns: undefined }
     }
     Enums: {
