@@ -796,7 +796,7 @@
   }
   /* Keep rounded-full for avatars/dots */
 
-  /* Catalog page — 2016 style */
+  /* ═══ CATALOG PAGE — 2016 ECS catalogPage style ═══ */
   [data-theme="roblox2016"] .cyber-card .aspect-square {
     border-radius: 0 !important;
     border: 1px solid #c3c3c3 !important;
@@ -807,67 +807,274 @@
     font-weight: 650;
     color: #343434;
   }
-  /* Item detail 2016 */
+
+  /* Catalog grid items — ECS catalogPage style */
+  [data-theme="roblox2016"] .grid a.cyber-card,
+  [data-theme="roblox2016"] .grid .cyber-card {
+    background: #fff !important;
+    border: 1px solid #c3c3c3 !important;
+    padding: 8px !important;
+    transition: border-color 0.15s !important;
+  }
+  [data-theme="roblox2016"] .grid a.cyber-card:hover,
+  [data-theme="roblox2016"] .grid .cyber-card:hover {
+    border-color: #0074BD !important;
+    transform: none !important;
+  }
+
+  /* Item image containers */
+  [data-theme="roblox2016"] .aspect-square {
+    border-radius: 0 !important;
+    background: #fff !important;
+  }
   [data-theme="roblox2016"] .aspect-square.rounded-2xl {
     border-radius: 0 !important;
     border: 1px solid #c3c3c3 !important;
     background: #fff !important;
   }
 
-  /* Primary button override */
-  [data-theme="roblox2016"] .bg-primary {
-    background: #01a2fd !important;
+  /* Limited badge — ECS orange style */
+  [data-theme="roblox2016"] .limited-badge {
+    box-shadow: none !important;
+    background: #f68802 !important;
+    color: #fff !important;
+    border-radius: 0 !important;
+    font-size: 11px !important;
+    padding: 2px 6px !important;
   }
-  [data-theme="roblox2016"] .bg-primary:hover {
+
+  /* Catalog header/filter area */
+  [data-theme="roblox2016"] .space-y-8 > .flex h1 {
+    font-size: 24px !important;
+    color: #343434 !important;
+  }
+
+  /* Filter buttons — flat 2016 style */
+  [data-theme="roblox2016"] button[class*="capitalize"] {
+    border-radius: 0 !important;
+    font-size: 13px !important;
+  }
+
+  /* ═══ ITEM DETAIL PAGE — 2016 ECS itemPage style ═══ */
+  /* Item detail info panel */
+  [data-theme="roblox2016"] .max-w-4xl .cyber-card {
+    background: #fff !important;
+    border: 1px solid #c3c3c3 !important;
+    border-radius: 0 !important;
+    padding: 12px !important;
+  }
+  /* Price display */
+  [data-theme="roblox2016"] .text-accent {
+    color: #02b757 !important;
+  }
+  [data-theme="roblox2016"] .text-2xl.font-bold.text-accent {
+    color: #02b757 !important;
+    font-size: 20px !important;
+  }
+
+  /* ═══ PROFILE PAGE — 2016 ECS profile style ═══ */
+  [data-theme="roblox2016"] .max-w-4xl .cyber-card.p-8,
+  [data-theme="roblox2016"] .max-w-4xl .cyber-card.p-6 {
+    background: #fff !important;
+    border: 1px solid #c3c3c3 !important;
+    padding: 16px !important;
+  }
+  /* Profile header username */
+  [data-theme="roblox2016"] .text-3xl.font-display.font-bold {
+    font-size: 22px !important;
+    color: #343434 !important;
+  }
+  /* Profile stats grid */
+  [data-theme="roblox2016"] .grid.grid-cols-2.md\:grid-cols-4 .cyber-card {
+    background: #fff !important;
+    border: 1px solid #c3c3c3 !important;
+    padding: 12px 8px !important;
+  }
+  [data-theme="roblox2016"] .grid.grid-cols-2.md\:grid-cols-4 .text-2xl {
+    font-size: 18px !important;
+    color: #343434 !important;
+  }
+  /* Avatar container */
+  [data-theme="roblox2016"] .w-32.h-32 {
+    border-radius: 0 !important;
+    border: 1px solid #c3c3c3 !important;
+  }
+  /* Emerald display on profile */
+  [data-theme="roblox2016"] .emerald-display {
+    background: #f8f8f8 !important;
+    border: 1px solid #c3c3c3 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 4px 8px !important;
+  }
+  [data-theme="roblox2016"] .emerald-display span {
+    color: #02b757 !important;
+  }
+
+  /* ═══ SETTINGS PAGE — 2016 ECS settings style ═══ */
+  [data-theme="roblox2016"] .max-w-2xl .cyber-card {
+    background: #fff !important;
+    border: 1px solid #c3c3c3 !important;
+    border-radius: 0 !important;
+  }
+  /* Settings tabs — flat 2016 style */
+  [data-theme="roblox2016"] .border-b.border-border {
+    border-color: #c3c3c3 !important;
+  }
+  /* Theme cards in settings */
+  [data-theme="roblox2016"] .ring-2.ring-primary {
+    ring-color: #0074BD !important;
+  }
+
+  /* ═══ BUTTONS — Global 2016 overrides ═══ */
+  /* Primary buttons */
+  [data-theme="roblox2016"] .bg-primary,
+  [data-theme="roblox2016"] button[class*="bg-primary"] {
+    background: #01a2fd !important;
+    border-radius: 4px !important;
+  }
+  [data-theme="roblox2016"] .bg-primary:hover,
+  [data-theme="roblox2016"] button[class*="bg-primary"]:hover {
     background: #3ab8ff !important;
   }
 
-  /* Buy button (emerald variant) in 2016 → green gradient */
+  /* Buy/emerald buttons — green gradient */
   [data-theme="roblox2016"] [data-variant="emerald"],
-  [data-theme="roblox2016"] .bg-accent {
+  [data-theme="roblox2016"] button[class*="emerald"] {
     background: linear-gradient(0deg, rgba(0,113,0,1) 0%, rgba(64,193,64,1) 100%) !important;
     border: 1px solid #006600 !important;
     border-radius: 2px !important;
     color: white !important;
   }
   [data-theme="roblox2016"] [data-variant="emerald"]:hover,
-  [data-theme="roblox2016"] .bg-accent:hover {
+  [data-theme="roblox2016"] button[class*="emerald"]:hover {
     background: linear-gradient(0deg, rgba(71,232,71,1) 0%, rgba(71,232,71,1) 100%) !important;
   }
 
-  /* Input fields */
+  /* Outline buttons */
+  [data-theme="roblox2016"] button[class*="border"][class*="bg-background"],
+  [data-theme="roblox2016"] .border.bg-background {
+    border: 1px solid #c3c3c3 !important;
+    background: #fff !important;
+    border-radius: 0 !important;
+    color: #343434 !important;
+  }
+
+  /* Destructive buttons */
+  [data-theme="roblox2016"] .bg-destructive {
+    background: #cc3333 !important;
+    border-radius: 2px !important;
+  }
+
+  /* ═══ FORMS — 2016 flat inputs ═══ */
   [data-theme="roblox2016"] input[type="text"],
   [data-theme="roblox2016"] input[type="password"],
   [data-theme="roblox2016"] input[type="email"],
   [data-theme="roblox2016"] input[type="number"],
   [data-theme="roblox2016"] input[type="search"],
-  [data-theme="roblox2016"] textarea {
+  [data-theme="roblox2016"] textarea,
+  [data-theme="roblox2016"] select {
     border: 1px solid #c3c3c3 !important;
     border-radius: 2px !important;
     background: #fff !important;
     color: #1e1e1f !important;
     font-size: 14px !important;
   }
+  [data-theme="roblox2016"] input:focus,
+  [data-theme="roblox2016"] textarea:focus,
+  [data-theme="roblox2016"] select:focus {
+    border-color: #0074BD !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
 
-  /* Tables */
+  /* ═══ TABLES — 2016 flat tables ═══ */
   [data-theme="roblox2016"] table {
     border-collapse: collapse;
   }
   [data-theme="roblox2016"] th {
-    background: #f2f2f2;
-    border: 1px solid #c3c3c3;
+    background: #f2f2f2 !important;
+    border: 1px solid #c3c3c3 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #666 !important;
+    text-transform: none !important;
   }
   [data-theme="roblox2016"] td {
-    border: 1px solid #c3c3c3;
+    border: 1px solid #c3c3c3 !important;
+    font-size: 14px !important;
+  }
+  [data-theme="roblox2016"] tr:hover {
+    background: #f8f8f8 !important;
   }
 
-  /* Scrollbar */
+  /* ═══ LINKS — 2016 blue links ═══ */
+  [data-theme="roblox2016"] a.text-primary,
+  [data-theme="roblox2016"] .text-primary {
+    color: #0074BD !important;
+  }
+  [data-theme="roblox2016"] a.text-primary:hover {
+    text-decoration: underline !important;
+  }
+  [data-theme="roblox2016"] a.font-semibold.text-primary {
+    color: #0074BD !important;
+  }
+
+  /* ═══ FRIENDS PAGE — 2016 style ═══ */
+  [data-theme="roblox2016"] .grid.grid-cols-2.sm\:grid-cols-3 .cyber-card,
+  [data-theme="roblox2016"] .grid.grid-cols-2.sm\:grid-cols-4 .cyber-card {
+    background: #fff !important;
+    border: 1px solid #c3c3c3 !important;
+    padding: 8px !important;
+  }
+
+  /* ═══ LEADERBOARD — 2016 style ═══ */
+  [data-theme="roblox2016"] .cyber-card.p-0 {
+    border: 1px solid #c3c3c3 !important;
+  }
+
+  /* ═══ USERS PAGE — 2016 style ═══ */
+  [data-theme="roblox2016"] .grid a[class*="cyber-card"] {
+    background: #fff !important;
+    border: 1px solid #c3c3c3 !important;
+  }
+
+  /* ═══ GENERAL — Page headings ═══ */
+  [data-theme="roblox2016"] h1 {
+    font-family: 'Source Sans Pro', sans-serif !important;
+    color: #343434 !important;
+  }
+  [data-theme="roblox2016"] h2 {
+    font-family: 'Source Sans Pro', sans-serif !important;
+    color: #343434 !important;
+    font-size: 18px !important;
+  }
+  [data-theme="roblox2016"] p.text-muted-foreground {
+    color: #666 !important;
+    font-size: 13px !important;
+  }
+
+  /* ═══ PAGINATION — 2016 flat style ═══ */
+  [data-theme="roblox2016"] nav[aria-label="pagination"] a,
+  [data-theme="roblox2016"] nav[aria-label="pagination"] button {
+    border-radius: 0 !important;
+    border: 1px solid #c3c3c3 !important;
+    background: #fff !important;
+    color: #0074BD !important;
+  }
+  [data-theme="roblox2016"] nav[aria-label="pagination"] a[data-active="true"],
+  [data-theme="roblox2016"] nav[aria-label="pagination"] [aria-current="page"] {
+    background: #0074BD !important;
+    color: #fff !important;
+  }
+
+  /* ═══ SCROLLBAR — 2016 ═══ */
   [data-theme="roblox2016"] ::-webkit-scrollbar-track { background: #e8e8e8; }
   [data-theme="roblox2016"] ::-webkit-scrollbar-thumb { background: #b0b0b0; border-radius: 4px; }
   [data-theme="roblox2016"] ::-webkit-scrollbar-thumb:hover { background: #999; }
   [data-theme="roblox2016"] ::selection { background: rgba(0,116,189,0.2); color: #1e1e1f; }
 
-  /* Settings dropdown (matching ECS) */
+  /* ═══ DROPDOWN — Settings dropdown ═══ */
   [data-theme="roblox2016"] .rbx16-settings-dropdown {
     width: 125px;
     position: absolute;
@@ -887,7 +1094,7 @@
     border-left: 4px solid #0074BD;
   }
 
-  /* Notification badge (matching ECS linkEntry.js) */
+  /* Notification badge */
   [data-theme="roblox2016"] .rbx16-notif-badge {
     background: #01a2fd;
     color: white;
@@ -895,6 +1102,40 @@
     padding: 2px 7px;
     font-size: 12px !important;
     font-weight: 600;
+  }
+
+  /* ═══ DIALOG/MODAL — 2016 flat style ═══ */
+  [data-theme="roblox2016"] [role="dialog"] {
+    border-radius: 0 !important;
+    border: 1px solid #c3c3c3 !important;
+  }
+
+  /* ═══ TOAST — 2016 style ═══ */
+  [data-theme="roblox2016"] [data-sonner-toast] {
+    border-radius: 0 !important;
+    border: 1px solid #c3c3c3 !important;
+  }
+
+  /* ═══ TRADING PAGE — 2016 style ═══ */
+  [data-theme="roblox2016"] .cyber-card.p-4,
+  [data-theme="roblox2016"] .cyber-card.p-5,
+  [data-theme="roblox2016"] .cyber-card.p-6 {
+    background: #fff !important;
+    border: 1px solid #c3c3c3 !important;
+  }
+
+  /* ═══ GRADIENT BACKGROUNDS — kill them all ═══ */
+  [data-theme="roblox2016"] .bg-gradient-to-br,
+  [data-theme="roblox2016"] .bg-gradient-to-r {
+    background: #f8f8f8 !important;
+  }
+  [data-theme="roblox2016"] [class*="from-primary"][class*="to-secondary"] {
+    background: #f8f8f8 !important;
+  }
+
+  /* Icon colors for stats */
+  [data-theme="roblox2016"] .text-neon-purple {
+    color: #6e5494 !important;
   }
 
   /* ═══════════════════════════════════════════════════
