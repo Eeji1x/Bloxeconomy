@@ -116,6 +116,7 @@ export type Database = {
           is_on_sale: boolean | null
           item_type: Database["public"]["Enums"]["item_type"]
           max_stock: number | null
+          model_url: string | null
           name: string
           price: number
           resell_enabled: boolean | null
@@ -135,6 +136,7 @@ export type Database = {
           is_on_sale?: boolean | null
           item_type?: Database["public"]["Enums"]["item_type"]
           max_stock?: number | null
+          model_url?: string | null
           name: string
           price?: number
           resell_enabled?: boolean | null
@@ -154,6 +156,7 @@ export type Database = {
           is_on_sale?: boolean | null
           item_type?: Database["public"]["Enums"]["item_type"]
           max_stock?: number | null
+          model_url?: string | null
           name?: string
           price?: number
           resell_enabled?: boolean | null
