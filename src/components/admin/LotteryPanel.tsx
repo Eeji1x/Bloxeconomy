@@ -156,7 +156,9 @@ const LotteryPanel = () => {
     setCreating(true);
     try {
       const startsAt = new Date();
-      const endsAt = new Date(startsAt.getTime() + duration * 3600000);
+      const durationMs = durationUnit === 'hours' ? durationValue * 3600000 : durationValue * 60000;
+      const durationHours = durationUnit === 'hours' ? durationValue : durationValue / 60;
+      const endsAt = new Date(startsAt.getTime() + durationMs);
 
       const { data: lottery, error } = await supabase
         .from('lotteries')
