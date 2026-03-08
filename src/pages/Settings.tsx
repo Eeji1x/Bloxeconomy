@@ -36,6 +36,8 @@ const Settings = () => {
 
   const USERNAME_CHANGE_COST = 1000;
   const is2016 = theme === 'roblox2016';
+  const is2015 = theme === 'roblox2015';
+  const isClassic = is2016 || is2015;
 
   if (isLoading) {
     return (
