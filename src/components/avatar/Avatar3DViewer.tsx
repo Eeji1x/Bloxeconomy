@@ -32,7 +32,7 @@ const Scene = () => (
     <AvatarModel />
 
     {/* Ground plate */}
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]} receiveShadow>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.2, 0]} receiveShadow>
       <circleGeometry args={[1.6, 64]} />
       <meshStandardMaterial color="#b8b8b8" roughness={0.85} />
     </mesh>
