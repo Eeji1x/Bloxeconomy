@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import {
   Home, ShoppingBag, User, ArrowLeftRight, Gift, Users,
   Shield, Menu, X, Gem, LogOut, LogIn, Trophy, Settings,
-  Mail, Package, Bell
+  Mail, Package, Bell, Gamepad2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
