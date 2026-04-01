@@ -297,7 +297,7 @@ const CatalogPanel = () => {
             <div className="space-y-2"><Label>Sale Start Time</Label><input type="datetime-local" value={formData.sale_start_time} onChange={(e) => setFormData({ ...formData, sale_start_time: e.target.value })} className="w-full h-10 rounded-md border bg-input px-3 text-sm" /></div>
             <div className="space-y-2"><Label>Sale End Time</Label><input type="datetime-local" value={formData.sale_end_time} onChange={(e) => setFormData({ ...formData, sale_end_time: e.target.value })} className="w-full h-10 rounded-md border bg-input px-3 text-sm" /></div>
           </div>
-          <div className="flex gap-2"><Button onClick={handleSubmit}><Save className="w-4 h-4 mr-2" />{editingItem ? 'Update' : 'Create'}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
+          <div className="flex gap-2"><Button onClick={handleSubmit} disabled={uploading}>{uploading ? <><Upload className="w-4 h-4 mr-2 animate-spin" />Uploading...</> : <><Save className="w-4 h-4 mr-2" />{editingItem ? 'Update' : 'Create'}</>}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
         </div>
       )}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
