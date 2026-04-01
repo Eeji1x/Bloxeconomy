@@ -27,6 +27,7 @@ const secondaryLinks = [
   { to: '/users', label: 'Players', icon: Users },
   { to: '/friends', label: 'Friends', icon: Users, authOnly: true },
   { to: '/inbox', label: 'Inbox', icon: Mail, authOnly: true },
+  { to: '/games', label: 'Games', icon: Gamepad2, authOnly: true },
   { to: '/promocodes', label: 'Codes', icon: Gift },
 ];
 
