@@ -118,6 +118,7 @@ const App = () => {
                     <Route path="/sodamons/item/:itemId" element={<SodamonsItem />} />
                     <Route path="/sodamons/top" element={<SodamonsTop />} />
                     <Route path="/emeralds" element={<EmeraldShop />} />
+                    <Route path="/games" element={<Games />} />
                     <Route path="/banned" element={<Banned />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
