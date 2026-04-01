@@ -3949,12 +3949,7 @@
   background: #02b757; border: 2px solid #fff;
 }
 
-/* ═══════════════════════════════════════════════════
-   MERCURY THEME — Inspired by MercuryCore
-   Dark purple hue-based system, Inter font, rounded cards
-   Hue: 270 (purple), BG: #0f0e11, Accent: #7733FF
-   ═══════════════════════════════════════════════════ */
-[data-theme="mercury"] {
+/* Mercury theme removed */
   --background: 270 10% 5%;
   --foreground: 0 0% 90%;
   --card: 270 8% 10%;
