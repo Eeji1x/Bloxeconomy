@@ -104,6 +104,71 @@ export type Database = {
         }
         Relationships: []
       }
+      beta_access: {
+        Row: {
+          beta_key_id: string | null
+          feature: string
+          granted_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          beta_key_id?: string | null
+          feature?: string
+          granted_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          beta_key_id?: string | null
+          feature?: string
+          granted_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beta_access_beta_key_id_fkey"
+            columns: ["beta_key_id"]
+            isOneToOne: false
+            referencedRelation: "beta_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      beta_keys: {
+        Row: {
+          created_at: string
+          created_by: string
+          feature: string
+          id: string
+          is_used: boolean
+          key: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          feature?: string
+          id?: string
+          is_used?: boolean
+          key: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          feature?: string
+          id?: string
+          is_used?: boolean
+          key?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       catalog_items: {
         Row: {
           created_at: string
