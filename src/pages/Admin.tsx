@@ -153,8 +153,9 @@ const CatalogPanel = () => {
     resell_enabled: true,
     sale_start_time: '',
     sale_end_time: '',
-    
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => { fetchItems(); }, []);
 
