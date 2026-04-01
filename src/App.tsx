@@ -34,6 +34,7 @@ import SodamonsItem from "./pages/SodamonsItem";
 import SodamonsTop from "./pages/SodamonsTop";
 import Banned from "./pages/Banned";
 import EmeraldShop from "./pages/EmeraldShop";
+import Games from "./pages/Games";
 import Register from "./pages/Register";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -117,6 +118,7 @@ const App = () => {
                     <Route path="/sodamons/item/:itemId" element={<SodamonsItem />} />
                     <Route path="/sodamons/top" element={<SodamonsTop />} />
                     <Route path="/emeralds" element={<EmeraldShop />} />
+                    <Route path="/games" element={<Games />} />
                     <Route path="/banned" element={<Banned />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

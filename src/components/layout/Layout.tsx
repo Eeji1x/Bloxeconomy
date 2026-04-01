@@ -6,7 +6,7 @@ import { Roblox2016Navbar } from './Roblox2016Navbar';
 import { Roblox2015Navbar } from './Roblox2015Navbar';
 import { Roblox2012Navbar } from './Roblox2012Navbar';
 import { Roblox2008Navbar } from './Roblox2008Navbar';
-import { MercuryNavbar } from './MercuryNavbar';
+
 import { SodabloxSidebar } from './SodabloxSidebar';
 import { BanRedirectWrapper } from '@/components/auth/BanRedirectWrapper';
 import { useMaintenanceMode } from '@/hooks/useMaintenanceMode';
@@ -112,22 +112,6 @@ export const Layout = ({ children }: LayoutProps) => {
     );
   }
 
-  // Mercury theme layout — dark purple, Inter font, 220px sidebar
-  if (theme === 'mercury') {
-    return (
-      <div className="min-h-screen" style={{ background: '#0f0e11' }}>
-        <AnnouncementBar />
-        <MercuryNavbar />
-        <main className="lg:ml-[220px] min-h-[calc(100vh-56px)]">
-          <div className="max-w-[1100px] mx-auto px-4 py-5">
-            <BanRedirectWrapper>
-              {children}
-            </BanRedirectWrapper>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   // Default SODABLOX layout
   return (

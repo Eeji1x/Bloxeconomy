@@ -17,10 +17,11 @@ import AdminCMD from '@/components/admin/AdminCMD';
 import AdminPlayers from '@/pages/AdminPlayers';
 import AltDetectionPanel from '@/components/admin/AltDetectionPanel';
 import ApplicationsPanel from '@/components/admin/ApplicationsPanel';
+import BetaKeysPanel from '@/components/admin/BetaKeysPanel';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
   Plus, Trash2, Save, BadgeCheck, RefreshCw, RotateCcw, Edit,
-  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye, FileText, Upload
+  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye, FileText, Upload, Key
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { forceDeleteItem } from '@/lib/forceDeleteItem';
@@ -45,6 +46,7 @@ const tabs: Tab[] = [
   { id: 'sodamons', label: 'Sodamons Values', icon: <Gem className="w-4 h-4" /> },
   { id: 'alt-detection', label: 'Alt Detection', icon: <Eye className="w-4 h-4" /> },
   { id: 'applications', label: 'Applications', icon: <FileText className="w-4 h-4" /> },
+  { id: 'beta-keys', label: 'Beta Keys', icon: <Key className="w-4 h-4" /> },
   { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
@@ -126,6 +128,7 @@ const Admin = () => {
         {activeTab === 'sodamons' && (isAdmin || isOwner || isEconomyManager) && <div className="cyber-card p-6"><SodamonsValueManager /></div>}
         {activeTab === 'alt-detection' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AltDetectionPanel /></div>}
         {activeTab === 'applications' && (isAdmin || isOwner) && <div className="cyber-card p-6"><ApplicationsPanel /></div>}
+        {activeTab === 'beta-keys' && (isAdmin || isOwner) && <div className="cyber-card p-6"><BetaKeysPanel /></div>}
         {activeTab === 'wipe' && (isAdmin || isOwner) && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
       </div>
     </div>
@@ -150,8 +153,9 @@ const CatalogPanel = () => {
     resell_enabled: true,
     sale_start_time: '',
     sale_end_time: '',
-    
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => { fetchItems(); }, []);
 
@@ -165,7 +169,16 @@ const CatalogPanel = () => {
     setFormData({ name: '', description: '', image_url: '', item_type: 'normal', price: 1, stock: null, is_on_sale: true, resell_enabled: true, sale_start_time: '', sale_end_time: '' });
     setEditingItem(null);
     setShowForm(false);
-    
+    setImageFile(null);
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const ext = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage.from('catalog-images').upload(fileName, file);
+    if (error) { toast.error('Image upload failed'); return null; }
+    const { data: urlData } = supabase.storage.from('catalog-images').getPublicUrl(fileName);
+    return urlData.publicUrl;
   };
 
   const handleStartEdit = (item: any) => {
@@ -182,11 +195,23 @@ const CatalogPanel = () => {
   };
 
   const handleSubmit = async () => {
+    setUploading(true);
+    let imageUrl = formData.image_url;
+    
+    // Upload file if selected
+    if (imageFile) {
+      const uploaded = await uploadImage(imageFile);
+      if (!uploaded) { setUploading(false); return; }
+      imageUrl = uploaded;
+    }
+
+    if (!imageUrl) { toast.error('Please provide an image'); setUploading(false); return; }
+
     if (editingItem) {
       const wasNormal = editingItem.item_type === 'normal';
       const becomingLimited = formData.item_type === 'limited';
       const { error } = await supabase.from('catalog_items').update({
-        name: formData.name, description: formData.description || null, image_url: formData.image_url,
+        name: formData.name, description: formData.description || null, image_url: imageUrl,
         item_type: formData.item_type, price: formData.price, stock: formData.stock, max_stock: formData.stock,
         is_on_sale: formData.is_on_sale, is_giftbox: false, resell_enabled: formData.resell_enabled,
         sale_start_time: formData.sale_start_time ? new Date(formData.sale_start_time).toISOString() : null,
@@ -207,15 +232,15 @@ const CatalogPanel = () => {
       }
     } else {
       const { error } = await supabase.from('catalog_items').insert({
-        name: formData.name, description: formData.description || null, image_url: formData.image_url,
+        name: formData.name, description: formData.description || null, image_url: imageUrl,
         item_type: formData.item_type, price: formData.price, stock: formData.stock, max_stock: formData.stock,
         is_on_sale: formData.is_on_sale, is_giftbox: false, resell_enabled: formData.resell_enabled,
         sale_start_time: formData.sale_start_time ? new Date(formData.sale_start_time).toISOString() : null,
         sale_end_time: formData.sale_end_time ? new Date(formData.sale_end_time).toISOString() : null,
-        
       });
       if (error) { toast.error('Failed to create item'); } else { toast.success('Item created!'); resetForm(); fetchItems(); }
     }
+    setUploading(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -255,7 +280,8 @@ const CatalogPanel = () => {
           <h3 className="font-bold">{editingItem ? 'Edit Item' : 'Create New Item'}</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2"><Label>Name</Label><Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Item name" /></div>
-            <div className="space-y-2"><Label>Image URL</Label><Input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} placeholder="https://..." /></div>
+            <div className="space-y-2"><Label>Image URL (or upload below)</Label><Input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} placeholder="https://..." /></div>
+            <div className="space-y-2"><Label>Upload Image (PNG/JPG)</Label><input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => { if (e.target.files?.[0]) setImageFile(e.target.files[0]); }} className="w-full text-sm file:mr-2 file:py-2 file:px-4 file:rounded file:border-0 file:bg-primary file:text-primary-foreground" />{imageFile && <p className="text-xs text-primary">📎 {imageFile.name}</p>}</div>
             <div className="space-y-2"><Label>Type</Label>
               <select value={formData.item_type} onChange={(e) => setFormData({ ...formData, item_type: e.target.value as any })} className="w-full h-10 rounded-md border bg-input px-3">
                 <option value="normal">Normal</option><option value="limited">Limited</option>
@@ -271,7 +297,7 @@ const CatalogPanel = () => {
             <div className="space-y-2"><Label>Sale Start Time</Label><input type="datetime-local" value={formData.sale_start_time} onChange={(e) => setFormData({ ...formData, sale_start_time: e.target.value })} className="w-full h-10 rounded-md border bg-input px-3 text-sm" /></div>
             <div className="space-y-2"><Label>Sale End Time</Label><input type="datetime-local" value={formData.sale_end_time} onChange={(e) => setFormData({ ...formData, sale_end_time: e.target.value })} className="w-full h-10 rounded-md border bg-input px-3 text-sm" /></div>
           </div>
-          <div className="flex gap-2"><Button onClick={handleSubmit}><Save className="w-4 h-4 mr-2" />{editingItem ? 'Update' : 'Create'}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
+          <div className="flex gap-2"><Button onClick={handleSubmit} disabled={uploading}>{uploading ? <><Upload className="w-4 h-4 mr-2 animate-spin" />Uploading...</> : <><Save className="w-4 h-4 mr-2" />{editingItem ? 'Update' : 'Create'}</>}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
         </div>
       )}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
