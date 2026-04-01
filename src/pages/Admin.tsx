@@ -128,6 +128,7 @@ const Admin = () => {
         {activeTab === 'sodamons' && (isAdmin || isOwner || isEconomyManager) && <div className="cyber-card p-6"><SodamonsValueManager /></div>}
         {activeTab === 'alt-detection' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AltDetectionPanel /></div>}
         {activeTab === 'applications' && (isAdmin || isOwner) && <div className="cyber-card p-6"><ApplicationsPanel /></div>}
+        {activeTab === 'beta-keys' && (isAdmin || isOwner) && <div className="cyber-card p-6"><BetaKeysPanel /></div>}
         {activeTab === 'wipe' && (isAdmin || isOwner) && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
       </div>
     </div>
