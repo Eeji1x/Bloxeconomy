@@ -169,7 +169,16 @@ const CatalogPanel = () => {
     setFormData({ name: '', description: '', image_url: '', item_type: 'normal', price: 1, stock: null, is_on_sale: true, resell_enabled: true, sale_start_time: '', sale_end_time: '' });
     setEditingItem(null);
     setShowForm(false);
-    
+    setImageFile(null);
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const ext = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage.from('catalog-images').upload(fileName, file);
+    if (error) { toast.error('Image upload failed'); return null; }
+    const { data: urlData } = supabase.storage.from('catalog-images').getPublicUrl(fileName);
+    return urlData.publicUrl;
   };
 
   const handleStartEdit = (item: any) => {
