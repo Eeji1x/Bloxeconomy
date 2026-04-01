@@ -17,6 +17,7 @@ import AdminCMD from '@/components/admin/AdminCMD';
 import AdminPlayers from '@/pages/AdminPlayers';
 import AltDetectionPanel from '@/components/admin/AltDetectionPanel';
 import ApplicationsPanel from '@/components/admin/ApplicationsPanel';
+import BetaKeysPanel from '@/components/admin/BetaKeysPanel';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
   Plus, Trash2, Save, BadgeCheck, RefreshCw, RotateCcw, Edit,
