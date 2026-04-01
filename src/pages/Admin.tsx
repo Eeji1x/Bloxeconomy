@@ -21,7 +21,7 @@ import BetaKeysPanel from '@/components/admin/BetaKeysPanel';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
   Plus, Trash2, Save, BadgeCheck, RefreshCw, RotateCcw, Edit,
-  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye, FileText, Upload
+  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye, FileText, Upload, Key
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { forceDeleteItem } from '@/lib/forceDeleteItem';
