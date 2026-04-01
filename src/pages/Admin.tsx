@@ -46,6 +46,7 @@ const tabs: Tab[] = [
   { id: 'sodamons', label: 'Sodamons Values', icon: <Gem className="w-4 h-4" /> },
   { id: 'alt-detection', label: 'Alt Detection', icon: <Eye className="w-4 h-4" /> },
   { id: 'applications', label: 'Applications', icon: <FileText className="w-4 h-4" /> },
+  { id: 'beta-keys', label: 'Beta Keys', icon: <Key className="w-4 h-4" /> },
   { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
