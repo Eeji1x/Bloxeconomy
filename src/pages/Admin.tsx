@@ -280,7 +280,8 @@ const CatalogPanel = () => {
           <h3 className="font-bold">{editingItem ? 'Edit Item' : 'Create New Item'}</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2"><Label>Name</Label><Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Item name" /></div>
-            <div className="space-y-2"><Label>Image URL</Label><Input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} placeholder="https://..." /></div>
+            <div className="space-y-2"><Label>Image URL (or upload below)</Label><Input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} placeholder="https://..." /></div>
+            <div className="space-y-2"><Label>Upload Image (PNG/JPG)</Label><input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => { if (e.target.files?.[0]) setImageFile(e.target.files[0]); }} className="w-full text-sm file:mr-2 file:py-2 file:px-4 file:rounded file:border-0 file:bg-primary file:text-primary-foreground" />{imageFile && <p className="text-xs text-primary">📎 {imageFile.name}</p>}</div>
             <div className="space-y-2"><Label>Type</Label>
               <select value={formData.item_type} onChange={(e) => setFormData({ ...formData, item_type: e.target.value as any })} className="w-full h-10 rounded-md border bg-input px-3">
                 <option value="normal">Normal</option><option value="limited">Limited</option>
