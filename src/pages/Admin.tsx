@@ -195,11 +195,23 @@ const CatalogPanel = () => {
   };
 
   const handleSubmit = async () => {
+    setUploading(true);
+    let imageUrl = formData.image_url;
+    
+    // Upload file if selected
+    if (imageFile) {
+      const uploaded = await uploadImage(imageFile);
+      if (!uploaded) { setUploading(false); return; }
+      imageUrl = uploaded;
+    }
+
+    if (!imageUrl) { toast.error('Please provide an image'); setUploading(false); return; }
+
     if (editingItem) {
       const wasNormal = editingItem.item_type === 'normal';
       const becomingLimited = formData.item_type === 'limited';
       const { error } = await supabase.from('catalog_items').update({
-        name: formData.name, description: formData.description || null, image_url: formData.image_url,
+        name: formData.name, description: formData.description || null, image_url: imageUrl,
         item_type: formData.item_type, price: formData.price, stock: formData.stock, max_stock: formData.stock,
         is_on_sale: formData.is_on_sale, is_giftbox: false, resell_enabled: formData.resell_enabled,
         sale_start_time: formData.sale_start_time ? new Date(formData.sale_start_time).toISOString() : null,
@@ -220,15 +232,15 @@ const CatalogPanel = () => {
       }
     } else {
       const { error } = await supabase.from('catalog_items').insert({
-        name: formData.name, description: formData.description || null, image_url: formData.image_url,
+        name: formData.name, description: formData.description || null, image_url: imageUrl,
         item_type: formData.item_type, price: formData.price, stock: formData.stock, max_stock: formData.stock,
         is_on_sale: formData.is_on_sale, is_giftbox: false, resell_enabled: formData.resell_enabled,
         sale_start_time: formData.sale_start_time ? new Date(formData.sale_start_time).toISOString() : null,
         sale_end_time: formData.sale_end_time ? new Date(formData.sale_end_time).toISOString() : null,
-        
       });
       if (error) { toast.error('Failed to create item'); } else { toast.success('Item created!'); resetForm(); fetchItems(); }
     }
+    setUploading(false);
   };
 
   const handleDelete = async (id: string) => {
