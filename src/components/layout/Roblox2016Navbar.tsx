@@ -4,17 +4,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 /* ═══════════════════════════════════════════════════════════════
-   2016 ROBLOX Navbar — Pixel-perfect replica
-   Reference: roblox.com circa 2016 (Source Sans Pro era)
+   2016 ROBLOX Navbar — ECS economy-simulator exact replica
+   Source: ccr0/economy-simulator/services/2016-roblox-main
    
-   Structure:
-   ┌─────────────────────────────────────────────────────────┐
-   │ [☰] [SODABLOX logo]  Catalog Trade Leaderboards  [🔍] [R$] [⚙] │
-   └─────────────────────────────────────────────────────────┘
-   Sidebar: 175px, #f2f2f2, left-fixed
+   Topbar: #0074BD, paddingTop 6px, paddingBottom 3px
+   Sidebar: 175px, #f2f2f2, fixed left, 10px padding
+   Nav links: Games, Catalog, Develop, ROBUX (16px white)
    ═══════════════════════════════════════════════════════════════ */
 
-// Real 2016 sidebar had these exact links
 const sidebarLinks = [
   { to: '/', label: 'Home', icon: 'icon-nav-home', hoverClass: 'hover-icon-nav-home' },
   { to: '/profile', label: 'Profile', icon: 'icon-nav-profile', hoverClass: 'hover-icon-nav-profile', needsAuth: true },
@@ -26,7 +23,7 @@ const sidebarLinks = [
   { to: '/users', label: 'Players', icon: 'icon-nav-group', hoverClass: '' },
   { to: '/leaderboards', label: 'Leaderboards', icon: 'icon-nav-forum', hoverClass: '' },
   { to: '/promocodes', label: 'Promo Codes', icon: 'icon-nav-shop', hoverClass: '' },
-  { to: '/settings', label: 'Settings', icon: 'icon-nav-settings', hoverClass: '' },
+  { to: '/games', label: 'Games', icon: 'icon-nav-home', hoverClass: '' },
 ];
 
 export const Roblox2016Navbar = () => {
@@ -36,6 +33,7 @@ export const Roblox2016Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
+  const navBarRef = useRef<HTMLElement>(null);
 
   const handleSignOut = async () => {
     await signOut();
@@ -44,7 +42,6 @@ export const Roblox2016Navbar = () => {
 
   const profileLink = profile ? `/profile/${profile.user_id}` : '/profile';
 
-  // Close settings dropdown when clicking outside
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
@@ -55,7 +52,6 @@ export const Roblox2016Navbar = () => {
     return () => document.removeEventListener('mousedown', handler);
   }, [settingsOpen]);
 
-  /* ── Sidebar Link ── */
   const SideLink = ({ link, mobile = false }: { link: typeof sidebarLinks[0]; mobile?: boolean }) => {
     if (link.needsAuth && !user) return null;
     const to = link.label === 'Profile' ? profileLink : link.to;
@@ -77,50 +73,53 @@ export const Roblox2016Navbar = () => {
     );
   };
 
-  /* ── Sidebar Panel ── */
-  const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className="rbx16-sidebar-inner">
-      {/* Real 2016 had username at top of sidebar */}
-      {user && profile && (
-        <>
-          <p className="rbx16-sidebar-username">{profile.username}</p>
-          <div className="rbx16-sidebar-divider" />
-        </>
-      )}
-      <nav className="rbx16-sidebar-nav">
-        {sidebarLinks.map(l => (
-          <SideLink key={l.label} link={l} mobile={mobile} />
-        ))}
-      </nav>
-      {(isAdmin || isOwner) && (
-        <>
-          <div className="rbx16-sidebar-divider" />
-          <Link
-            to="/admin"
-            onClick={mobile ? () => setSidebarOpen(false) : undefined}
-            className={cn(
-              'rbx16-sidebar-link rbx16-sidebar-link-admin',
-              location.pathname.startsWith('/admin') && 'rbx16-sidebar-link-active'
-            )}
-          >
-            <span className="icon-nav-settings" />
-            <span className="rbx16-sidebar-label">Admin Panel</span>
-          </Link>
-        </>
-      )}
-      {/* Real 2016: "Upgrade Now" / BC button at bottom */}
-      <Link to="/catalog" className="rbx16-upgrade-btn">
-        Avatar Shop
-      </Link>
-    </div>
-  );
+  /* Sidebar content — matches ECS navSidebar exactly */
+  const Sidebar = ({ mobile = false }: { mobile?: boolean }) => {
+    const paddingTop = navBarRef.current ? navBarRef.current.clientHeight + 'px' : '39px';
+    
+    return (
+      <div className="rbx16-sidebar-inner" style={{ paddingTop }}>
+        {user && profile && (
+          <>
+            <p className="rbx16-sidebar-username">{profile.username}</p>
+            <div className="rbx16-sidebar-divider" />
+          </>
+        )}
+        <nav className="rbx16-sidebar-nav">
+          {sidebarLinks.map(l => (
+            <SideLink key={l.label} link={l} mobile={mobile} />
+          ))}
+        </nav>
+        {(isAdmin || isOwner) && (
+          <>
+            <div className="rbx16-sidebar-divider" />
+            <Link
+              to="/admin"
+              onClick={mobile ? () => setSidebarOpen(false) : undefined}
+              className={cn(
+                'rbx16-sidebar-link rbx16-sidebar-link-admin',
+                location.pathname.startsWith('/admin') && 'rbx16-sidebar-link-active'
+              )}
+            >
+              <span className="icon-nav-settings" />
+              <span className="rbx16-sidebar-label">Admin Panel</span>
+            </Link>
+          </>
+        )}
+        {/* ECS: "Upgrade Now" button — #01a2fd */}
+        <Link to="/catalog" className="rbx16-upgrade-btn">
+          Avatar Shop
+        </Link>
+      </div>
+    );
+  };
 
   return (
     <>
-      {/* ─── Top Navbar ─── Real 2016: #0074BD, height ~45px */}
-      <nav className="rbx16-topbar">
+      {/* ─── Top Navbar ─── ECS: #0074BD, paddingTop 6px, paddingBottom 3px */}
+      <nav className="rbx16-topbar" ref={navBarRef}>
         <div className="rbx16-topbar-container">
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger — ECS: icon-menu, shows below 1300px */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="rbx16-hamburger"
@@ -129,12 +128,12 @@ export const Roblox2016Navbar = () => {
             <span className="icon-nav-menu" />
           </button>
 
-          {/* Logo — Real 2016 used the ROBLOX wordmark image */}
+          {/* Logo — ECS: 118x30 roblox_logo.svg */}
           <Link to="/" className="rbx16-logo">
             <span className="rbx16-logo-text">SODABLOX</span>
           </Link>
 
-          {/* Nav links — Catalog, Trade, Leaderboards, Sodamons */}
+          {/* Nav links — ECS: Games, Catalog, Develop, ROBUX (16px white) */}
           <div className="rbx16-nav-links">
             <Link to="/catalog" className={cn('rbx16-nav-link', location.pathname === '/catalog' && 'rbx16-nav-link-active')}>Catalog</Link>
             <Link to="/trading" className={cn('rbx16-nav-link', location.pathname === '/trading' && 'rbx16-nav-link-active')}>Trade</Link>
@@ -144,7 +143,7 @@ export const Roblox2016Navbar = () => {
 
           <div className="flex-1" />
 
-          {/* Search bar — Real 2016: white translucent input */}
+          {/* Search — ECS: white translucent input */}
           <div className="rbx16-search-wrapper">
             <input
               type="text"
@@ -156,17 +155,16 @@ export const Roblox2016Navbar = () => {
             </span>
           </div>
 
-          {/* Right side — Real 2016: ROBUX amount, settings gear, notifications */}
+          {/* Right side — ECS: robux icon + amount, settings gear */}
           <div className="rbx16-right-area">
             {user && profile ? (
               <>
-                {/* Emerald/Robux display */}
                 <Link to="/emeralds" className="rbx16-currency">
                   <span className="icon-nav-robux" />
                   <span className="rbx16-currency-amount">{profile.emeralds.toLocaleString()}</span>
                 </Link>
 
-                {/* Settings gear with dropdown */}
+                {/* Settings dropdown — ECS: 125px, boxShadow, hover #eaeaea + 4px #0074BD border */}
                 <div className="relative" ref={settingsRef}>
                   <button
                     onClick={() => setSettingsOpen(!settingsOpen)}
@@ -207,16 +205,18 @@ export const Roblox2016Navbar = () => {
         </div>
       </nav>
 
-      {/* ─── Desktop Sidebar ─── */}
-      <aside className="rbx16-sidebar hidden lg:flex">
-        <Sidebar />
-      </aside>
+      {/* ─── Desktop Sidebar ─── ECS: shows above 1300px */}
+      {user && (
+        <aside className="rbx16-sidebar rbx16-sidebar-desktop">
+          <Sidebar />
+        </aside>
+      )}
 
       {/* ─── Mobile Sidebar ─── */}
       {sidebarOpen && (
         <>
-          <div className="lg:hidden fixed inset-0 bg-black/40 z-40" onClick={() => setSidebarOpen(false)} />
-          <aside className="lg:hidden rbx16-sidebar rbx16-sidebar-mobile">
+          <div className="fixed inset-0 bg-black/40 z-[998]" onClick={() => setSidebarOpen(false)} />
+          <aside className="rbx16-sidebar rbx16-sidebar-mobile" style={{ display: 'flex' }}>
             <Sidebar mobile />
           </aside>
         </>

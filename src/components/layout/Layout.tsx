@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { AnnouncementBar } from './AnnouncementBar';
 import { Roblox2016Navbar } from './Roblox2016Navbar';
@@ -19,6 +20,7 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   const { isMaintenanceMode, isLoading } = useMaintenanceMode();
   const { theme } = useTheme();
+  const { user } = useAuth();
   const location = useLocation();
 
   const authPaths = ['/login', '/signup', '/auth', '/apply', '/privacy', '/terms', '/register'];
@@ -84,7 +86,7 @@ export const Layout = ({ children }: LayoutProps) => {
       <div className="min-h-screen" style={{ background: '#e3e3e3' }}>
         <AnnouncementBar />
         <Roblox2016Navbar />
-        <main className="lg:ml-[175px] min-h-[calc(100vh-46px)]">
+        <main className={user ? 'rbx16-main-with-sidebar' : ''} style={{ minHeight: 'calc(100vh - 46px)' }}>
           <div className="max-w-[1100px] mx-auto px-4 py-4">
             <BanRedirectWrapper>
               {children}
