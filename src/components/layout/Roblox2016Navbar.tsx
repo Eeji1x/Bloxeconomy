@@ -207,7 +207,7 @@ export const Roblox2016Navbar = () => {
 
       {/* ─── Desktop Sidebar ─── ECS: shows above 1300px */}
       {user && (
-        <aside className="rbx16-sidebar hidden lg:flex" style={{ display: '' }}>
+        <aside className="rbx16-sidebar rbx16-sidebar-desktop">
           <Sidebar />
         </aside>
       )}
