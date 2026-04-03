@@ -20,6 +20,7 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   const { isMaintenanceMode, isLoading } = useMaintenanceMode();
   const { theme } = useTheme();
+  const { user } = useAuth();
   const location = useLocation();
 
   const authPaths = ['/login', '/signup', '/auth', '/apply', '/privacy', '/terms', '/register'];
