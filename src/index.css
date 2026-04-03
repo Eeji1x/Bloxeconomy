@@ -609,6 +609,13 @@
     text-decoration: none !important;
   }
 
+  /* Main content area — offset by sidebar when logged in, above 1300px */
+  @media(min-width: 1301px) {
+    [data-theme="roblox2016"] .rbx16-main-with-sidebar {
+      margin-left: 175px;
+    }
+  }
+
   /* ═══ PANELS (real 2016 white card style — no border-radius) ═══ */
   [data-theme="roblox2016"] .rbx16-home {
     display: flex;
