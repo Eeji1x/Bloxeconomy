@@ -1,45 +1,149 @@
 import { Link } from 'react-router-dom';
-import { AlertTriangle, LogIn } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { LogIn } from 'lucide-react';
 
 const Maintenance = () => {
   return (
-    <div className="fixed inset-0 z-[100] bg-background flex items-center justify-center cyber-grid">
-      {/* Ambient glow */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-destructive/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative text-center space-y-8 max-w-lg mx-auto px-6">
-        <div className="w-24 h-24 mx-auto rounded-2xl bg-destructive/20 border border-destructive/30 flex items-center justify-center">
-          <AlertTriangle className="w-12 h-12 text-destructive" />
-        </div>
-
-        <div className="space-y-4">
-          <h1 className="text-4xl font-display font-bold gradient-text">
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 100,
+        background: '#e3e3e3',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: '"Source Sans Pro", Arial, Helvetica, sans-serif',
+      }}
+    >
+      <div style={{ textAlign: 'center', maxWidth: 480, padding: '0 24px' }}>
+        {/* Logo */}
+        <div
+          style={{
+            background: '#0074BD',
+            display: 'inline-block',
+            padding: '12px 32px',
+            marginBottom: 24,
+          }}
+        >
+          <span
+            style={{
+              color: '#fff',
+              fontSize: 28,
+              fontWeight: 800,
+              letterSpacing: 2,
+            }}
+          >
             SODABLOX
-          </h1>
-          <h2 className="text-2xl font-display font-bold text-foreground">
+          </span>
+        </div>
+
+        {/* Panel */}
+        <div
+          style={{
+            background: '#fff',
+            border: '1px solid #c3c3c3',
+            padding: '32px 24px',
+          }}
+        >
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              margin: '0 auto 16px',
+              background: '#f5c242',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 32,
+            }}
+          >
+            ⚠
+          </div>
+
+          <h1
+            style={{
+              fontSize: 22,
+              fontWeight: 700,
+              color: '#393b3d',
+              margin: '0 0 8px',
+            }}
+          >
             Under Maintenance
-          </h2>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            SODABLOX is currently under maintenance. The site will be back online soon.
+          </h1>
+
+          <p
+            style={{
+              fontSize: 15,
+              color: '#666',
+              lineHeight: 1.5,
+              margin: '0 0 24px',
+            }}
+          >
+            SODABLOX is currently under maintenance. The site will be back
+            online soon.
           </p>
-        </div>
 
-        <div className="flex items-center justify-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
-          <div className="w-2 h-2 rounded-full bg-destructive animate-pulse delay-150" />
-          <div className="w-2 h-2 rounded-full bg-destructive animate-pulse delay-300" />
-        </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 6,
+              marginBottom: 24,
+            }}
+          >
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#f5c242',
+                display: 'inline-block',
+                animation: 'pulse 1.4s infinite',
+              }}
+            />
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#f5c242',
+                display: 'inline-block',
+                animation: 'pulse 1.4s 0.2s infinite',
+              }}
+            />
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#f5c242',
+                display: 'inline-block',
+                animation: 'pulse 1.4s 0.4s infinite',
+              }}
+            />
+          </div>
 
-        <Link to="/login">
-          <Button variant="outline" className="gap-2 mt-4">
-            <LogIn className="w-4 h-4" />
+          <Link
+            to="/login"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 16px',
+              fontSize: 14,
+              fontWeight: 600,
+              color: '#393b3d',
+              background: '#f2f2f2',
+              border: '1px solid #c3c3c3',
+              textDecoration: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            <LogIn style={{ width: 16, height: 16 }} />
             Admin Login
-          </Button>
-        </Link>
+          </Link>
+        </div>
       </div>
     </div>
   );

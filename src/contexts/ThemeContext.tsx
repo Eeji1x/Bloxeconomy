@@ -99,7 +99,7 @@ function sanitizeTheme(val: unknown): ThemeId {
   if (typeof val === 'string' && VALID_THEMES.includes(val as ThemeId)) {
     return val as ThemeId;
   }
-  return 'sodablox';
+  return 'roblox2016';
 }
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
