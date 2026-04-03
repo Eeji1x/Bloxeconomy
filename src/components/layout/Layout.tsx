@@ -86,7 +86,7 @@ export const Layout = ({ children }: LayoutProps) => {
       <div className="min-h-screen" style={{ background: '#e3e3e3' }}>
         <AnnouncementBar />
         <Roblox2016Navbar />
-        <main className={user ? 'lg:ml-[175px]' : ''} style={{ minHeight: 'calc(100vh - 46px)' }}>
+        <main className={user ? 'rbx16-main-with-sidebar' : ''} style={{ minHeight: 'calc(100vh - 46px)' }}>
           <div className="max-w-[1100px] mx-auto px-4 py-4">
             <BanRedirectWrapper>
               {children}
