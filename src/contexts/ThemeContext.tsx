@@ -88,7 +88,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'sodablox',
+  theme: 'roblox2016',
   setTheme: () => {},
   isLoading: true,
 });
