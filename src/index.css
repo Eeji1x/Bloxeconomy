@@ -520,6 +520,14 @@
     flex-direction: column;
     border-right: none;
   }
+  [data-theme="roblox2016"] .rbx16-sidebar-desktop {
+    display: none;
+  }
+  @media(min-width: 1301px) {
+    [data-theme="roblox2016"] .rbx16-sidebar-desktop {
+      display: flex;
+    }
+  }
   [data-theme="roblox2016"] .rbx16-sidebar-mobile {
     display: flex !important;
     z-index: 999;
