@@ -128,9 +128,10 @@ export const Roblox2016Navbar = () => {
             <span className="icon-nav-menu" />
           </button>
 
-          {/* Logo — ECS: 118x30 roblox_logo.svg */}
+          {/* Logo — ECS: 118x30 desktop, 30x30 mobile "R" */}
           <Link to="/" className="rbx16-logo">
-            <span className="rbx16-logo-text">SODABLOX</span>
+            <span className="rbx16-logo-text hidden min-[1301px]:block">SODABLOX</span>
+            <span className="rbx16-logo-text block min-[1301px]:hidden" style={{ fontSize: '20px' }}>S</span>
           </Link>
 
           {/* Nav links — ECS: Games, Catalog, Develop, ROBUX (16px white) */}
