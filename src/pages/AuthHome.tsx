@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Zap, Sparkles, ShoppingBag, ArrowRightLeft, Users, Gem, Star, Gift, Trophy, FileText, Shield } from 'lucide-react';
 
 const AuthHome = () => {
   const { user } = useAuth();
@@ -13,8 +10,6 @@ const AuthHome = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  // No longer redirect logged-in users — they can view this page
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,192 +34,145 @@ const AuthHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden">
-      {/* Navbar */}
-      <nav className="relative z-50 h-[60px] bg-card/80 backdrop-blur-xl border-b border-primary/20 shadow-[0_0_30px_hsl(var(--primary)/0.1)]">
-        <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-6">
-          <Link to="/auth" className="text-2xl font-display font-black tracking-tight">
-            <span className="gradient-text">SODA</span>
-            <span className="text-foreground">BLOX</span>
+    <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'Source Sans Pro', Arial, sans-serif" }}>
+      {/* Top bar */}
+      <div style={{ background: '#0074BD', height: 45 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px' }}>
+          <Link to="/auth" style={{ color: '#fff', fontSize: 22, fontWeight: 800, textDecoration: 'none', letterSpacing: 1 }}>
+            SODABLOX
           </Link>
           {!user && (
-            <form onSubmit={handleLogin} className="hidden sm:flex items-center gap-2">
-              <Input
+            <form onSubmit={handleLogin} style={{ display: 'flex', alignItems: 'center', gap: 6 }} className="hidden sm:flex">
+              <input
                 type="text"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="h-9 w-36 bg-input border-border text-sm"
+                style={{ height: 30, padding: '0 8px', fontSize: 13, border: '1px solid #005a94', borderRadius: 2, width: 130, background: 'rgba(255,255,255,0.9)', color: '#1e1e1f' }}
               />
-              <Input
+              <input
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-9 w-36 bg-input border-border text-sm"
+                style={{ height: 30, padding: '0 8px', fontSize: 13, border: '1px solid #005a94', borderRadius: 2, width: 130, background: 'rgba(255,255,255,0.9)', color: '#1e1e1f' }}
               />
-              <Button type="submit" variant="neon" size="sm" disabled={isLoggingIn}>
+              <button
+                type="submit"
+                disabled={isLoggingIn}
+                style={{ height: 30, padding: '0 16px', fontSize: 13, fontWeight: 700, background: '#00a2ff', color: '#fff', border: 'none', borderRadius: 2, cursor: 'pointer' }}
+              >
                 {isLoggingIn ? '...' : 'Login'}
-              </Button>
+              </button>
             </form>
           )}
-          {!user && (
-            <div className="flex sm:hidden gap-2">
-              <Link to="/login"><Button variant="outline" size="sm">Login</Button></Link>
-              <Link to="/signup"><Button variant="neon" size="sm">Sign Up</Button></Link>
-            </div>
-          )}
           {user && (
-            <Link to="/"><Button variant="neon" size="sm">Go to Dashboard</Button></Link>
+            <Link to="/" style={{ color: '#fff', fontSize: 14, fontWeight: 600, textDecoration: 'none', background: '#00a2ff', padding: '6px 16px', borderRadius: 2 }}>
+              Go to Home
+            </Link>
           )}
         </div>
-      </nav>
+      </div>
 
-      {/* Hero */}
-      <section className="relative py-24 md:py-32 text-center overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px]">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-full blur-3xl animate-pulse" />
+      {/* Hero Banner */}
+      <div style={{ background: 'linear-gradient(135deg, #0074BD 0%, #00a2ff 50%, #00c3ff 100%)', padding: '60px 20px', textAlign: 'center' }}>
+        <h1 style={{ fontSize: 56, fontWeight: 800, color: '#fff', margin: '0 0 16px', letterSpacing: 2, textShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+          SODABLOX
+        </h1>
+        <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.9)', margin: '0 0 32px', maxWidth: 600, marginLeft: 'auto', marginRight: 'auto' }}>
+          A virtual world revival. Collect items, trade limiteds, and build your legacy.
+        </p>
+        {!user ? (
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/signup" style={{ display: 'inline-block', padding: '12px 36px', fontSize: 16, fontWeight: 700, background: '#3bc95f', color: '#fff', borderRadius: 4, textDecoration: 'none', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>
+              Sign Up
+            </Link>
+            <Link to="/apply" style={{ display: 'inline-block', padding: '12px 36px', fontSize: 16, fontWeight: 700, background: 'rgba(255,255,255,0.2)', color: '#fff', borderRadius: 4, textDecoration: 'none', border: '2px solid rgba(255,255,255,0.4)' }}>
+              Apply to Join
+            </Link>
           </div>
-          <div className="absolute top-0 left-0 w-full h-full cyber-grid opacity-10" />
-        </div>
+        ) : (
+          <Link to="/" style={{ display: 'inline-block', padding: '12px 36px', fontSize: 16, fontWeight: 700, background: '#3bc95f', color: '#fff', borderRadius: 4, textDecoration: 'none' }}>
+            Go to Dashboard
+          </Link>
+        )}
+      </div>
 
-        <div className="relative z-10 space-y-8 max-w-3xl mx-auto px-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
-            <Sparkles className="w-4 h-4" />
-            <span>Welcome to the future of virtual worlds</span>
-          </div>
-          <h1 className="text-6xl md:text-8xl font-display font-black tracking-tight">
-            <span className="gradient-text">SODA</span>
-            <span className="text-foreground">BLOX</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground font-body max-w-2xl mx-auto">
-            A futuristic virtual world revival. Collect items, trade limiteds, and build your legacy.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {!user ? (
-              <>
-                <Link to="/signup">
-                  <Button variant="neon" size="xl" className="group">
-                    <Zap className="w-5 h-5 group-hover:animate-pulse" />
-                    Start Playing
-                  </Button>
-                </Link>
-                <Link to="/apply">
-                  <Button variant="outline" size="xl" className="gap-2">
-                    <FileText className="w-5 h-5" />
-                    Apply to Join
-                  </Button>
-                </Link>
-                <Link to="/login">
-                  <Button variant="ghost" size="xl">
-                    Already have an account?
-                  </Button>
-                </Link>
-              </>
-            ) : (
-              <Link to="/">
-                <Button variant="neon" size="xl" className="group">
-                  <Zap className="w-5 h-5 group-hover:animate-pulse" />
-                  Go to Dashboard
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="relative py-16 px-4">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-12">
-            Everything you need to <span className="gradient-text">dominate</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { icon: ShoppingBag, title: 'Catalog', desc: 'Browse and purchase items. Find rare limiteds and exclusive gear.', color: 'text-primary' },
-              { icon: ArrowRightLeft, title: 'Trading', desc: 'Trade limited items with other players. Grow your collection.', color: 'text-secondary' },
-              { icon: Users, title: 'Community', desc: 'Connect with players, send messages, and add friends.', color: 'text-accent' },
-            ].map((f) => (
-              <div key={f.title} className="cyber-card p-6 group hover:border-primary/40 transition-all duration-300">
-                <f.icon className={`w-10 h-10 ${f.color} mb-4 group-hover:scale-110 transition-transform`} />
-                <h3 className="font-display font-bold text-lg mb-2">{f.title}</h3>
-                <p className="text-sm text-muted-foreground">{f.desc}</p>
-              </div>
-            ))}
+      {/* Mobile login */}
+      {!user && (
+        <div className="sm:hidden" style={{ padding: 20 }}>
+          <div style={{ border: '1px solid #c3c3c3', borderRadius: 4, padding: 16, background: '#f8f8f8' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#393b3d', marginBottom: 12 }}>Login</h3>
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                style={{ height: 36, padding: '0 10px', fontSize: 14, border: '1px solid #c3c3c3', borderRadius: 2 }}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ height: 36, padding: '0 10px', fontSize: 14, border: '1px solid #c3c3c3', borderRadius: 2 }}
+              />
+              <button
+                type="submit"
+                disabled={isLoggingIn}
+                style={{ height: 36, fontSize: 14, fontWeight: 700, background: '#0074BD', color: '#fff', border: 'none', borderRadius: 2, cursor: 'pointer' }}
+              >
+                {isLoggingIn ? 'Logging in...' : 'Login'}
+              </button>
+            </form>
           </div>
         </div>
-      </section>
+      )}
 
-      {/* Why Join */}
-      <section className="relative py-16 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5" />
-        <div className="absolute inset-0 cyber-grid opacity-10" />
-        <div className="relative max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-12">
-            Why join <span className="gradient-text">SODABLOX</span>?
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {[
-              { icon: Gem, title: 'Free Emeralds', desc: 'Every new player receives 100 free emeralds to start their journey.' },
-              { icon: Star, title: 'Limited Items', desc: 'Collect rare limited items with serial numbers. Trade them for profit!' },
-              { icon: Gift, title: 'Promocodes', desc: 'Redeem special codes for free emeralds and exclusive items.' },
-              { icon: Trophy, title: 'Leaderboards', desc: 'Compete with other players and climb the rankings.' },
-            ].map((f) => (
-              <div key={f.title} className="flex items-start gap-4 p-5 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm">
-                <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20 shrink-0">
-                  <f.icon className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-display font-bold mb-1">{f.title}</h3>
-                  <p className="text-sm text-muted-foreground">{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Features grid */}
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '40px 20px' }}>
+        <h2 style={{ fontSize: 24, fontWeight: 700, color: '#393b3d', textAlign: 'center', marginBottom: 32 }}>Features</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
+          {[
+            { icon: '🛒', title: 'Catalog', desc: 'Browse and purchase items. Find rare limiteds and exclusive gear.' },
+            { icon: '🔄', title: 'Trading', desc: 'Trade limited items with other players. Grow your collection.' },
+            { icon: '👥', title: 'Community', desc: 'Connect with players, send messages, and add friends.' },
+            { icon: '💎', title: 'Free Emeralds', desc: 'Every new player receives 100 free emeralds to start.' },
+            { icon: '⭐', title: 'Limited Items', desc: 'Collect rare limited items with serial numbers.' },
+            { icon: '🏆', title: 'Leaderboards', desc: 'Compete with other players and climb the rankings.' },
+          ].map((f) => (
+            <div key={f.title} style={{ border: '1px solid #c3c3c3', borderRadius: 4, padding: 20, background: '#fff' }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>{f.icon}</div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#393b3d', marginBottom: 6 }}>{f.title}</h3>
+              <p style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>{f.desc}</p>
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
 
       {/* CTA */}
       {!user && (
-        <section className="relative py-16 px-4">
-          <div className="max-w-3xl mx-auto relative overflow-hidden rounded-2xl">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20" />
-            <div className="absolute inset-0 cyber-grid opacity-30" />
-            <div className="relative p-12 text-center space-y-6">
-              <h2 className="text-3xl md:text-4xl font-display font-bold">
-                Ready to join the <span className="gradient-text">revolution</span>?
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-                Create your account now and receive 100 free emeralds to start your journey.
-              </p>
-              <Link to="/signup">
-                <Button variant="neon" size="xl">Create Account</Button>
-              </Link>
-            </div>
-          </div>
-        </section>
+        <div style={{ background: '#f2f2f2', padding: '40px 20px', textAlign: 'center', borderTop: '1px solid #e3e3e3' }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: '#393b3d', marginBottom: 12 }}>Ready to join?</h2>
+          <p style={{ fontSize: 14, color: '#666', marginBottom: 20, maxWidth: 500, margin: '0 auto 20px' }}>
+            Create your account now and receive 100 free emeralds to start your journey.
+          </p>
+          <Link to="/signup" style={{ display: 'inline-block', padding: '12px 36px', fontSize: 16, fontWeight: 700, background: '#0074BD', color: '#fff', borderRadius: 4, textDecoration: 'none' }}>
+            Create Account
+          </Link>
+        </div>
       )}
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground space-y-2">
-        <div className="flex items-center justify-center gap-4">
-          <Link to="/terms" className="hover:text-primary transition-colors flex items-center gap-1">
-            <FileText className="w-3 h-3" />
-            Terms of Service
-          </Link>
-          <Link to="/privacy" className="hover:text-primary transition-colors flex items-center gap-1">
-            <Shield className="w-3 h-3" />
-            Privacy Policy
-          </Link>
-          <Link to="/apply" className="hover:text-primary transition-colors flex items-center gap-1">
-            <FileText className="w-3 h-3" />
-            Apply
-          </Link>
+      <div style={{ borderTop: '1px solid #e3e3e3', padding: '16px 20px', textAlign: 'center', fontSize: 12, color: '#999' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 8 }}>
+          <Link to="/terms" style={{ color: '#00a2ff', textDecoration: 'none' }}>Terms of Service</Link>
+          <Link to="/privacy" style={{ color: '#00a2ff', textDecoration: 'none' }}>Privacy Policy</Link>
+          <Link to="/apply" style={{ color: '#00a2ff', textDecoration: 'none' }}>Apply</Link>
         </div>
         <p>© {new Date().getFullYear()} SODABLOX. All rights reserved.</p>
-      </footer>
+      </div>
     </div>
   );
 };
