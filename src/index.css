@@ -356,7 +356,7 @@
     border-radius: 4px;
   }
 
-  /* ── Search (ECS: white input in navbar, search icon float right) ── */
+  /* ── Search (ECS: white bg, 1px solid #c3c3c3, borderRadius 2px, padding 4px 2px) ── */
   [data-theme="roblox2016"] .rbx16-search-wrapper {
     display: none;
     align-items: center;
@@ -369,23 +369,23 @@
   [data-theme="roblox2016"] .rbx16-search-input {
     width: 200px;
     height: 30px;
-    padding: 0 28px 0 10px;
+    padding: 4px 28px 4px 10px;
     font-size: 14px !important;
-    border: 1px solid rgba(255,255,255,0.25);
+    border: 1px solid #c3c3c3;
     border-radius: 2px;
-    background: rgba(255,255,255,0.12);
-    color: white;
+    background: white;
+    color: #1e1e1f;
     outline: none;
   }
-  [data-theme="roblox2016"] .rbx16-search-input::placeholder { color: rgba(255,255,255,0.6); }
+  [data-theme="roblox2016"] .rbx16-search-input::placeholder { color: rgba(0,0,0,0.4); }
   [data-theme="roblox2016"] .rbx16-search-input:focus {
-    background: rgba(255,255,255,0.2);
-    border-color: rgba(255,255,255,0.4);
+    border-color: #0074BD;
+    box-shadow: none;
   }
   [data-theme="roblox2016"] .rbx16-search-icon {
     position: absolute;
     right: 6px;
-    color: rgba(255,255,255,0.6);
+    color: #999;
     pointer-events: none;
   }
   [data-theme="roblox2016"] .rbx16-search-icon .icon-nav-search {
@@ -393,7 +393,8 @@
     height: 18px;
     background-size: 36px auto;
     background-position: 0 -72px;
-    filter: brightness(0) invert(1);
+    filter: none;
+    opacity: 0.5;
   }
 
   /* ── Right area (ECS: robux icon + amount, settings icon) ── */
