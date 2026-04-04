@@ -927,6 +927,7 @@ export type Database = {
         Row: {
           avatar_data: Json | null
           created_at: string | null
+          emeralds: number | null
           id: string | null
           is_online: boolean | null
           is_verified: boolean | null
@@ -939,6 +940,7 @@ export type Database = {
         Insert: {
           avatar_data?: Json | null
           created_at?: string | null
+          emeralds?: number | null
           id?: string | null
           is_online?: boolean | null
           is_verified?: boolean | null
@@ -951,6 +953,7 @@ export type Database = {
         Update: {
           avatar_data?: Json | null
           created_at?: string | null
+          emeralds?: number | null
           id?: string | null
           is_online?: boolean | null
           is_verified?: boolean | null
