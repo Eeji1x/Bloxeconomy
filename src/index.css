@@ -452,17 +452,18 @@
     background-position: 0 -60px;
     filter: brightness(0) invert(1);
   }
-  /* Settings dropdown (ECS: 125px, white, boxShadow, hover #eaeaea + 4px blue left border) */
+  /* Settings dropdown (ECS: 125px, white, boxShadow 0 -5px 20px rgba(25,25,25,0.15)) */
   [data-theme="roblox2016"] .rbx16-settings-dropdown {
     position: absolute;
     top: 45px;
-    right: 0;
+    right: 10px;
     width: 125px;
     background: white;
     box-shadow: 0 -5px 20px rgba(25,25,25,0.15);
     z-index: 100;
     user-select: none;
   }
+  /* ECS: hover #eaeaea, borderLeft 4px solid #0074BD, marginLeft -4px */
   [data-theme="roblox2016"] .rbx16-dropdown-item {
     display: block;
     width: 100%;
@@ -473,12 +474,13 @@
     text-align: left;
     background: transparent;
     border: none;
-    border-left: 4px solid transparent;
     cursor: pointer;
+    margin-bottom: 0;
   }
   [data-theme="roblox2016"] .rbx16-dropdown-item:hover {
     background: #eaeaea;
     border-left: 4px solid #0074BD;
+    padding-left: 6px;
   }
   /* Signup/Login buttons (logged out) */
   [data-theme="roblox2016"] .rbx16-signup-btn {
