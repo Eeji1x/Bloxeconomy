@@ -356,7 +356,7 @@
     border-radius: 4px;
   }
 
-  /* ── Search (ECS: white input in navbar, search icon float right) ── */
+  /* ── Search (ECS: white bg, 1px solid #c3c3c3, borderRadius 2px, padding 4px 2px) ── */
   [data-theme="roblox2016"] .rbx16-search-wrapper {
     display: none;
     align-items: center;
@@ -369,23 +369,23 @@
   [data-theme="roblox2016"] .rbx16-search-input {
     width: 200px;
     height: 30px;
-    padding: 0 28px 0 10px;
+    padding: 4px 28px 4px 10px;
     font-size: 14px !important;
-    border: 1px solid rgba(255,255,255,0.25);
+    border: 1px solid #c3c3c3;
     border-radius: 2px;
-    background: rgba(255,255,255,0.12);
-    color: white;
+    background: white;
+    color: #1e1e1f;
     outline: none;
   }
-  [data-theme="roblox2016"] .rbx16-search-input::placeholder { color: rgba(255,255,255,0.6); }
+  [data-theme="roblox2016"] .rbx16-search-input::placeholder { color: rgba(0,0,0,0.4); }
   [data-theme="roblox2016"] .rbx16-search-input:focus {
-    background: rgba(255,255,255,0.2);
-    border-color: rgba(255,255,255,0.4);
+    border-color: #0074BD;
+    box-shadow: none;
   }
   [data-theme="roblox2016"] .rbx16-search-icon {
     position: absolute;
     right: 6px;
-    color: rgba(255,255,255,0.6);
+    color: #999;
     pointer-events: none;
   }
   [data-theme="roblox2016"] .rbx16-search-icon .icon-nav-search {
@@ -393,7 +393,8 @@
     height: 18px;
     background-size: 36px auto;
     background-position: 0 -72px;
-    filter: brightness(0) invert(1);
+    filter: none;
+    opacity: 0.5;
   }
 
   /* ── Right area (ECS: robux icon + amount, settings icon) ── */
@@ -451,17 +452,18 @@
     background-position: 0 -60px;
     filter: brightness(0) invert(1);
   }
-  /* Settings dropdown (ECS: 125px, white, boxShadow, hover #eaeaea + 4px blue left border) */
+  /* Settings dropdown (ECS: 125px, white, boxShadow 0 -5px 20px rgba(25,25,25,0.15)) */
   [data-theme="roblox2016"] .rbx16-settings-dropdown {
     position: absolute;
     top: 45px;
-    right: 0;
+    right: 10px;
     width: 125px;
     background: white;
     box-shadow: 0 -5px 20px rgba(25,25,25,0.15);
     z-index: 100;
     user-select: none;
   }
+  /* ECS: hover #eaeaea, borderLeft 4px solid #0074BD, marginLeft -4px */
   [data-theme="roblox2016"] .rbx16-dropdown-item {
     display: block;
     width: 100%;
@@ -472,12 +474,13 @@
     text-align: left;
     background: transparent;
     border: none;
-    border-left: 4px solid transparent;
     cursor: pointer;
+    margin-bottom: 0;
   }
   [data-theme="roblox2016"] .rbx16-dropdown-item:hover {
     background: #eaeaea;
     border-left: 4px solid #0074BD;
+    padding-left: 6px;
   }
   /* Signup/Login buttons (logged out) */
   [data-theme="roblox2016"] .rbx16-signup-btn {
@@ -1397,36 +1400,7 @@
   [data-theme="roblox2016"] ::-webkit-scrollbar-thumb:hover { background: #999; }
   [data-theme="roblox2016"] ::selection { background: rgba(0,116,189,0.2); color: #1e1e1f; }
 
-  /* ═══ DROPDOWN — Settings dropdown (real 2016 style) ═══ */
-  [data-theme="roblox2016"] .rbx16-settings-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 140px;
-    background: white;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    z-index: 60;
-    display: flex;
-    flex-direction: column;
-  }
-  [data-theme="roblox2016"] .rbx16-dropdown-item {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 8px 14px;
-    font-size: 14px !important;
-    color: #393b3d !important;
-    text-decoration: none !important;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-  }
-  [data-theme="roblox2016"] .rbx16-dropdown-item:hover {
-    background: #f2f2f2;
-    box-shadow: 4px 0 0 0 #00a2ff inset;
-    cursor: pointer;
-  }
+  /* Duplicate dropdown removed — defined above in topbar section */
 
   /* Notification badge */
   [data-theme="roblox2016"] .rbx16-notif-badge {
