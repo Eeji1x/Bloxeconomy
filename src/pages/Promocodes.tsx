@@ -19,6 +19,8 @@ interface Promocode {
 
 const Promocodes = () => {
   const { user, profile, refreshProfile } = useAuth();
+  const { theme } = useTheme();
+  const is2016 = theme === 'roblox2016' || theme === 'roblox2015';
   const [code, setCode] = useState('');
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [promocodes, setPromocodes] = useState<Promocode[]>([]);
