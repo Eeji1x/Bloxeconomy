@@ -31,8 +31,23 @@ const EmeraldShop = () => {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  // The "you can't buy" screen
   if (showNope) {
+    if (is2016) {
+      return (
+        <div style={{ maxWidth: 500, margin: '0 auto', textAlign: 'center' }}>
+          <div className="rbx16-panel">
+            <div className="rbx16-panel-header" style={{ background: '#ffe0e0' }}>Nice try!</div>
+            <div className="rbx16-panel-body" style={{ padding: '30px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+              <div style={{ fontSize: 48 }}>🚫</div>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#393b3d' }}>You can't buy Emeralds lol</h2>
+              <p style={{ fontSize: 13, color: '#666' }}>This is a virtual economy — Emeralds can't be purchased with real money.</p>
+              <p style={{ fontSize: 13, color: '#666' }}>Earn them by logging in daily, trading, or using promo codes!</p>
+              <button className="rbx16-btn-cancel" onClick={() => setShowNope(false)}>Go Back</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="max-w-lg mx-auto text-center py-20 space-y-6">
         <div className="w-24 h-24 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
@@ -48,6 +63,37 @@ const EmeraldShop = () => {
         <Button variant="outline" onClick={() => setShowNope(false)}>
           Go Back
         </Button>
+      </div>
+    );
+  }
+
+  if (is2016) {
+    return (
+      <div style={{ maxWidth: 800 }}>
+        <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+          <div className="rbx16-panel-header">Emerald Shop</div>
+          <div className="rbx16-panel-body" style={{ textAlign: 'center' }}>
+            <p style={{ fontSize: 13, color: '#666', marginBottom: 8 }}>Get Emeralds to buy items, trade, and more!</p>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 16px', background: '#f0fff0', border: '1px solid #c3e8c3' }}>
+              <span style={{ fontSize: 14 }}>💎</span>
+              <span style={{ fontWeight: 700, fontSize: 16 }}>Your Balance: {profile?.emeralds.toLocaleString() || 0}</span>
+            </div>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+          {packages.map((pkg) => (
+            <div key={pkg.id} className="rbx16-panel" style={{ textAlign: 'center', position: 'relative' }}>
+              {pkg.popular && <div style={{ position: 'absolute', top: -8, left: '50%', transform: 'translateX(-50%)', background: '#0074BD', color: '#fff', fontSize: 10, fontWeight: 700, padding: '2px 8px', textTransform: 'uppercase' }}>Most Popular</div>}
+              <div className="rbx16-panel-body" style={{ padding: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                <div style={{ fontSize: 32 }}>💎</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: '#393b3d' }}>{pkg.amount.toLocaleString()}</div>
+                <div style={{ fontSize: 12, color: '#666' }}>Emeralds</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: '#0074BD' }}>{pkg.price}</div>
+                <button className="rbx16-btn-buy" style={{ width: '100%' }} onClick={() => setShowNope(true)}>Buy Now</button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
