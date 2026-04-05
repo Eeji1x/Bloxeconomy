@@ -365,6 +365,157 @@ const Trading = () => {
     return <Navigate to="/banned" replace />;
   }
 
+  /* ═══════════════════════════════════════════
+     ROBLOX 2016 TRADING LAYOUT
+     ═══════════════════════════════════════════ */
+  if (is2016) {
+    return (
+      <div style={{ maxWidth: 900 }}>
+        <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+          <div className="rbx16-panel-header">Trading</div>
+          <div className="rbx16-panel-body">
+            <p style={{ fontSize: 13, color: '#666' }}>Trade limited items and emeralds with other players</p>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid #c3c3c3', marginBottom: 12 }}>
+          {([['pending', `Pending (${pendingTrades.length})`], ['send', 'Send Trade'], ['history', 'History']] as const).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key as any)}
+              style={{
+                padding: '8px 16px', fontSize: 14,
+                fontWeight: activeTab === key ? 700 : 400,
+                color: activeTab === key ? '#0074BD' : '#666',
+                background: activeTab === key ? '#fff' : '#f2f2f2',
+                border: '1px solid #c3c3c3',
+                borderBottom: activeTab === key ? '2px solid #fff' : '1px solid #c3c3c3',
+                marginBottom: -2, cursor: 'pointer',
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Send Trade */}
+        {activeTab === 'send' && (
+          <div>
+            {!selectedUser ? (
+              <div className="rbx16-panel">
+                <div className="rbx16-panel-header">Find a User</div>
+                <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input type="text" placeholder="Search by username or ID..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && searchUsers()} style={{ flex: 1, padding: '6px 10px' }} />
+                    <button className="rbx16-btn-continue" onClick={searchUsers} disabled={searching}>Search</button>
+                  </div>
+                  {searchResults.length > 0 && searchResults.map((result) => (
+                    <div key={result.user_id} onClick={() => selectUser(result)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', border: '1px solid #e8e8e8', cursor: 'pointer', background: '#fafafa' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <UserAvatar userId={result.user_id} size="md" />
+                        <div>
+                          <span style={{ fontWeight: 600, fontSize: 13, color: '#0055b3' }}>{result.username}</span>
+                          <span style={{ fontSize: 11, color: '#999', marginLeft: 6 }}>#{result.numeric_id}</span>
+                        </div>
+                      </div>
+                      <button className="rbx16-btn-continue" style={{ fontSize: 11, padding: '2px 8px' }}>Select</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+                  <div className="rbx16-panel-body" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 13, color: '#666' }}>Trading with:</span>
+                      <UserAvatar userId={selectedUser.user_id} size="sm" />
+                      <span style={{ fontWeight: 700, fontSize: 14 }}>{selectedUser.username}</span>
+                    </div>
+                    <button className="rbx16-btn-cancel" style={{ fontSize: 12, padding: '3px 10px' }} onClick={() => setSelectedUser(null)}>Cancel</button>
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  {/* Your Offer */}
+                  <div className="rbx16-panel">
+                    <div className="rbx16-panel-header" style={{ background: '#e8f4ff' }}>You are offering</div>
+                    <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 12, color: '#666' }}>💎</span>
+                        <input type="number" min={0} max={profile?.emeralds || 0} value={myEmeralds} onChange={(e) => setMyEmeralds(Math.min(parseInt(e.target.value) || 0, profile?.emeralds || 0))} style={{ width: 80, padding: '4px 6px', fontSize: 12 }} />
+                        <span style={{ fontSize: 11, color: '#999' }}>/ {profile?.emeralds.toLocaleString()}</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: '#666', fontWeight: 600 }}>Your limited items:</div>
+                      {myInventory.length === 0 ? <p style={{ fontSize: 12, color: '#999' }}>No limited items</p> : (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, maxHeight: 200, overflowY: 'auto' }}>
+                          {myInventory.map((item) => (
+                            <div key={item.id} onClick={() => toggleMyItem(item.id)} style={{ border: selectedMyItems.includes(item.id) ? '2px solid #02b757' : '1px solid #e8e8e8', cursor: 'pointer', background: selectedMyItems.includes(item.id) ? '#efffef' : '#fff' }}>
+                              <img src={item.catalog_items.image_url} alt={item.catalog_items.name} style={{ width: '100%', aspectRatio: '1', objectFit: 'contain', padding: 2 }} />
+                              <div style={{ fontSize: 9, padding: '1px 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#0055b3' }}>{item.catalog_items.name}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Their Offer */}
+                  <div className="rbx16-panel">
+                    <div className="rbx16-panel-header" style={{ background: '#fff8e1' }}>You are requesting</div>
+                    <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 12, color: '#666' }}>💎</span>
+                        <input type="number" min={0} value={theirEmeralds} onChange={(e) => setTheirEmeralds(parseInt(e.target.value) || 0)} style={{ width: 80, padding: '4px 6px', fontSize: 12 }} />
+                      </div>
+                      <div style={{ fontSize: 12, color: '#666', fontWeight: 600 }}>Their limited items:</div>
+                      {theirInventory.length === 0 ? <p style={{ fontSize: 12, color: '#999' }}>No limited items</p> : (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, maxHeight: 200, overflowY: 'auto' }}>
+                          {theirInventory.map((item) => (
+                            <div key={item.id} onClick={() => toggleTheirItem(item.id)} style={{ border: selectedTheirItems.includes(item.id) ? '2px solid #0074BD' : '1px solid #e8e8e8', cursor: 'pointer', background: selectedTheirItems.includes(item.id) ? '#e8f4ff' : '#fff' }}>
+                              <img src={item.catalog_items.image_url} alt={item.catalog_items.name} style={{ width: '100%', aspectRatio: '1', objectFit: 'contain', padding: 2 }} />
+                              <div style={{ fontSize: 9, padding: '1px 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#0055b3' }}>{item.catalog_items.name}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center', marginTop: 12 }}>
+                  <button className="rbx16-btn-buy" onClick={sendTrade} disabled={sendingTrade || (selectedMyItems.length === 0 && selectedTheirItems.length === 0 && myEmeralds === 0 && theirEmeralds === 0)} style={{ fontSize: 14, padding: '8px 32px', opacity: sendingTrade ? 0.5 : 1 }}>
+                    {sendingTrade ? 'Sending...' : 'Send Trade Request'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Pending */}
+        {activeTab === 'pending' && (
+          <div>
+            {pendingTrades.length === 0 ? (
+              <div className="rbx16-panel"><div className="rbx16-panel-body" style={{ textAlign: 'center', padding: 40, color: '#999', fontSize: 13 }}>No pending trades</div></div>
+            ) : pendingTrades.map((trade) => (
+              <TradeCard key={trade.id} trade={trade} currentUserId={user.id} onAction={handleTrade} />
+            ))}
+          </div>
+        )}
+
+        {/* History */}
+        {activeTab === 'history' && (
+          <div>
+            {tradeHistory.length === 0 ? (
+              <div className="rbx16-panel"><div className="rbx16-panel-body" style={{ textAlign: 'center', padding: 40, color: '#999', fontSize: 13 }}>No trade history</div></div>
+            ) : tradeHistory.map((trade) => (
+              <TradeCard key={trade.id} trade={trade} currentUserId={user.id} isHistory />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       {/* Header */}
