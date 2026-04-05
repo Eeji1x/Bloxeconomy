@@ -126,8 +126,26 @@ const Player = ({ equippedItems }: { equippedItems: { image_url: string }[] }) =
 // ─── Camera follower ───
 const CameraFollower = () => {
   const { camera } = useThree();
+  const offset = useRef(new THREE.Vector3(0, 6, 10));
+  
   useFrame(() => {
-    // Camera stays fixed, OrbitControls handles it
+    // Find the player group by traversing the scene
+    const scene = camera.parent;
+    if (!scene) return;
+    
+    // Look for the player group (it has AvatarPlane children)
+    let playerPos: THREE.Vector3 | null = null;
+    scene.traverse((obj) => {
+      if (obj.userData.__isPlayer) {
+        playerPos = obj.position.clone();
+      }
+    });
+    
+    if (playerPos) {
+      const target = (playerPos as THREE.Vector3).clone().add(offset.current);
+      camera.position.lerp(target, 0.08);
+      camera.lookAt(playerPos as THREE.Vector3);
+    }
   });
   return null;
 };
