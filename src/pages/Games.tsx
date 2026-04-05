@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Sky } from '@react-three/drei';
+import { Sky } from '@react-three/drei';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -111,6 +111,13 @@ const Player = ({ equippedItems }: { equippedItems: { image_url: string }[] }) =
     ref.current.position.z = Math.max(-24, Math.min(24, ref.current.position.z));
   });
 
+  // Mark group as player for camera to find
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.userData.__isPlayer = true;
+    }
+  }, []);
+
   return (
     <group ref={ref} position={[0, 1.2, 0]}>
       {/* Base avatar */}
@@ -126,8 +133,26 @@ const Player = ({ equippedItems }: { equippedItems: { image_url: string }[] }) =
 // ─── Camera follower ───
 const CameraFollower = () => {
   const { camera } = useThree();
+  const offset = useRef(new THREE.Vector3(0, 6, 10));
+  
   useFrame(() => {
-    // Camera stays fixed, OrbitControls handles it
+    // Find the player group by traversing the scene
+    const scene = camera.parent;
+    if (!scene) return;
+    
+    // Look for the player group (it has AvatarPlane children)
+    let playerPos: THREE.Vector3 | null = null;
+    scene.traverse((obj) => {
+      if (obj.userData.__isPlayer) {
+        playerPos = obj.position.clone();
+      }
+    });
+    
+    if (playerPos) {
+      const target = (playerPos as THREE.Vector3).clone().add(offset.current);
+      camera.position.lerp(target, 0.08);
+      camera.lookAt(playerPos as THREE.Vector3);
+    }
   });
   return null;
 };
@@ -200,13 +225,7 @@ const GameScene = ({ equippedItems }: { equippedItems: { image_url: string }[] }
     <Player equippedItems={equippedItems} />
     <CameraFollower />
 
-    <OrbitControls
-      enablePan={false}
-      maxPolarAngle={Math.PI / 2.2}
-      minDistance={5}
-      maxDistance={20}
-      target={[0, 2, 0]}
-    />
+    {/* Camera follows player, no OrbitControls needed */}
   </>
 );
 
@@ -331,58 +350,49 @@ const Games = () => {
 
   // Lobby
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-display font-bold flex items-center gap-3">
-          <Gamepad2 className="w-8 h-8 text-primary" />
-          Games
-        </h1>
-        <p className="text-muted-foreground">Play games in your browser — beta access required</p>
+    <div style={{ maxWidth: 800 }}>
+      <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+        <div className="rbx16-panel-header">Games</div>
+        <div className="rbx16-panel-body">
+          <p style={{ fontSize: 13, color: '#666' }}>Play games in your browser — beta access required</p>
+        </div>
       </div>
 
       {hasAccess === null ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-        </div>
+        <div style={{ textAlign: 'center', padding: 40 }}><div className="rbx16-spinner" style={{ margin: '0 auto' }} /></div>
       ) : !hasAccess ? (
-        <div className="cyber-card p-8 space-y-6 text-center max-w-md mx-auto">
-          <Key className="w-12 h-12 text-primary mx-auto" />
-          <h2 className="text-xl font-display font-bold">Beta Access Required</h2>
-          <p className="text-sm text-muted-foreground">
-            Games is currently in beta. Enter a beta key to get early access.
-          </p>
-          <div className="space-y-3">
-            <Input
+        <div className="rbx16-panel" style={{ maxWidth: 400, margin: '0 auto' }}>
+          <div className="rbx16-panel-header">Beta Access Required</div>
+          <div className="rbx16-panel-body" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
+            <p style={{ fontSize: 13, color: '#666' }}>Games is currently in beta. Enter a beta key to get early access.</p>
+            <input
+              type="text"
               value={betaKey}
               onChange={(e) => setBetaKey(e.target.value.toUpperCase())}
               placeholder="BETA-XXXXX-XXXXX"
-              className="text-center font-mono"
+              style={{ width: '100%', padding: '6px 10px', fontFamily: 'monospace', textAlign: 'center', textTransform: 'uppercase' }}
             />
-            <Button onClick={redeemKey} disabled={redeeming || !betaKey.trim()} className="w-full">
+            <button className="rbx16-btn-buy" onClick={redeemKey} disabled={redeeming || !betaKey.trim()} style={{ width: '100%', opacity: (redeeming || !betaKey.trim()) ? 0.5 : 1 }}>
               {redeeming ? 'Redeeming...' : 'Redeem Beta Key'}
-            </Button>
+            </button>
           </div>
         </div>
       ) : (
-        <div className="grid gap-6">
-          <div className="cyber-card overflow-hidden">
-            <div className="h-48 bg-gradient-to-br from-green-900/50 to-blue-900/50 flex items-center justify-center">
-              <div className="text-center space-y-2">
-                <Gamepad2 className="w-16 h-16 text-primary mx-auto" />
-                <h3 className="text-2xl font-display font-bold">Empty Baseplate</h3>
-                <p className="text-sm text-muted-foreground">A classic empty place — just a green baseplate and sky</p>
-              </div>
+        <div className="rbx16-panel">
+          <div style={{ height: 180, background: 'linear-gradient(135deg, #2d5a27 0%, #1a4a6e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ textAlign: 'center', color: '#fff' }}>
+              <div style={{ fontSize: 24, fontWeight: 700 }}>Empty Baseplate</div>
+              <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>A classic empty place — just a green baseplate and sky</div>
             </div>
-            <div className="p-6 flex items-center justify-between">
-              <div>
-                <div className="text-sm text-muted-foreground">By SODABLOX</div>
-                <div className="text-xs text-muted-foreground">Max Players: 5</div>
-              </div>
-              <Button onClick={() => setInGame(true)} size="lg" className="gap-2">
-                <LogIn className="w-5 h-5" />
-                Play
-              </Button>
+          </div>
+          <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px solid #c3c3c3' }}>
+            <div>
+              <div style={{ fontSize: 12, color: '#666' }}>By SODABLOX</div>
+              <div style={{ fontSize: 11, color: '#999' }}>Max Players: 5</div>
             </div>
+            <button className="rbx16-btn-buy" onClick={() => setInGame(true)} style={{ fontSize: 14, padding: '6px 24px' }}>
+              ▶ Play
+            </button>
           </div>
         </div>
       )}

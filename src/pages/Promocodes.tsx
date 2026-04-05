@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Gift, Gem, Package, Check, X } from 'lucide-react';
@@ -18,6 +19,8 @@ interface Promocode {
 
 const Promocodes = () => {
   const { user, profile, refreshProfile } = useAuth();
+  const { theme } = useTheme();
+  const is2016 = theme === 'roblox2016' || theme === 'roblox2015';
   const [code, setCode] = useState('');
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [promocodes, setPromocodes] = useState<Promocode[]>([]);
@@ -110,6 +113,65 @@ const Promocodes = () => {
       setIsRedeeming(false);
     }
   };
+
+  if (is2016) {
+    return (
+      <div style={{ maxWidth: 700 }}>
+        <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+          <div className="rbx16-panel-header">Promo Codes</div>
+          <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <p style={{ fontSize: 13, color: '#666' }}>Enter a promo code below to receive free rewards!</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="text"
+                placeholder="ENTER-CODE-HERE"
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                style={{ flex: 1, padding: '6px 10px', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 2 }}
+              />
+              <button className="rbx16-btn-buy" onClick={handleRedeem} disabled={isRedeeming || !user} style={{ opacity: (isRedeeming || !user) ? 0.5 : 1 }}>
+                {isRedeeming ? '...' : 'Redeem'}
+              </button>
+            </div>
+            {!user && <p style={{ fontSize: 12, color: '#999', textAlign: 'center' }}>Please log in to redeem codes</p>}
+          </div>
+        </div>
+
+        {promocodes.length > 0 && (
+          <div className="rbx16-panel">
+            <div className="rbx16-panel-header">Available Codes</div>
+            <div className="rbx16-panel-body" style={{ padding: 0 }}>
+              {promocodes.map((promo) => {
+                const isRedeemed = redeemedCodes.includes(promo.id);
+                const isMaxed = promo.max_uses !== null && promo.current_uses >= promo.max_uses;
+                return (
+                  <div key={promo.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderBottom: '1px solid #e8e8e8', opacity: isRedeemed ? 0.5 : 1 }}>
+                    <div>
+                      <div style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: 14, letterSpacing: 1 }}>{promo.code}</div>
+                      <div style={{ fontSize: 12, color: '#666', display: 'flex', gap: 8, marginTop: 2 }}>
+                        {promo.emerald_reward > 0 && <span>💎 {promo.emerald_reward}</span>}
+                        {promo.item_reward_id && <span>📦 Item</span>}
+                        {promo.max_uses !== null && <span>{promo.current_uses}/{promo.max_uses} uses</span>}
+                      </div>
+                    </div>
+                    <div>
+                      {isRedeemed ? (
+                        <span style={{ color: '#02b757', fontSize: 12, fontWeight: 600 }}>✓ Redeemed</span>
+                      ) : isMaxed ? (
+                        <span style={{ color: '#cc3333', fontSize: 12, fontWeight: 600 }}>Expired</span>
+                      ) : (
+                        <button className="rbx16-btn-continue" style={{ fontSize: 12, padding: '3px 10px' }} onClick={() => { setCode(promo.code); handleRedeem(); }} disabled={!user}>Use</button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
