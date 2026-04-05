@@ -81,66 +81,77 @@ const Users = () => {
   }
 
   /* ═══════════════════════════════════════════
-     ROBLOX 2020 LAYOUT
+     ROBLOX 2016 USERS LAYOUT
      ═══════════════════════════════════════════ */
   if (isRoblox) {
     return (
-      <div className="max-w-[960px] mx-auto space-y-4">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-bold text-foreground">People</h1>
-            <p className="text-sm text-muted-foreground">
-              {onlineUsers.length} online · {users.length} total
-            </p>
-          </div>
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              placeholder="Search users..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-9 pl-9 pr-3 text-sm rounded border border-border bg-card text-foreground placeholder-muted-foreground outline-none focus:border-primary"
-            />
+      <div style={{ maxWidth: 900 }}>
+        <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+          <div className="rbx16-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>People ({onlineUsers.length} online · {users.length} total)</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input
+                type="text"
+                placeholder="Search users..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="rbx16-search-catalog"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Online Users */}
         {onlineUsers.length > 0 && (
-          <div className="rbx-panel">
-            <div className="rbx-panel-header">
-              <span className="text-sm font-bold text-foreground flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#02b757]" />
-                Online ({onlineUsers.length})
-              </span>
+          <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+            <div className="rbx16-panel-header" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#02b757' }} />
+              Online ({onlineUsers.length})
             </div>
-            <div className="p-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-5">
-              {onlineUsers.map((user) => (
-                <RbxUserCard key={user.id} user={user} isAdminUser={isAdmin(user.user_id)} />
-              ))}
+            <div className="rbx16-panel-body">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 10 }}>
+                {onlineUsers.map((user) => (
+                  <Link key={user.id} to={`/profile/${user.numeric_id}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+                    <div style={{ width: 60, height: 60, border: '1px solid #c3c3c3', overflow: 'hidden', position: 'relative' }}>
+                      <img src={DEFAULT_AVATAR} alt={user.username} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }} />
+                      <div style={{ position: 'absolute', bottom: 2, right: 2, width: 8, height: 8, borderRadius: '50%', background: '#02b757', border: '1.5px solid #fff' }} />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <span style={{ fontSize: 11, color: '#0055b3', fontWeight: 600, maxWidth: 70, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.username}</span>
+                      {user.is_verified && <img src="/images/verified-badge.png" alt="Verified" style={{ width: 10, height: 10 }} />}
+                      {isAdmin(user.user_id) && <Shield className="w-2.5 h-2.5" style={{ color: '#cc3333' }} />}
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Offline Users */}
-        <div className="rbx-panel">
-          <div className="rbx-panel-header">
-            <span className="text-sm font-bold text-foreground flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground/50" />
-              Offline ({offlineUsers.length})
-            </span>
+        <div className="rbx16-panel">
+          <div className="rbx16-panel-header" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#999' }} />
+            Offline ({offlineUsers.length})
           </div>
-          {offlineUsers.length > 0 ? (
-            <div className="p-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-5">
-              {offlineUsers.map((user) => (
-                <RbxUserCard key={user.id} user={user} isAdminUser={isAdmin(user.user_id)} />
-              ))}
-            </div>
-          ) : (
-            <div className="p-6 text-center text-sm text-muted-foreground">
-              No offline users
-            </div>
-          )}
+          <div className="rbx16-panel-body">
+            {offlineUsers.length > 0 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 10 }}>
+                {offlineUsers.map((user) => (
+                  <Link key={user.id} to={`/profile/${user.numeric_id}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+                    <div style={{ width: 60, height: 60, border: '1px solid #c3c3c3', overflow: 'hidden', opacity: 0.7 }}>
+                      <img src={DEFAULT_AVATAR} alt={user.username} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }} />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <span style={{ fontSize: 11, color: '#666', fontWeight: 600, maxWidth: 70, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.username}</span>
+                      {user.is_verified && <img src="/images/verified-badge.png" alt="Verified" style={{ width: 10, height: 10 }} />}
+                      {isAdmin(user.user_id) && <Shield className="w-2.5 h-2.5" style={{ color: '#cc3333' }} />}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', padding: 20, color: '#999', fontSize: 13 }}>No offline users</div>
+            )}
+          </div>
         </div>
       </div>
     );
