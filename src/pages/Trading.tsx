@@ -58,6 +58,8 @@ interface Trade {
 
 const Trading = () => {
   const { user, profile, isLoading, refreshProfile } = useAuth();
+  const { theme } = useTheme();
+  const is2016 = theme === 'roblox2016' || theme === 'roblox2015';
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'send' | 'pending' | 'history'>('pending');
   
