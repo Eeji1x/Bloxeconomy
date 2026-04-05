@@ -350,58 +350,49 @@ const Games = () => {
 
   // Lobby
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-display font-bold flex items-center gap-3">
-          <Gamepad2 className="w-8 h-8 text-primary" />
-          Games
-        </h1>
-        <p className="text-muted-foreground">Play games in your browser — beta access required</p>
+    <div style={{ maxWidth: 800 }}>
+      <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+        <div className="rbx16-panel-header">Games</div>
+        <div className="rbx16-panel-body">
+          <p style={{ fontSize: 13, color: '#666' }}>Play games in your browser — beta access required</p>
+        </div>
       </div>
 
       {hasAccess === null ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-        </div>
+        <div style={{ textAlign: 'center', padding: 40 }}><div className="rbx16-spinner" style={{ margin: '0 auto' }} /></div>
       ) : !hasAccess ? (
-        <div className="cyber-card p-8 space-y-6 text-center max-w-md mx-auto">
-          <Key className="w-12 h-12 text-primary mx-auto" />
-          <h2 className="text-xl font-display font-bold">Beta Access Required</h2>
-          <p className="text-sm text-muted-foreground">
-            Games is currently in beta. Enter a beta key to get early access.
-          </p>
-          <div className="space-y-3">
-            <Input
+        <div className="rbx16-panel" style={{ maxWidth: 400, margin: '0 auto' }}>
+          <div className="rbx16-panel-header">Beta Access Required</div>
+          <div className="rbx16-panel-body" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
+            <p style={{ fontSize: 13, color: '#666' }}>Games is currently in beta. Enter a beta key to get early access.</p>
+            <input
+              type="text"
               value={betaKey}
               onChange={(e) => setBetaKey(e.target.value.toUpperCase())}
               placeholder="BETA-XXXXX-XXXXX"
-              className="text-center font-mono"
+              style={{ width: '100%', padding: '6px 10px', fontFamily: 'monospace', textAlign: 'center', textTransform: 'uppercase' }}
             />
-            <Button onClick={redeemKey} disabled={redeeming || !betaKey.trim()} className="w-full">
+            <button className="rbx16-btn-buy" onClick={redeemKey} disabled={redeeming || !betaKey.trim()} style={{ width: '100%', opacity: (redeeming || !betaKey.trim()) ? 0.5 : 1 }}>
               {redeeming ? 'Redeeming...' : 'Redeem Beta Key'}
-            </Button>
+            </button>
           </div>
         </div>
       ) : (
-        <div className="grid gap-6">
-          <div className="cyber-card overflow-hidden">
-            <div className="h-48 bg-gradient-to-br from-green-900/50 to-blue-900/50 flex items-center justify-center">
-              <div className="text-center space-y-2">
-                <Gamepad2 className="w-16 h-16 text-primary mx-auto" />
-                <h3 className="text-2xl font-display font-bold">Empty Baseplate</h3>
-                <p className="text-sm text-muted-foreground">A classic empty place — just a green baseplate and sky</p>
-              </div>
+        <div className="rbx16-panel">
+          <div style={{ height: 180, background: 'linear-gradient(135deg, #2d5a27 0%, #1a4a6e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ textAlign: 'center', color: '#fff' }}>
+              <div style={{ fontSize: 24, fontWeight: 700 }}>Empty Baseplate</div>
+              <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>A classic empty place — just a green baseplate and sky</div>
             </div>
-            <div className="p-6 flex items-center justify-between">
-              <div>
-                <div className="text-sm text-muted-foreground">By SODABLOX</div>
-                <div className="text-xs text-muted-foreground">Max Players: 5</div>
-              </div>
-              <Button onClick={() => setInGame(true)} size="lg" className="gap-2">
-                <LogIn className="w-5 h-5" />
-                Play
-              </Button>
+          </div>
+          <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px solid #c3c3c3' }}>
+            <div>
+              <div style={{ fontSize: 12, color: '#666' }}>By SODABLOX</div>
+              <div style={{ fontSize: 11, color: '#999' }}>Max Players: 5</div>
             </div>
+            <button className="rbx16-btn-buy" onClick={() => setInGame(true)} style={{ fontSize: 14, padding: '6px 24px' }}>
+              ▶ Play
+            </button>
           </div>
         </div>
       )}
