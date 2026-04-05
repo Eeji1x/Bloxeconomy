@@ -111,6 +111,13 @@ const Player = ({ equippedItems }: { equippedItems: { image_url: string }[] }) =
     ref.current.position.z = Math.max(-24, Math.min(24, ref.current.position.z));
   });
 
+  // Mark group as player for camera to find
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.userData.__isPlayer = true;
+    }
+  }, []);
+
   return (
     <group ref={ref} position={[0, 1.2, 0]}>
       {/* Base avatar */}
