@@ -16,6 +16,8 @@ const packages = [
 
 const EmeraldShop = () => {
   const { user, profile, isLoading } = useAuth();
+  const { theme } = useTheme();
+  const is2016 = theme === 'roblox2016' || theme === 'roblox2015';
   const navigate = useNavigate();
   const [showNope, setShowNope] = useState(false);
 
