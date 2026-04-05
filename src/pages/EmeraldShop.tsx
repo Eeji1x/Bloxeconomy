@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Gem, Sparkles, Crown, Zap, Star, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
