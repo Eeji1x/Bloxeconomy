@@ -225,13 +225,7 @@ const GameScene = ({ equippedItems }: { equippedItems: { image_url: string }[] }
     <Player equippedItems={equippedItems} />
     <CameraFollower />
 
-    <OrbitControls
-      enablePan={false}
-      maxPolarAngle={Math.PI / 2.2}
-      minDistance={5}
-      maxDistance={20}
-      target={[0, 2, 0]}
-    />
+    {/* Camera follows player, no OrbitControls needed */}
   </>
 );
 
