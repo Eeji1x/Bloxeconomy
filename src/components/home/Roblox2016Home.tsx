@@ -92,11 +92,11 @@ export const Roblox2016Home = () => {
     <div className="rbx16-home-two-col">
       {/* ── LEFT COLUMN: User card + Quick links ── */}
       <div className="rbx16-home-left">
-        {/* User Card */}
+        {/* ECS profileHeader style: avatar with #B8B8B8 border, maxWidth 110px */}
         <div className="rbx16-panel">
           <div className="rbx16-panel-body" style={{ padding: '12px', textAlign: 'center' }}>
             <Link to={`/profile/${user.id}`} style={{ display: 'block', marginBottom: 8 }}>
-              <div style={{ width: 120, height: 120, margin: '0 auto', border: '1px solid #c3c3c3', overflow: 'hidden' }}>
+              <div style={{ border: '1px solid #B8B8B8', margin: '0 auto', maxWidth: 110, overflow: 'hidden' }}>
                 <UserAvatar userId={user.id} size="xl" className="w-full h-full" />
               </div>
             </Link>
@@ -104,7 +104,7 @@ export const Roblox2016Home = () => {
               {profile.is_verified && (
                 <img src="/images/verified-badge.png" alt="Verified" style={{ width: 14, height: 14 }} />
               )}
-              <Link to={`/profile/${user.id}`} className="rbx16-welcome-username">{profile.username}</Link>
+              <Link to={`/profile/${user.id}`} style={{ fontSize: 18, fontWeight: 400, color: '#1e1e1f', textDecoration: 'none' }}>{profile.username}</Link>
             </div>
             <div style={{ fontSize: 14, color: '#666', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
               <span className="icon-nav-robux" style={{ width: 16, height: 16, backgroundSize: '32px auto' }} />
