@@ -1008,7 +1008,7 @@
     overflow: hidden;
     border: 1px solid #c5c5c5;
     background: #ffffff;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3);
   }
   [data-theme="roblox2016"] .rbx16-friend-tile:hover .rbx16-friend-avatar {
     box-shadow: 0 1px 6px 0 rgba(25,25,25,0.45);
@@ -1057,7 +1057,7 @@
   [data-theme="roblox2016"] .cyber-card {
     background: #fff;
     border: none;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3);
     border-radius: 0;
     padding: 2px 8px;
   }
@@ -1069,7 +1069,7 @@
   [data-theme="roblox2016"] .neon-border-pink,
   [data-theme="roblox2016"] .neon-border-green {
     border: none;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3);
   }
   [data-theme="roblox2016"] .glow-cyan,
   [data-theme="roblox2016"] .glow-pink,
@@ -1131,7 +1131,7 @@
   /* Flatten cards — ECS style (no rounded corners, minimal borders) */
   [data-theme="roblox2016"] .rounded-lg.border {
     border-color: transparent;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2);
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3);
     border-radius: 3px !important;
   }
   [data-theme="roblox2016"] .rounded-lg,
@@ -1158,7 +1158,7 @@
   [data-theme="roblox2016"] .grid a.cyber-card,
   [data-theme="roblox2016"] .grid .cyber-card {
     background: #fff !important;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
     padding: 8px !important;
     transition: box-shadow 0.15s !important;
@@ -1207,7 +1207,7 @@
   /* Item detail info panel */
   [data-theme="roblox2016"] .max-w-4xl .cyber-card {
     background: #fff !important;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
     border-radius: 3px !important;
     padding: 12px !important;
@@ -1225,7 +1225,7 @@
   [data-theme="roblox2016"] .max-w-4xl .cyber-card.p-8,
   [data-theme="roblox2016"] .max-w-4xl .cyber-card.p-6 {
     background: #fff !important;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
     padding: 16px !important;
   }
@@ -1237,7 +1237,7 @@
   /* Profile stats grid */
   [data-theme="roblox2016"] .grid.grid-cols-2.md\:grid-cols-4 .cyber-card {
     background: #fff !important;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
     padding: 12px 8px !important;
   }
@@ -1253,7 +1253,7 @@
   /* Emerald display on profile */
   [data-theme="roblox2016"] .emerald-display {
     background: #f8f8f8 !important;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
     border-radius: 3px !important;
     padding: 4px 8px !important;
@@ -1265,7 +1265,7 @@
   /* ═══ SETTINGS PAGE — 2016 ECS settings style ═══ */
   [data-theme="roblox2016"] .max-w-2xl .cyber-card {
     background: #fff !important;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
     border-radius: 3px !important;
   }
@@ -1376,21 +1376,21 @@
   [data-theme="roblox2016"] .grid.grid-cols-2.sm\:grid-cols-3 .cyber-card,
   [data-theme="roblox2016"] .grid.grid-cols-2.sm\:grid-cols-4 .cyber-card {
     background: #fff !important;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
     padding: 8px !important;
   }
 
   /* ═══ LEADERBOARD — 2016 style ═══ */
   [data-theme="roblox2016"] .cyber-card.p-0 {
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
   }
 
   /* ═══ USERS PAGE — 2016 style ═══ */
   [data-theme="roblox2016"] .grid a[class*="cyber-card"] {
     background: #fff !important;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
   }
 
@@ -1451,14 +1451,14 @@
   /* ═══ TOAST — 2016 style ═══ */
   [data-theme="roblox2016"] [data-sonner-toast] {
     border-radius: 3px !important;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
   }
 
   /* ═══ TRADING PAGE — 2016 style ═══ */
   [data-theme="roblox2016"] .cyber-card[class*="p-"] {
     background: #fff !important;
-    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.2) !important;
+    box-shadow: 0 1px 4px 0 rgba(25,25,25,0.3) !important;
     border: none !important;
   }
 
