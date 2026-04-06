@@ -208,37 +208,26 @@ const Profile = () => {
 
   return (
     <div style={{ maxWidth: 940, margin: '0 auto' }}>
-      {/* Profile Header */}
-      <div className="rbx16-panel" style={{ marginBottom: 12 }}>
-        <div className="rbx16-panel-header">
-          <span className="rbx16-panel-header-text">{profileData.username}'s Profile</span>
-        </div>
-        <div className="rbx16-panel-body" style={{ padding: 0 }}>
-          <div style={{ display: 'flex', gap: 0, flexWrap: 'wrap' }}>
-            {/* Left: Avatar */}
-            <div style={{ 
-              width: 230, 
-              padding: 16, 
-              borderRight: '1px solid #e3e3e3',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              flexShrink: 0
-            }}>
-              <div style={{ width: 180, height: 180, border: '1px solid #c3c3c3', overflow: 'hidden', marginBottom: 12 }}>
+      {/* ECS profileHeader: card with avatar + username + stats */}
+      <div className="rbx16-panel" style={{ marginBottom: 0 }}>
+        <div className="rbx16-panel-body" style={{ padding: 16 }}>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            {/* Left: Avatar — ECS: iconWrapper border 1px solid #B8B8B8, maxWidth 110px */}
+            <div style={{ textAlign: 'center', flexShrink: 0 }}>
+              <div style={{ border: '1px solid #B8B8B8', margin: '0 auto', maxWidth: 110, overflow: 'hidden' }}>
                 <UserAvatar userId={viewingUserId!} size="xl" className="w-full h-full" />
               </div>
               
               {/* Action buttons */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 10, maxWidth: 110 }}>
                 {isOwnProfile ? (
-                  <Link to="/avatar" className="rbx16-btn-primary" style={{ textAlign: 'center', display: 'block', padding: '6px 12px', fontSize: 13 }}>
+                  <Link to="/avatar" className="rbx16-btn-primary" style={{ textAlign: 'center', display: 'block', padding: '5px 10px', fontSize: 13 }}>
                     Edit Avatar
                   </Link>
                 ) : (
                   <>
                     {friendStatus === 'none' && (
-                      <button onClick={handleSendFriendRequest} disabled={friendLoading} className="rbx16-btn-primary" style={{ width: '100%', padding: '6px 12px', fontSize: 13 }}>
+                      <button onClick={handleSendFriendRequest} disabled={friendLoading} className="rbx16-btn-primary" style={{ width: '100%', padding: '5px 10px', fontSize: 13 }}>
                         Add Friend
                       </button>
                     )}
@@ -249,8 +238,8 @@ const Profile = () => {
                     )}
                     {friendStatus === 'pending_received' && (
                       <>
-                        <button onClick={handleAcceptFriend} disabled={friendLoading} className="rbx16-btn-primary" style={{ width: '100%', padding: '6px 12px', fontSize: 13 }}>
-                          Accept Request
+                        <button onClick={handleAcceptFriend} disabled={friendLoading} className="rbx16-btn-primary" style={{ width: '100%', padding: '5px 10px', fontSize: 13 }}>
+                          Accept
                         </button>
                         <button onClick={handleDeclineFriend} disabled={friendLoading} className="rbx16-btn-control" style={{ width: '100%', justifyContent: 'center', fontSize: 13 }}>
                           Decline
@@ -270,54 +259,43 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Right: Info */}
-            <div style={{ flex: 1, minWidth: 0, padding: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <h1 style={{ fontSize: 24, fontWeight: 700, color: '#393b3d', margin: 0 }}>{profileData.username}</h1>
+            {/* Right: Info — ECS: username 30px fontWeight 400, userStatus 16px fontWeight 300 */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <h1 style={{ fontSize: 30, fontWeight: 400, color: '#393b3d', margin: 0 }}>{profileData.username}</h1>
                 {profileData.is_verified && (
                   <img src="/images/verified-badge.png" alt="Verified" style={{ width: 18, height: 18 }} />
                 )}
                 {isProfileAdmin && (
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#fff', background: '#e74c3c', padding: '2px 6px', borderRadius: 3 }}>Admin</span>
-                )}
-                {profileData.is_online && (
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#00b06f' }}>● Online</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#fff', background: '#e74c3c', padding: '2px 6px' }}>Admin</span>
                 )}
               </div>
+              {profileData.is_online && (
+                <p style={{ fontSize: 16, fontWeight: 300, color: '#02b757', margin: '0 0 8px' }}>● Online</p>
+              )}
+              {!profileData.is_online && (
+                <p style={{ fontSize: 16, fontWeight: 300, color: '#999', margin: '0 0 8px' }}>Last seen {lastSeen}</p>
+              )}
 
-              {/* Stats table */}
-              <table style={{ width: '100%', fontSize: 14, borderCollapse: 'collapse' }}>
+              {/* Stats */}
+              <table style={{ fontSize: 14, borderCollapse: 'collapse' }}>
                 <tbody>
                   <tr>
-                    <td style={{ padding: '6px 0', color: '#666', width: 130 }}>User ID</td>
-                    <td style={{ padding: '6px 0', color: '#393b3d', fontWeight: 600 }}>#{profileData.numeric_id}</td>
+                    <td style={{ padding: '4px 16px 4px 0', color: '#999' }}>Join Date</td>
+                    <td style={{ padding: '4px 0', color: '#393b3d' }}>{memberSince}</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '6px 0', color: '#666', borderTop: '1px solid #eee' }}>Join Date</td>
-                    <td style={{ padding: '6px 0', color: '#393b3d', borderTop: '1px solid #eee' }}>{memberSince}</td>
+                    <td style={{ padding: '4px 16px 4px 0', color: '#999' }}>Friends</td>
+                    <td style={{ padding: '4px 0' }}><Link to="/friends" className="rbx16-link">{friendCount}</Link></td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '6px 0', color: '#666', borderTop: '1px solid #eee' }}>Friends</td>
-                    <td style={{ padding: '6px 0', borderTop: '1px solid #eee' }}>
-                      <Link to="/friends" className="rbx16-link">{friendCount}</Link>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '6px 0', color: '#666', borderTop: '1px solid #eee' }}>Items</td>
-                    <td style={{ padding: '6px 0', color: '#393b3d', borderTop: '1px solid #eee' }}>{inventory.length}</td>
+                    <td style={{ padding: '4px 16px 4px 0', color: '#999' }}>Items</td>
+                    <td style={{ padding: '4px 0', color: '#393b3d' }}>{inventory.length}</td>
                   </tr>
                   {isOwnProfile && (
                     <tr>
-                      <td style={{ padding: '6px 0', color: '#666', borderTop: '1px solid #eee' }}>Emeralds</td>
-                      <td style={{ padding: '6px 0', color: '#393b3d', fontWeight: 700, borderTop: '1px solid #eee' }}>
-                        💎 {profileData.emeralds.toLocaleString()}
-                      </td>
-                    </tr>
-                  )}
-                  {!profileData.is_online && profileData.last_seen && (
-                    <tr>
-                      <td style={{ padding: '6px 0', color: '#666', borderTop: '1px solid #eee' }}>Last Seen</td>
-                      <td style={{ padding: '6px 0', color: '#393b3d', borderTop: '1px solid #eee' }}>{lastSeen}</td>
+                      <td style={{ padding: '4px 16px 4px 0', color: '#999' }}>Emeralds</td>
+                      <td style={{ padding: '4px 0', color: '#02b757', fontWeight: 700 }}>💎 {profileData.emeralds.toLocaleString()}</td>
                     </tr>
                   )}
                 </tbody>
@@ -327,44 +305,17 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 0, marginBottom: 0 }}>
+      {/* ECS tabs2016: box-shadow inset tabs */}
+      <div className="rbx16-tabs2016" style={{ marginBottom: 12 }}>
         <button
           onClick={() => setActiveTab('about')}
-          style={{
-            padding: '8px 20px',
-            fontSize: 14,
-            fontWeight: 600,
-            border: '1px solid #c3c3c3',
-            borderBottom: activeTab === 'about' ? '1px solid #fff' : '1px solid #c3c3c3',
-            background: activeTab === 'about' ? '#fff' : '#f2f2f2',
-            color: '#393b3d',
-            cursor: 'pointer',
-            borderRadius: '4px 4px 0 0',
-            marginBottom: -1,
-            position: 'relative',
-            zIndex: activeTab === 'about' ? 2 : 1,
-          }}
+          className={`rbx16-tab2016 ${activeTab === 'about' ? 'rbx16-tab2016-active' : ''}`}
         >
           About
         </button>
         <button
           onClick={() => setActiveTab('inventory')}
-          style={{
-            padding: '8px 20px',
-            fontSize: 14,
-            fontWeight: 600,
-            border: '1px solid #c3c3c3',
-            borderBottom: activeTab === 'inventory' ? '1px solid #fff' : '1px solid #c3c3c3',
-            background: activeTab === 'inventory' ? '#fff' : '#f2f2f2',
-            color: '#393b3d',
-            cursor: 'pointer',
-            borderRadius: '4px 4px 0 0',
-            marginBottom: -1,
-            position: 'relative',
-            zIndex: activeTab === 'inventory' ? 2 : 1,
-            marginLeft: -1,
-          }}
+          className={`rbx16-tab2016 ${activeTab === 'inventory' ? 'rbx16-tab2016-active' : ''}`}
         >
           Inventory ({inventory.length})
         </button>

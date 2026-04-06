@@ -129,27 +129,16 @@ const Settings = () => {
 
     return (
       <div style={{ maxWidth: 700 }}>
-        <div className="rbx16-panel" style={{ marginBottom: 12 }}>
-          <div className="rbx16-panel-header">My Settings</div>
-        </div>
+        {/* ECS myAccount2016: h1 "My Settings" */}
+        <h1 style={{ fontSize: 24, fontWeight: 400, color: '#393b3d', marginBottom: 12 }}>My Settings</h1>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid #c3c3c3', marginBottom: 12 }}>
+        {/* ECS tabs2016: inset box-shadow tabs */}
+        <div className="rbx16-tabs2016" style={{ marginBottom: 12 }}>
           {TABS.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveSection(tab.key)}
-              style={{
-                padding: '8px 16px',
-                fontSize: 14,
-                fontWeight: activeSection === tab.key ? 700 : 400,
-                color: activeSection === tab.key ? '#0074BD' : '#666',
-                background: activeSection === tab.key ? '#fff' : '#f2f2f2',
-                border: '1px solid #c3c3c3',
-                borderBottom: activeSection === tab.key ? '2px solid #fff' : '1px solid #c3c3c3',
-                marginBottom: -2,
-                cursor: 'pointer',
-              }}
+              className={`rbx16-tab2016 ${activeSection === tab.key ? 'rbx16-tab2016-active' : ''}`}
             >
               {tab.label}
             </button>
