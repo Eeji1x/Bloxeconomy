@@ -147,6 +147,7 @@ const Inbox = () => {
   if (isClassic) {
     return (
       <div style={{ maxWidth: 800 }}>
+        <h1 className="rbx16-page-title">Inbox</h1>
         <div className="rbx16-panel" style={{ marginBottom: 12 }}>
           <div className="rbx16-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>Inbox {totalUnread > 0 && <span className="rbx16-notif-badge">{totalUnread}</span>}</span>

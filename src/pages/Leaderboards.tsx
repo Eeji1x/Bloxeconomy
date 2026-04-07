@@ -88,6 +88,7 @@ const Leaderboards = () => {
 
   return (
     <div style={{ maxWidth: 940, margin: '0 auto' }}>
+      <h1 className="rbx16-page-title">Leaderboards</h1>
       <div className="rbx16-panel">
         <div className="rbx16-panel-header">
           <span className="rbx16-panel-header-text">Leaderboards</span>

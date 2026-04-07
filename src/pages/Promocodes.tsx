@@ -117,8 +117,8 @@ const Promocodes = () => {
   if (is2016) {
     return (
       <div style={{ maxWidth: 700 }}>
+        <h1 className="rbx16-page-title">Promo Codes</h1>
         <div className="rbx16-panel" style={{ marginBottom: 12 }}>
-          <div className="rbx16-panel-header">Promo Codes</div>
           <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <p style={{ fontSize: 13, color: '#666' }}>Enter a promo code below to receive free rewards!</p>
             <div style={{ display: 'flex', gap: 8 }}>
