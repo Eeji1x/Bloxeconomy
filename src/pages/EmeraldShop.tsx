@@ -72,7 +72,6 @@ const EmeraldShop = () => {
       <div style={{ maxWidth: 800 }}>
         <h1 className="rbx16-page-title">Emerald Shop</h1>
         <div className="rbx16-panel" style={{ marginBottom: 12 }}>
-          <div className="rbx16-panel-header">Emerald Shop</div>
           <div className="rbx16-panel-body" style={{ textAlign: 'center' }}>
             <p style={{ fontSize: 13, color: '#666', marginBottom: 8 }}>Get Emeralds to buy items, trade, and more!</p>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 16px', background: '#f0fff0', border: '1px solid #c3e8c3' }}>
