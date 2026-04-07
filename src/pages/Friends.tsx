@@ -128,6 +128,7 @@ const Friends = () => {
   if (isClassic) {
     return (
       <div style={{ maxWidth: 800 }}>
+        <h1 className="rbx16-page-title">Friends</h1>
         {/* Incoming requests */}
         {incomingRequests.length > 0 && (
           <div className="rbx16-panel" style={{ marginBottom: 12 }}>

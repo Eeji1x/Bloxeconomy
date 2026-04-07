@@ -74,7 +74,9 @@ const Avatar = () => {
      ═══════════════════════════════════════════ */
   if (isClassic) {
     return (
-      <div style={{ display: 'flex', gap: 16 }}>
+      <div>
+        <h1 className="rbx16-page-title">Avatar Editor</h1>
+        <div style={{ display: 'flex', gap: 16 }}>
         {/* Preview */}
         <div style={{ width: 280, flexShrink: 0 }}>
           <div className="rbx16-panel">

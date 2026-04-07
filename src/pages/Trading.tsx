@@ -371,10 +371,10 @@ const Trading = () => {
   if (is2016) {
     return (
       <div style={{ maxWidth: 900 }}>
+        <h1 className="rbx16-page-title">Trading</h1>
         <div className="rbx16-panel" style={{ marginBottom: 12 }}>
-          <div className="rbx16-panel-header">Trading</div>
           <div className="rbx16-panel-body">
-            <p style={{ fontSize: 13, color: '#666' }}>Trade limited items and emeralds with other players</p>
+            <p style={{ fontSize: 13, color: '#666' }}>Trade limited items and emeralds with other players.</p>
           </div>
         </div>
 
