@@ -130,7 +130,7 @@ const Settings = () => {
     return (
       <div style={{ maxWidth: 700 }}>
         {/* ECS myAccount2016: h1 "My Settings" */}
-        <h1 style={{ fontSize: 24, fontWeight: 400, color: '#393b3d', marginBottom: 12 }}>My Settings</h1>
+        <h1 className="rbx16-page-title">My Settings</h1>
 
         {/* ECS tabs2016: inset box-shadow tabs */}
         <div className="rbx16-tabs2016" style={{ marginBottom: 12 }}>
