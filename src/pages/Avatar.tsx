@@ -153,7 +153,6 @@ const Avatar = () => {
         </div>
         </div>
       </div>
-      </div>
     );
   }
 
