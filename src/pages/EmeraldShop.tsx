@@ -70,6 +70,7 @@ const EmeraldShop = () => {
   if (is2016) {
     return (
       <div style={{ maxWidth: 800 }}>
+        <h1 className="rbx16-page-title">Emerald Shop</h1>
         <div className="rbx16-panel" style={{ marginBottom: 12 }}>
           <div className="rbx16-panel-header">Emerald Shop</div>
           <div className="rbx16-panel-body" style={{ textAlign: 'center' }}>
