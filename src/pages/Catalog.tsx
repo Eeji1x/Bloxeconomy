@@ -208,7 +208,9 @@ const Catalog = () => {
     ];
 
     return (
-      <div className="rbx16-catalog-page">
+      <div>
+        <h1 className="rbx16-page-title">Avatar Shop</h1>
+        <div className="rbx16-catalog-page">
         {/* Category sidebar */}
         <div className="rbx16-catalog-sidebar">
           <div className="rbx16-panel">
