@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, TrendingUp, TrendingDown, Minus, AlertTriangle, ArrowUpDown } from 'lucide-react';
@@ -47,18 +48,22 @@ const DemandBadge = ({ demand }: { demand: string }) => {
 };
 
 const Sodamons = () => {
+  const { theme } = useTheme();
   const [items, setItems] = useState<LimitedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('value');
   const [sortAsc, setSortAsc] = useState(false);
 
+  const is2016 = theme === 'roblox2016';
+  const is2015 = theme === 'roblox2015';
+  const isClassic = is2016 || is2015;
+
   useEffect(() => {
     fetchItems();
   }, []);
 
   const fetchItems = async () => {
-    // Get limited items with their values
     const { data: catalogData } = await supabase
       .from('catalog_items')
       .select('id, name, image_url, price, stock, max_stock')
@@ -68,7 +73,6 @@ const Sodamons = () => {
 
     const itemIds = catalogData.map(i => i.id);
 
-    // Fetch values, tags, and owner counts in parallel
     const [valuesRes, tagsRes, ownersRes] = await Promise.all([
       supabase.from('item_values').select('item_id, value, demand, trend, rap').in('item_id', itemIds),
       supabase.from('item_tags').select('item_id, tag').in('item_id', itemIds),
@@ -85,12 +89,6 @@ const Sodamons = () => {
       tagsMap.set(t.item_id, existing);
     });
 
-    // Count unique owners per item
-    const ownerCountMap = new Map<string, Set<string>>();
-    ownersRes.data?.forEach((inv: any) => {
-      if (!ownerCountMap.has(inv.item_id)) ownerCountMap.set(inv.item_id, new Set());
-      // We count inventory rows as owner count approximation
-    });
     const ownerCounts = new Map<string, number>();
     ownersRes.data?.forEach((inv: any) => {
       ownerCounts.set(inv.item_id, (ownerCounts.get(inv.item_id) || 0) + 1);
@@ -142,6 +140,127 @@ const Sodamons = () => {
     else { setSortKey(key); setSortAsc(false); }
   };
 
+  const getDemandClass = (demand: string) => {
+    switch (demand) {
+      case 'Very High': return 'rbx16-demand-vh';
+      case 'High': return 'rbx16-demand-h';
+      case 'Low': return 'rbx16-demand-l';
+      default: return 'rbx16-demand-n';
+    }
+  };
+
+  const getTrendClass = (trend: string) => {
+    switch (trend) {
+      case 'Rising': return 'rbx16-trend-rising';
+      case 'Dropping': return 'rbx16-trend-dropping';
+      case 'Unstable': return 'rbx16-trend-unstable';
+      default: return 'rbx16-trend-stable';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className={isClassic ? "rbx16-spinner" : "w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"} />
+      </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════════
+     ROBLOX 2016 SODAMONS LAYOUT
+     ═══════════════════════════════════════════ */
+  if (isClassic) {
+    return (
+      <div style={{ maxWidth: 940 }}>
+        <h1 className="rbx16-page-title">Sodamons — Value List</h1>
+
+        <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+          <div className="rbx16-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="rbx16-panel-header-text">Limited Items ({filtered.length})</span>
+            <Link to="/sodamons/top" className="rbx16-link" style={{ fontWeight: 600 }}>🏆 Top Items</Link>
+          </div>
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid #e8e8e8' }}>
+            <input
+              type="text"
+              placeholder="Search items..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ width: '100%', maxWidth: 300, padding: '5px 8px' }}
+            />
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="rbx16-value-table">
+              <thead>
+                <tr>
+                  <th style={{ width: 40 }}>Img</th>
+                  <th onClick={() => handleSort('name')}>Item Name {sortKey === 'name' && (sortAsc ? '▲' : '▼')}</th>
+                  <th onClick={() => handleSort('rap')}>RAP {sortKey === 'rap' && (sortAsc ? '▲' : '▼')}</th>
+                  <th onClick={() => handleSort('value')}>Value {sortKey === 'value' && (sortAsc ? '▲' : '▼')}</th>
+                  <th onClick={() => handleSort('demand')}>Demand {sortKey === 'demand' && (sortAsc ? '▲' : '▼')}</th>
+                  <th onClick={() => handleSort('trend')}>Trend {sortKey === 'trend' && (sortAsc ? '▲' : '▼')}</th>
+                  <th>Owners</th>
+                  <th>Stock</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} style={{ textAlign: 'center', padding: 30, color: '#999' }}>
+                      {search ? 'No items match your search' : 'No limited items found'}
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map((item) => (
+                    <tr key={item.id}>
+                      <td>
+                        <img src={item.image_url} alt={item.name} style={{ width: 36, height: 36, objectFit: 'contain', border: '1px solid #e8e8e8' }} />
+                      </td>
+                      <td>
+                        <Link to={`/sodamons/item/${item.id}`} className="rbx16-link" style={{ fontWeight: 600 }}>
+                          {item.name}
+                        </Link>
+                        {item.tags.length > 0 && (
+                          <div style={{ display: 'flex', gap: 3, marginTop: 2 }}>
+                            {item.tags.map(tag => (
+                              <span key={tag} style={{ fontSize: 10, background: '#f2f2f2', border: '1px solid #e0e0e0', padding: '0 4px', color: '#666' }}>{tag}</span>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ fontFamily: 'monospace', fontSize: '12px !important' }}>💎 {(item.item_values?.rap || item.price).toLocaleString()}</td>
+                      <td style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '12px !important' }}>
+                        {item.item_values ? `💎 ${item.item_values.value.toLocaleString()}` : '—'}
+                      </td>
+                      <td>
+                        <span className={`rbx16-demand-badge ${getDemandClass(item.item_values?.demand || 'Normal')}`}>
+                          {item.item_values?.demand || 'Normal'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={getTrendClass(item.item_values?.trend || 'Stable')} style={{ fontWeight: 600, fontSize: 12 }}>
+                          {item.item_values?.trend === 'Rising' && '▲ '}
+                          {item.item_values?.trend === 'Dropping' && '▼ '}
+                          {item.item_values?.trend === 'Unstable' && '⚡ '}
+                          {item.item_values?.trend === 'Stable' && '— '}
+                          {item.item_values?.trend || 'Stable'}
+                        </span>
+                      </td>
+                      <td>{item.owner_count}</td>
+                      <td>{item.stock ?? '—'}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════════
+     DEFAULT SODABLOX LAYOUT
+     ═══════════════════════════════════════════ */
   const SortHeader = ({ label, sortKeyVal }: { label: string; sortKeyVal: SortKey }) => (
     <th
       className="px-3 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-foreground transition-colors select-none"
@@ -154,17 +273,8 @@ const Sodamons = () => {
     </th>
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-display font-bold">SODAMONS</h1>
@@ -178,7 +288,6 @@ const Sodamons = () => {
         </Link>
       </div>
 
-      {/* Search */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
@@ -189,7 +298,6 @@ const Sodamons = () => {
         />
       </div>
 
-      {/* Items Table */}
       <div className="rounded-lg border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
