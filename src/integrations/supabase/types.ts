@@ -143,7 +143,8 @@ export type Database = {
           feature: string
           id: string
           is_used: boolean
-          key: string
+          key_hash: string
+          key_prefix: string
           used_at: string | null
           used_by: string | null
         }
@@ -153,7 +154,8 @@ export type Database = {
           feature?: string
           id?: string
           is_used?: boolean
-          key: string
+          key_hash: string
+          key_prefix: string
           used_at?: string | null
           used_by?: string | null
         }
@@ -163,7 +165,8 @@ export type Database = {
           feature?: string
           id?: string
           is_used?: boolean
-          key?: string
+          key_hash?: string
+          key_prefix?: string
           used_at?: string | null
           used_by?: string | null
         }
@@ -270,7 +273,8 @@ export type Database = {
           created_by: string
           id: string
           is_used: boolean
-          key: string
+          key_hash: string
+          key_prefix: string
           used_at: string | null
           used_by: string | null
         }
@@ -279,7 +283,8 @@ export type Database = {
           created_by: string
           id?: string
           is_used?: boolean
-          key: string
+          key_hash: string
+          key_prefix: string
           used_at?: string | null
           used_by?: string | null
         }
@@ -288,7 +293,8 @@ export type Database = {
           created_by?: string
           id?: string
           is_used?: boolean
-          key?: string
+          key_hash?: string
+          key_prefix?: string
           used_at?: string | null
           used_by?: string | null
         }
@@ -678,7 +684,8 @@ export type Database = {
           created_at: string
           id: string
           is_used: boolean
-          token: string
+          token_hash: string
+          token_prefix: string
           used_at: string | null
           used_by: string | null
           username: string
@@ -688,7 +695,8 @@ export type Database = {
           created_at?: string
           id?: string
           is_used?: boolean
-          token: string
+          token_hash: string
+          token_prefix: string
           used_at?: string | null
           used_by?: string | null
           username: string
@@ -698,7 +706,8 @@ export type Database = {
           created_at?: string
           id?: string
           is_used?: boolean
-          token?: string
+          token_hash?: string
+          token_prefix?: string
           used_at?: string | null
           used_by?: string | null
           username?: string
@@ -980,6 +989,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      hash_key: { Args: { _value: string }; Returns: string }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_economy_manager: { Args: { _user_id: string }; Returns: boolean }
       is_owner: { Args: { _user_id: string }; Returns: boolean }
