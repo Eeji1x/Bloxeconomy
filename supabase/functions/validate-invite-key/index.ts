@@ -6,6 +6,17 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Match Postgres public.hash_key(text):
+// encode(digest(upper(btrim(value)), 'sha256'), 'hex')
+async function hashKey(value: string): Promise<string> {
+  const normalized = value.trim().toUpperCase();
+  const bytes = new TextEncoder().encode(normalized);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -27,28 +38,21 @@ Deno.serve(async (req) => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    // Look up the key
+    const key_hash = await hashKey(invite_key);
+
     const { data: keyRecord, error } = await supabase
       .from("invite_keys")
-      .select("*")
-      .eq("key", invite_key.trim().toUpperCase())
+      .select("id, is_used")
+      .eq("key_hash", key_hash)
       .maybeSingle();
 
-    if (error || !keyRecord) {
+    if (error || !keyRecord || keyRecord.is_used) {
       return new Response(
         JSON.stringify({ valid: false, message: "Invalid or already used invite key." }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    if (keyRecord.is_used) {
-      return new Response(
-        JSON.stringify({ valid: false, message: "Invalid or already used invite key." }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // If user_id provided, mark key as used
     if (user_id) {
       const { error: updateError } = await supabase
         .from("invite_keys")
@@ -58,7 +62,7 @@ Deno.serve(async (req) => {
           used_at: new Date().toISOString(),
         })
         .eq("id", keyRecord.id)
-        .eq("is_used", false); // Prevent race conditions
+        .eq("is_used", false);
 
       if (updateError) {
         return new Response(
@@ -72,7 +76,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ valid: true }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (err) {
+  } catch (_err) {
     return new Response(
       JSON.stringify({ valid: false, message: "Server error." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
