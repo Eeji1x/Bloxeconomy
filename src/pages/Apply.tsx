@@ -38,7 +38,7 @@ const Apply = () => {
   // Status checker state
   const [showStatusChecker, setShowStatusChecker] = useState(false);
   const [statusInput, setStatusInput] = useState('');
-  const [statusResult, setStatusResult] = useState<{ status: string; reject_reason?: string; username?: string; registration_token?: string; token_used?: boolean } | null>(null);
+  const [statusResult, setStatusResult] = useState<{ status: string; reject_reason?: string; username?: string; registration_token?: string; token_prefix?: string; token_used?: boolean } | null>(null);
   const [statusLoading, setStatusLoading] = useState(false);
   const [statusError, setStatusError] = useState('');
 
@@ -348,18 +348,10 @@ const Apply = () => {
                   {statusResult.status === 'accepted' && (
                     <div className="space-y-2">
                       <p className="text-sm text-accent">🎉 Your application was accepted!</p>
-                      {statusResult.registration_token && (
-                        <Link to={`/register/${statusResult.registration_token}`}>
-                          <Button variant="neon" size="sm" className="w-full gap-2">
-                            <CheckCircle className="w-4 h-4" /> Create Your Account
-                          </Button>
-                        </Link>
-                      )}
-                      {statusResult.token_used && (
+                      {statusResult.token_used ? (
                         <p className="text-sm text-muted-foreground">Your registration link has already been used. If you already created your account, you can <Link to="/login" className="text-primary hover:underline">log in here</Link>.</p>
-                      )}
-                      {!statusResult.registration_token && !statusResult.token_used && (
-                        <p className="text-sm text-muted-foreground">Your registration link is being prepared. Check back soon!</p>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">For security, your one-time registration link was shown only when an admin approved your application. If you did not save it, please contact a staff member to issue a new one.</p>
                       )}
                     </div>
                   )}

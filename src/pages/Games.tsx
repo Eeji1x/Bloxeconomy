@@ -276,10 +276,12 @@ const Games = () => {
   const redeemKey = async () => {
     if (!user || !betaKey.trim()) return;
     setRedeeming(true);
+    const { hashKey } = await import('@/lib/hashKey');
+    const keyHash = await hashKey(betaKey);
     const { data: keyData, error: keyError } = await supabase
       .from('beta_keys')
-      .select('*')
-      .eq('key', betaKey.trim().toUpperCase())
+      .select('id, is_used, feature')
+      .eq('key_hash', keyHash)
       .eq('is_used', false)
       .eq('feature', 'games')
       .maybeSingle();

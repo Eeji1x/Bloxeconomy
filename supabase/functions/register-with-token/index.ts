@@ -6,6 +6,15 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Match Postgres public.hash_key(text)
+async function hashKey(value: string): Promise<string> {
+  const normalized = value.trim().toUpperCase();
+  const bytes = new TextEncoder().encode(normalized);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -72,10 +81,14 @@ Deno.serve(async (req) => {
         .join("")
         .slice(0, 64);
 
+      const token_hash = await hashKey(secureToken);
+      const token_prefix = secureToken.substring(0, 8) + "…";
+
       const { error: insertErr } = await adminClient
         .from("registration_tokens")
         .insert({
-          token: secureToken,
+          token_hash,
+          token_prefix,
           application_id,
           username,
         });
@@ -127,20 +140,19 @@ Deno.serve(async (req) => {
         reject_reason: app.reject_reason,
       };
 
-      // If accepted, look up the registration token
+      // If accepted, indicate registration link status (raw token cannot be retrieved after generation)
       if (app.status === "accepted") {
         const { data: tokenRecord } = await adminClient
           .from("registration_tokens")
-          .select("token, is_used")
+          .select("is_used, token_prefix")
           .eq("application_id", app.id)
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle();
 
-        if (tokenRecord && !tokenRecord.is_used) {
-          result.registration_token = tokenRecord.token;
-        } else if (tokenRecord?.is_used) {
-          result.token_used = true;
+        if (tokenRecord) {
+          result.token_prefix = tokenRecord.token_prefix;
+          result.token_used = tokenRecord.is_used;
         }
       }
 
@@ -166,7 +178,7 @@ Deno.serve(async (req) => {
       const { data: tokenRecord } = await adminClient
         .from("registration_tokens")
         .select("id, is_used")
-        .eq("token", token.trim())
+        .eq("token_hash", await hashKey(token))
         .maybeSingle();
 
       if (!tokenRecord) {
@@ -225,8 +237,8 @@ Deno.serve(async (req) => {
 
       const { data: tokenRecord, error: tokenError } = await adminClient
         .from("registration_tokens")
-        .select("*")
-        .eq("token", token.trim())
+        .select("id, is_used, application_id, username")
+        .eq("token_hash", await hashKey(token))
         .maybeSingle();
 
       if (tokenError || !tokenRecord) {

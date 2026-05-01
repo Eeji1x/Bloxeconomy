@@ -126,26 +126,29 @@ const AdminCMD = () => {
         return;
       }
 
-      const keysToInsert = Array.from({ length: count }, () => ({
-        key: generateInviteKey(),
+      const { hashKey, inviteKeyPrefix } = await import('@/lib/hashKey');
+      const rawKeys = Array.from({ length: count }, () => generateInviteKey());
+      const keysToInsert = await Promise.all(rawKeys.map(async (k) => ({
+        key_hash: await hashKey(k),
+        key_prefix: inviteKeyPrefix(k),
         created_by: userId,
-      }));
+      })));
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('invite_keys')
-        .insert(keysToInsert)
-        .select('key');
+        .insert(keysToInsert);
 
       if (error) {
         setLines([...newLines, `  \x1b[31mError:\x1b[0m ${error.message}`]);
       } else {
-        const generated = data || [];
         setLines([
           ...newLines,
           '',
-          `  \x1b[32m✓\x1b[0m Successfully generated \x1b[33m${generated.length}\x1b[0m invite key(s):`,
+          `  \x1b[32m✓\x1b[0m Successfully generated \x1b[33m${rawKeys.length}\x1b[0m invite key(s) (one-time reveal):`,
           '',
-          ...generated.map(k => `  \x1b[36m${k.key}\x1b[0m`),
+          ...rawKeys.map(k => `  \x1b[36m${k}\x1b[0m`),
+          '',
+          '  \x1b[33m!\x1b[0m Save these now — keys are hashed and cannot be recovered.',
           '',
         ]);
       }
