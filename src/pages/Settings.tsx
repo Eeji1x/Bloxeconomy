@@ -331,7 +331,7 @@ const Settings = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-border pb-4">
+      <div className="flex gap-2 border-b border-border pb-4 flex-wrap">
         <Button variant={activeSection === 'username' ? 'default' : 'ghost'} onClick={() => setActiveSection('username')} className="gap-2">
           <User className="w-4 h-4" /> Username
         </Button>
@@ -341,6 +341,11 @@ const Settings = () => {
         <Button variant={activeSection === 'themes' ? 'default' : 'ghost'} onClick={() => setActiveSection('themes')} className="gap-2">
           <Palette className="w-4 h-4" /> Themes
         </Button>
+        {hasGamesBeta && (
+          <Button variant={activeSection === 'rcc' ? 'default' : 'ghost'} onClick={() => setActiveSection('rcc')} className="gap-2">
+            <Zap className="w-4 h-4" /> RCC
+          </Button>
+        )}
       </div>
 
       {/* Username */}
