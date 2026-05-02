@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { validateUsername } from '@/lib/profanity';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -14,15 +14,39 @@ import {
   Save,
   AlertCircle,
   Check,
-  Palette
+  Palette,
+  Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme, THEMES, ThemeId } from '@/contexts/ThemeContext';
+import { isRccModeEnabled, setRccMode } from '@/pages/Games';
+
+type SettingsSection = 'username' | 'password' | 'themes' | 'rcc';
 
 const Settings = () => {
   const { user, profile, isLoading, refreshProfile } = useAuth();
   const { theme, setTheme } = useTheme();
-  const [activeSection, setActiveSection] = useState<'username' | 'password' | 'themes'>('username');
+  const [activeSection, setActiveSection] = useState<SettingsSection>('username');
+  const [hasGamesBeta, setHasGamesBeta] = useState(false);
+  const [rccOn, setRccOn] = useState<boolean>(isRccModeEnabled());
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('beta_access')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('feature', 'games')
+      .maybeSingle()
+      .then(({ data }) => setHasGamesBeta(!!data));
+  }, [user]);
+
+  const toggleRcc = () => {
+    const next = !rccOn;
+    setRccOn(next);
+    setRccMode(next);
+    toast.success(next ? 'RCC Mode enabled' : 'RCC Mode disabled');
+  };
   
   const [newUsername, setNewUsername] = useState('');
   const [usernameLoading, setUsernameLoading] = useState(false);
@@ -121,10 +145,11 @@ const Settings = () => {
     const btnBuyClass = is2015 ? 'rbx15-btn-buy' : 'rbx16-btn-buy';
     const btnContinueClass = is2015 ? 'rbx15-btn-continue' : 'rbx16-btn-continue';
     const btnCancelClass = is2015 ? 'rbx15-btn-cancel' : 'rbx16-btn-cancel';
-    const TABS = [
-      { key: 'username' as const, label: 'Username' },
-      { key: 'password' as const, label: 'Password' },
-      { key: 'themes' as const, label: 'Themes' },
+    const TABS: { key: SettingsSection; label: string }[] = [
+      { key: 'username', label: 'Username' },
+      { key: 'password', label: 'Password' },
+      { key: 'themes', label: 'Themes' },
+      ...(hasGamesBeta ? [{ key: 'rcc' as const, label: 'RCC' }] : []),
     ];
 
     return (
@@ -259,6 +284,34 @@ const Settings = () => {
             </div>
           </div>
         )}
+
+        {/* RCC Mode (only if user has games beta access) */}
+        {activeSection === 'rcc' && hasGamesBeta && (
+          <div className="rbx16-panel">
+            <div className="rbx16-panel-header">RCC Mode (Beta)</div>
+            <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <p className="rbx16-text-muted">
+                <strong>RCC Mode</strong> enables high-fidelity rendering in the Games client:
+                real-time shadows, ACES tone mapping, atmospheric fog, and a sharper higher-DPI render.
+                Costs more performance — recommended for desktops with a discrete GPU.
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: '#f8f8f8', border: '1px solid #e0e0e0' }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 14 }}>Status</div>
+                  <div style={{ fontSize: 12, color: rccOn ? '#02b757' : '#999' }}>
+                    {rccOn ? '● Enabled — high fidelity' : '○ Disabled — standard rendering'}
+                  </div>
+                </div>
+                <button className={rccOn ? 'rbx16-btn-cancel' : 'rbx16-btn-buy'} onClick={toggleRcc}>
+                  {rccOn ? 'Turn Off' : 'Turn On'}
+                </button>
+              </div>
+              <p style={{ fontSize: 11, color: '#999' }}>
+                Saved locally to this device. Changes take effect next time you join a game.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -278,7 +331,7 @@ const Settings = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-border pb-4">
+      <div className="flex gap-2 border-b border-border pb-4 flex-wrap">
         <Button variant={activeSection === 'username' ? 'default' : 'ghost'} onClick={() => setActiveSection('username')} className="gap-2">
           <User className="w-4 h-4" /> Username
         </Button>
@@ -288,6 +341,11 @@ const Settings = () => {
         <Button variant={activeSection === 'themes' ? 'default' : 'ghost'} onClick={() => setActiveSection('themes')} className="gap-2">
           <Palette className="w-4 h-4" /> Themes
         </Button>
+        {hasGamesBeta && (
+          <Button variant={activeSection === 'rcc' ? 'default' : 'ghost'} onClick={() => setActiveSection('rcc')} className="gap-2">
+            <Zap className="w-4 h-4" /> RCC
+          </Button>
+        )}
       </div>
 
       {/* Username */}
@@ -396,6 +454,35 @@ const Settings = () => {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* RCC Mode (default layout) */}
+      {activeSection === 'rcc' && hasGamesBeta && (
+        <div className="cyber-card p-6 space-y-6">
+          <div className="space-y-2">
+            <h2 className="text-xl font-display font-bold flex items-center gap-2">
+              <Zap className="w-5 h-5 text-amber-400" /> RCC Mode <span className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">Beta</span>
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Enables high-fidelity rendering in the Games client: real-time shadows, ACES tone mapping,
+              atmospheric fog, and a sharper higher-DPI render. Costs more performance.
+            </p>
+          </div>
+          <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border">
+            <div>
+              <div className="font-bold">Status</div>
+              <div className={`text-xs ${rccOn ? 'text-green-400' : 'text-muted-foreground'}`}>
+                {rccOn ? '● Enabled — high fidelity' : '○ Disabled — standard rendering'}
+              </div>
+            </div>
+            <Button onClick={toggleRcc} variant={rccOn ? 'destructive' : 'default'}>
+              {rccOn ? 'Turn Off' : 'Turn On'}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Saved locally to this device. Changes take effect next time you join a game.
+          </p>
         </div>
       )}
     </div>
