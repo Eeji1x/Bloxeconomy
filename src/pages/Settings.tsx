@@ -456,6 +456,35 @@ const Settings = () => {
           </div>
         </div>
       )}
+
+      {/* RCC Mode (default layout) */}
+      {activeSection === 'rcc' && hasGamesBeta && (
+        <div className="cyber-card p-6 space-y-6">
+          <div className="space-y-2">
+            <h2 className="text-xl font-display font-bold flex items-center gap-2">
+              <Zap className="w-5 h-5 text-amber-400" /> RCC Mode <span className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">Beta</span>
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Enables high-fidelity rendering in the Games client: real-time shadows, ACES tone mapping,
+              atmospheric fog, and a sharper higher-DPI render. Costs more performance.
+            </p>
+          </div>
+          <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border">
+            <div>
+              <div className="font-bold">Status</div>
+              <div className={`text-xs ${rccOn ? 'text-green-400' : 'text-muted-foreground'}`}>
+                {rccOn ? '● Enabled — high fidelity' : '○ Disabled — standard rendering'}
+              </div>
+            </div>
+            <Button onClick={toggleRcc} variant={rccOn ? 'destructive' : 'default'}>
+              {rccOn ? 'Turn Off' : 'Turn On'}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Saved locally to this device. Changes take effect next time you join a game.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
