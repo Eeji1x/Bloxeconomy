@@ -145,10 +145,11 @@ const Settings = () => {
     const btnBuyClass = is2015 ? 'rbx15-btn-buy' : 'rbx16-btn-buy';
     const btnContinueClass = is2015 ? 'rbx15-btn-continue' : 'rbx16-btn-continue';
     const btnCancelClass = is2015 ? 'rbx15-btn-cancel' : 'rbx16-btn-cancel';
-    const TABS = [
-      { key: 'username' as const, label: 'Username' },
-      { key: 'password' as const, label: 'Password' },
-      { key: 'themes' as const, label: 'Themes' },
+    const TABS: { key: SettingsSection; label: string }[] = [
+      { key: 'username', label: 'Username' },
+      { key: 'password', label: 'Password' },
+      { key: 'themes', label: 'Themes' },
+      ...(hasGamesBeta ? [{ key: 'rcc' as const, label: 'RCC' }] : []),
     ];
 
     return (
