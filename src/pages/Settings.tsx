@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { validateUsername } from '@/lib/profanity';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -14,15 +14,39 @@ import {
   Save,
   AlertCircle,
   Check,
-  Palette
+  Palette,
+  Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme, THEMES, ThemeId } from '@/contexts/ThemeContext';
+import { isRccModeEnabled, setRccMode } from '@/pages/Games';
+
+type SettingsSection = 'username' | 'password' | 'themes' | 'rcc';
 
 const Settings = () => {
   const { user, profile, isLoading, refreshProfile } = useAuth();
   const { theme, setTheme } = useTheme();
-  const [activeSection, setActiveSection] = useState<'username' | 'password' | 'themes'>('username');
+  const [activeSection, setActiveSection] = useState<SettingsSection>('username');
+  const [hasGamesBeta, setHasGamesBeta] = useState(false);
+  const [rccOn, setRccOn] = useState<boolean>(isRccModeEnabled());
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('beta_access')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('feature', 'games')
+      .maybeSingle()
+      .then(({ data }) => setHasGamesBeta(!!data));
+  }, [user]);
+
+  const toggleRcc = () => {
+    const next = !rccOn;
+    setRccOn(next);
+    setRccMode(next);
+    toast.success(next ? 'RCC Mode enabled' : 'RCC Mode disabled');
+  };
   
   const [newUsername, setNewUsername] = useState('');
   const [usernameLoading, setUsernameLoading] = useState(false);
