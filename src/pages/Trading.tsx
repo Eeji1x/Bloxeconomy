@@ -56,8 +56,6 @@ interface Trade {
   receiver_profile?: Profile;
 }
 
-const ITEMS_PER_PAGE = 14;
-
 const Trading = () => {
   const { user, profile, isLoading, refreshProfile } = useAuth();
   const { theme } = useTheme();
@@ -84,19 +82,12 @@ const Trading = () => {
   const [pendingTrades, setPendingTrades] = useState<Trade[]>([]);
   const [tradeHistory, setTradeHistory] = useState<Trade[]>([]);
 
-  // Inventory browsing state
-  const [myInvPage, setMyInvPage] = useState(1);
-  const [theirInvPage, setTheirInvPage] = useState(1);
-  const [myInvSearch, setMyInvSearch] = useState('');
-  const [theirInvSearch, setTheirInvSearch] = useState('');
-  const [myInvCategory, setMyInvCategory] = useState('All');
-  const [theirInvCategory, setTheirInvCategory] = useState('All');
-
   useEffect(() => {
     if (user) {
       fetchMyInventory();
       fetchTrades();
       
+      // Check if coming from a profile
       const targetUserId = searchParams.get('user');
       if (targetUserId && targetUserId !== user.id) {
         fetchUserById(targetUserId);
@@ -105,16 +96,37 @@ const Trading = () => {
     }
   }, [user, searchParams]);
 
+  // Realtime subscription for trades
   useEffect(() => {
     if (!user) return;
 
     const channel = supabase
       .channel('trades')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `sender_id=eq.${user.id}` }, () => fetchTrades())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `receiver_id=eq.${user.id}` }, () => fetchTrades())
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'trades',
+          filter: `sender_id=eq.${user.id}`,
+        },
+        () => fetchTrades()
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'trades',
+          filter: `receiver_id=eq.${user.id}`,
+        },
+        () => fetchTrades()
+      )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const fetchUserById = async (userId: string) => {
@@ -133,10 +145,21 @@ const Trading = () => {
   const fetchMyInventory = async () => {
     const { data } = await supabase
       .from('user_inventory')
-      .select(`id, item_id, quantity, catalog_items (id, name, image_url, item_type)`)
+      .select(`
+        id,
+        item_id,
+        quantity,
+        catalog_items (
+          id,
+          name,
+          image_url,
+          item_type
+        )
+      `)
       .eq('user_id', user?.id);
 
     if (data) {
+      // Only show limited items
       const limitedItems = data.filter((item: any) => item.catalog_items?.item_type === 'limited');
       setMyInventory(limitedItems as InventoryItem[]);
     }
@@ -145,10 +168,21 @@ const Trading = () => {
   const fetchTheirInventory = async (userId: string) => {
     const { data } = await supabase
       .from('user_inventory')
-      .select(`id, item_id, quantity, catalog_items (id, name, image_url, item_type)`)
+      .select(`
+        id,
+        item_id,
+        quantity,
+        catalog_items (
+          id,
+          name,
+          image_url,
+          item_type
+        )
+      `)
       .eq('user_id', userId);
 
     if (data) {
+      // Only show limited items
       const limitedItems = data.filter((item: any) => item.catalog_items?.item_type === 'limited');
       setTheirInventory(limitedItems as InventoryItem[]);
     }
@@ -157,16 +191,24 @@ const Trading = () => {
   const fetchTrades = async () => {
     if (!user) return;
 
+    // Fetch pending trades
     const { data: pending } = await supabase
-      .from('trades').select('*').eq('status', 'pending')
+      .from('trades')
+      .select('*')
+      .eq('status', 'pending')
       .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
       .order('created_at', { ascending: false });
 
+    // Fetch trade history
     const { data: history } = await supabase
-      .from('trades').select('*').neq('status', 'pending')
+      .from('trades')
+      .select('*')
+      .neq('status', 'pending')
       .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-      .order('created_at', { ascending: false }).limit(50);
+      .order('created_at', { ascending: false })
+      .limit(50);
 
+    // Fetch profiles for both
     const allUserIds = new Set<string>();
     [...(pending || []), ...(history || [])].forEach(t => {
       allUserIds.add(t.sender_id);
@@ -174,10 +216,12 @@ const Trading = () => {
     });
 
     const { data: profiles } = await supabase
-      .from('public_profiles').select('user_id, username, numeric_id, is_verified')
+      .from('public_profiles')
+      .select('user_id, username, numeric_id, is_verified')
       .in('user_id', Array.from(allUserIds));
 
     const profileMap = new Map(profiles?.map(p => [p.user_id!, { ...p, emeralds: 0 }]));
+
     const addProfiles = (trades: Trade[]) => trades.map(t => ({
       ...t,
       sender_profile: profileMap.get(t.sender_id),
@@ -190,14 +234,18 @@ const Trading = () => {
 
   const searchUsers = async () => {
     if (!searchQuery.trim()) return;
+    
     setSearching(true);
     const { data } = await supabase
-      .from('public_profiles').select('user_id, username, numeric_id, is_verified')
+      .from('public_profiles')
+      .select('user_id, username, numeric_id, is_verified')
       .neq('user_id', user?.id)
       .or(`username.ilike.%${searchQuery}%,numeric_id.eq.${parseInt(searchQuery) || 0}`)
       .limit(10);
 
-    if (data) setSearchResults(data.map(d => ({ ...d, emeralds: 0, is_banned: false })) as Profile[]);
+    if (data) {
+      setSearchResults(data.map(d => ({ ...d, emeralds: 0, is_banned: false })) as Profile[]);
+    }
     setSearching(false);
   };
 
@@ -209,28 +257,25 @@ const Trading = () => {
     setSelectedTheirItems([]);
     setMyEmeralds(0);
     setTheirEmeralds(0);
-    setMyInvPage(1);
-    setTheirInvPage(1);
-    setMyInvSearch('');
-    setTheirInvSearch('');
     fetchTheirInventory(targetUser.user_id);
   };
 
   const toggleMyItem = (itemId: string) => {
-    setSelectedMyItems(prev =>
-      prev.includes(itemId) ? prev.filter(id => id !== itemId) : prev.length < 4 ? [...prev, itemId] : prev
+    setSelectedMyItems(prev => 
+      prev.includes(itemId) ? prev.filter(id => id !== itemId) : [...prev, itemId]
     );
   };
 
   const toggleTheirItem = (itemId: string) => {
-    setSelectedTheirItems(prev =>
-      prev.includes(itemId) ? prev.filter(id => id !== itemId) : prev.length < 4 ? [...prev, itemId] : prev
+    setSelectedTheirItems(prev => 
+      prev.includes(itemId) ? prev.filter(id => id !== itemId) : [...prev, itemId]
     );
   };
 
   const sendTrade = async () => {
     if (!user || !selectedUser || !profile) return;
 
+    // Validation
     if (selectedMyItems.length === 0 && selectedTheirItems.length === 0 && myEmeralds === 0 && theirEmeralds === 0) {
       toast.error('Please add items or emeralds to the trade');
       return;
@@ -244,15 +289,17 @@ const Trading = () => {
     setSendingTrade(true);
 
     try {
-      const { error } = await supabase.from('trades').insert({
-        sender_id: user.id,
-        receiver_id: selectedUser.user_id,
-        sender_items: selectedMyItems,
-        receiver_items: selectedTheirItems,
-        sender_emeralds: myEmeralds,
-        receiver_emeralds: theirEmeralds,
-        status: 'pending',
-      });
+      const { error } = await supabase
+        .from('trades')
+        .insert({
+          sender_id: user.id,
+          receiver_id: selectedUser.user_id,
+          sender_items: selectedMyItems,
+          receiver_items: selectedTheirItems,
+          sender_emeralds: myEmeralds,
+          receiver_emeralds: theirEmeralds,
+          status: 'pending',
+        });
 
       if (error) throw error;
 
@@ -310,437 +357,161 @@ const Trading = () => {
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
-  if (profile?.is_banned) return <Navigate to="/banned" replace />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (profile?.is_banned) {
+    return <Navigate to="/banned" replace />;
+  }
 
   /* ═══════════════════════════════════════════
      ROBLOX 2016 TRADING LAYOUT
      ═══════════════════════════════════════════ */
   if (is2016) {
-    // Filter helpers
-    const filterItems = (items: InventoryItem[], search: string) =>
-      search.trim()
-        ? items.filter(i => i.catalog_items.name.toLowerCase().includes(search.toLowerCase()))
-        : items;
-
-    const myFiltered = filterItems(myInventory, myInvSearch);
-    const theirFiltered = filterItems(theirInventory, theirInvSearch);
-
-    const myTotalPages = Math.max(1, Math.ceil(myFiltered.length / ITEMS_PER_PAGE));
-    const theirTotalPages = Math.max(1, Math.ceil(theirFiltered.length / ITEMS_PER_PAGE));
-
-    const myPageItems = myFiltered.slice((myInvPage - 1) * ITEMS_PER_PAGE, myInvPage * ITEMS_PER_PAGE);
-    const theirPageItems = theirFiltered.slice((theirInvPage - 1) * ITEMS_PER_PAGE, theirInvPage * ITEMS_PER_PAGE);
-
-    // When no user selected — show find user + tabs
-    if (!selectedUser || activeTab !== 'send') {
-      return (
-        <div style={{ maxWidth: 900 }}>
-          <h1 className="rbx16-page-title">Trading</h1>
-          <div className="rbx16-panel" style={{ marginBottom: 12 }}>
-            <div className="rbx16-panel-body">
-              <p style={{ fontSize: 13, color: '#666' }}>Trade limited items and emeralds with other players.</p>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid #c3c3c3', marginBottom: 12 }}>
-            {([['pending', `Pending (${pendingTrades.length})`], ['send', 'Send Trade'], ['history', 'History']] as const).map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key as any)}
-                style={{
-                  padding: '8px 16px', fontSize: 14,
-                  fontWeight: activeTab === key ? 700 : 400,
-                  color: activeTab === key ? '#0074BD' : '#666',
-                  background: activeTab === key ? '#fff' : '#f2f2f2',
-                  border: '1px solid #c3c3c3',
-                  borderBottom: activeTab === key ? '2px solid #fff' : '1px solid #c3c3c3',
-                  marginBottom: -2, cursor: 'pointer',
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {/* Send Trade — find user */}
-          {activeTab === 'send' && (
-            <div className="rbx16-panel">
-              <div className="rbx16-panel-header">Find a User</div>
-              <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <input
-                    type="text" placeholder="Search by username or ID..."
-                    value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && searchUsers()}
-                    style={{ flex: 1, padding: '6px 10px' }}
-                  />
-                  <button className="rbx16-btn-continue" onClick={searchUsers} disabled={searching}>Search</button>
-                </div>
-                {searchResults.length > 0 && searchResults.map((result) => (
-                  <div
-                    key={result.user_id}
-                    onClick={() => { selectUser(result); setActiveTab('send'); }}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', border: '1px solid #e8e8e8', cursor: 'pointer', background: '#fafafa' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <UserAvatar userId={result.user_id} size="md" />
-                      <div>
-                        <span style={{ fontWeight: 600, fontSize: 13, color: '#0055b3' }}>{result.username}</span>
-                        <span style={{ fontSize: 11, color: '#999', marginLeft: 6 }}>#{result.numeric_id}</span>
-                      </div>
-                    </div>
-                    <button className="rbx16-btn-continue" style={{ fontSize: 11, padding: '2px 8px' }}>Select</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Pending */}
-          {activeTab === 'pending' && (
-            <div>
-              {pendingTrades.length === 0 ? (
-                <div className="rbx16-panel">
-                  <div className="rbx16-panel-body" style={{ textAlign: 'center', padding: 40, color: '#999', fontSize: 13 }}>No pending trades</div>
-                </div>
-              ) : pendingTrades.map((trade) => (
-                <TradeCard key={trade.id} trade={trade} currentUserId={user.id} onAction={handleTrade} />
-              ))}
-            </div>
-          )}
-
-          {/* History */}
-          {activeTab === 'history' && (
-            <div>
-              {tradeHistory.length === 0 ? (
-                <div className="rbx16-panel">
-                  <div className="rbx16-panel-body" style={{ textAlign: 'center', padding: 40, color: '#999', fontSize: 13 }}>No trade history</div>
-                </div>
-              ) : tradeHistory.map((trade) => (
-                <TradeCard key={trade.id} trade={trade} currentUserId={user.id} isHistory />
-              ))}
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // ─── Full trading window (image-style layout) ───
     return (
-      <div style={{ maxWidth: 960, background: '#c8c8c8', border: '1px solid #999', fontFamily: 'Arial, sans-serif' }}>
-        {/* Orange top bar */}
-        <div style={{ background: '#f7941d', padding: '5px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #d4780a' }}>
-          <span style={{ fontWeight: 700, fontSize: 15, color: '#000', letterSpacing: 0.5 }}>
-            TRADING{' '}
-            <span style={{ fontWeight: 400, fontSize: 13 }}>with {selectedUser.username}</span>
-          </span>
-          <button
-            onClick={() => setSelectedUser(null)}
-            style={{ background: '#aaa', border: '1px solid #888', padding: '2px 10px', cursor: 'pointer', fontSize: 12, fontWeight: 700, borderRadius: 2 }}
-          >
-            Exit Trading &nbsp;✕
-          </button>
+      <div style={{ maxWidth: 900 }}>
+        <h1 className="rbx16-page-title">Trading</h1>
+        <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+          <div className="rbx16-panel-body">
+            <p style={{ fontSize: 13, color: '#666' }}>Trade limited items and emeralds with other players.</p>
+          </div>
         </div>
 
-        {/* Body */}
-        <div style={{ display: 'flex', gap: 0 }}>
-          {/* ── LEFT PANEL ── */}
-          <div style={{ width: 300, minWidth: 300, background: '#d8d8d8', borderRight: '1px solid #b0b0b0', padding: 10, display: 'flex', flexDirection: 'column', gap: 0 }}>
-
-            {/* Your Offer */}
-            <div style={{ background: '#e8e8e8', border: '1px solid #b8b8b8', marginBottom: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '6px 8px 4px', borderBottom: '1px solid #c8c8c8' }}>
-                <span style={{ fontWeight: 700, fontSize: 13 }}>Your Offer</span>
-                <div style={{ textAlign: 'right', fontSize: 10, color: '#333', lineHeight: 1.6 }}>
-                  <div>Total RAP: <span style={{ color: '#339900', fontWeight: 700 }}>R$</span><span style={{ color: '#339900' }}>0</span></div>
-                  <div>Total Value: <span style={{ color: '#339900', fontWeight: 700 }}>R$</span><span style={{ color: '#339900' }}>0</span></div>
-                </div>
-              </div>
-              {/* Item slots */}
-              <div style={{ display: 'flex', gap: 4, padding: '8px 8px 4px' }}>
-                {[0, 1, 2, 3].map((i) => {
-                  const itemId = selectedMyItems[i];
-                  const item = itemId ? myInventory.find(x => x.id === itemId) : null;
-                  return (
-                    <div
-                      key={i}
-                      onClick={() => item && toggleMyItem(item.id)}
-                      style={{
-                        width: 62, height: 62, border: '1px solid #999',
-                        background: item ? '#fff' : '#c0c0c0',
-                        cursor: item ? 'pointer' : 'default',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        overflow: 'hidden', position: 'relative',
-                      }}
-                      title={item ? `Remove: ${item.catalog_items.name}` : 'Empty slot'}
-                    >
-                      {item && (
-                        <>
-                          <img src={item.catalog_items.image_url} alt={item.catalog_items.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                          <div style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(200,0,0,0.75)', color: '#fff', fontSize: 9, padding: '0 2px', lineHeight: '13px', cursor: 'pointer' }}>✕</div>
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              {/* Plus Robux */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px 8px', fontSize: 12 }}>
-                <span>Plus</span>
-                <span style={{ color: '#339900', fontWeight: 700, fontSize: 12 }}>R$</span>
-                <input
-                  type="number" min={0} max={profile?.emeralds || 0}
-                  value={myEmeralds || ''}
-                  placeholder="Enter amount"
-                  onChange={(e) => setMyEmeralds(Math.min(parseInt(e.target.value) || 0, profile?.emeralds || 0))}
-                  style={{ width: 110, padding: '2px 5px', fontSize: 12, border: '1px solid #aaa' }}
-                />
-                <span style={{ color: '#cc0000', fontWeight: 700 }}>*</span>
-              </div>
-            </div>
-
-            {/* Horizontal divider */}
-            <div style={{ height: 6, background: '#c0c0c0', border: '1px solid #aaa', marginBottom: 8 }} />
-
-            {/* Your Request */}
-            <div style={{ background: '#e8e8e8', border: '1px solid #b8b8b8', marginBottom: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '6px 8px 4px', borderBottom: '1px solid #c8c8c8' }}>
-                <span style={{ fontWeight: 700, fontSize: 13 }}>Your Request</span>
-                <div style={{ textAlign: 'right', fontSize: 10, color: '#333', lineHeight: 1.6 }}>
-                  <div>Total RAP: <span style={{ color: '#339900', fontWeight: 700 }}>R$</span><span style={{ color: '#339900' }}>0</span></div>
-                  <div>Total Value: <span style={{ color: '#339900', fontWeight: 700 }}>R$</span><span style={{ color: '#339900' }}>0</span></div>
-                </div>
-              </div>
-              {/* Item slots */}
-              <div style={{ display: 'flex', gap: 4, padding: '8px 8px 4px' }}>
-                {[0, 1, 2, 3].map((i) => {
-                  const itemId = selectedTheirItems[i];
-                  const item = itemId ? theirInventory.find(x => x.id === itemId) : null;
-                  return (
-                    <div
-                      key={i}
-                      onClick={() => item && toggleTheirItem(item.id)}
-                      style={{
-                        width: 62, height: 62, border: '1px solid #999',
-                        background: item ? '#fff' : '#c0c0c0',
-                        cursor: item ? 'pointer' : 'default',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        overflow: 'hidden', position: 'relative',
-                      }}
-                      title={item ? `Remove: ${item.catalog_items.name}` : 'Empty slot'}
-                    >
-                      {item && (
-                        <>
-                          <img src={item.catalog_items.image_url} alt={item.catalog_items.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                          <div style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(200,0,0,0.75)', color: '#fff', fontSize: 9, padding: '0 2px', lineHeight: '13px', cursor: 'pointer' }}>✕</div>
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              {/* Plus Robux */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px 8px', fontSize: 12 }}>
-                <span>Plus</span>
-                <span style={{ color: '#339900', fontWeight: 700, fontSize: 12 }}>R$</span>
-                <input
-                  type="number" min={0}
-                  value={theirEmeralds || ''}
-                  placeholder="Enter amount"
-                  onChange={(e) => setTheirEmeralds(parseInt(e.target.value) || 0)}
-                  style={{ width: 110, padding: '2px 5px', fontSize: 12, border: '1px solid #aaa' }}
-                />
-                <span style={{ color: '#cc0000', fontWeight: 700 }}>*</span>
-              </div>
-            </div>
-
-            {/* Send Request button */}
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid #c3c3c3', marginBottom: 12 }}>
+          {([['pending', `Pending (${pendingTrades.length})`], ['send', 'Send Trade'], ['history', 'History']] as const).map(([key, label]) => (
             <button
-              onClick={sendTrade}
-              disabled={sendingTrade || (selectedMyItems.length === 0 && selectedTheirItems.length === 0 && myEmeralds === 0 && theirEmeralds === 0)}
+              key={key}
+              onClick={() => setActiveTab(key as any)}
               style={{
-                background: sendingTrade ? '#5a9e5a' : '#28a428',
-                color: '#fff', border: 'none', width: '100%',
-                padding: '10px 0', fontSize: 16, fontWeight: 700,
-                cursor: sendingTrade ? 'not-allowed' : 'pointer',
-                letterSpacing: 0.3,
+                padding: '8px 16px', fontSize: 14,
+                fontWeight: activeTab === key ? 700 : 400,
+                color: activeTab === key ? '#0074BD' : '#666',
+                background: activeTab === key ? '#fff' : '#f2f2f2',
+                border: '1px solid #c3c3c3',
+                borderBottom: activeTab === key ? '2px solid #fff' : '1px solid #c3c3c3',
+                marginBottom: -2, cursor: 'pointer',
               }}
             >
-              {sendingTrade ? 'Sending...' : 'Send Request'}
+              {label}
             </button>
-
-            {/* Fee note */}
-            <p style={{ fontSize: 10, color: '#555', marginTop: 8 }}>* A 30% fee will be taken from the amount.</p>
-          </div>
-
-          {/* ── RIGHT PANEL ── */}
-          <div style={{ flex: 1, background: '#fff', padding: 12, display: 'flex', flexDirection: 'column', gap: 16 }}>
-
-            {/* My Inventory */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <span style={{ fontSize: 14, fontWeight: 600 }}>My Inventory</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <span style={{ fontSize: 12 }}>Category:</span>
-                  <select
-                    value={myInvCategory}
-                    onChange={(e) => { setMyInvCategory(e.target.value); setMyInvPage(1); }}
-                    style={{ fontSize: 12, padding: '2px 4px', border: '1px solid #bbb' }}
-                  >
-                    <option>All</option>
-                    <option>Hats</option>
-                    <option>Gear</option>
-                    <option>Faces</option>
-                    <option>Packages</option>
-                  </select>
-                </div>
-              </div>
-              <input
-                type="text" placeholder="Search"
-                value={myInvSearch}
-                onChange={(e) => { setMyInvSearch(e.target.value); setMyInvPage(1); }}
-                style={{ width: '100%', padding: '4px 8px', fontSize: 12, border: '1px solid #bbb', marginBottom: 8, boxSizing: 'border-box' }}
-              />
-
-              {/* Item grid */}
-              <div style={{ border: '1px solid #ddd', minHeight: 240 }}>
-                {myPageItems.length === 0 ? (
-                  <div style={{ padding: 24, textAlign: 'center', color: '#999', fontSize: 13 }}>No items found</div>
-                ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                    {myPageItems.map((item) => {
-                      const selected = selectedMyItems.includes(item.id);
-                      return (
-                        <div
-                          key={item.id}
-                          onClick={() => toggleMyItem(item.id)}
-                          style={{
-                            border: `1px solid ${selected ? '#0074BD' : '#ddd'}`,
-                            cursor: 'pointer',
-                            background: selected ? '#deeeff' : '#fff',
-                            display: 'flex', flexDirection: 'column', alignItems: 'center',
-                            padding: '3px 2px',
-                          }}
-                          title={item.catalog_items.name}
-                        >
-                          <span style={{ fontSize: 9, color: '#0055b3', textAlign: 'center', lineHeight: 1.2, marginBottom: 1, width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {item.catalog_items.name}
-                          </span>
-                          <img
-                            src={item.catalog_items.image_url}
-                            alt={item.catalog_items.name}
-                            style={{ width: '100%', aspectRatio: '1', objectFit: 'contain' }}
-                          />
-                          <span style={{ fontSize: 9, color: '#0055b3', marginTop: 1 }}>R$0</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Pagination */}
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 6 }}>
-                <button
-                  onClick={() => setMyInvPage(p => Math.max(1, p - 1))}
-                  disabled={myInvPage === 1}
-                  style={{ background: '#e0e0e0', border: '1px solid #bbb', padding: '2px 8px', cursor: myInvPage === 1 ? 'not-allowed' : 'pointer', opacity: myInvPage === 1 ? 0.5 : 1 }}
-                >◄</button>
-                <span style={{ fontSize: 13 }}>Page {myInvPage}</span>
-                <button
-                  onClick={() => setMyInvPage(p => Math.min(myTotalPages, p + 1))}
-                  disabled={myInvPage === myTotalPages}
-                  style={{ background: '#e0e0e0', border: '1px solid #bbb', padding: '2px 8px', cursor: myInvPage === myTotalPages ? 'not-allowed' : 'pointer', opacity: myInvPage === myTotalPages ? 0.5 : 1 }}
-                >►</button>
-              </div>
-            </div>
-
-            {/* Divider */}
-            <div style={{ borderTop: '1px solid #ddd' }} />
-
-            {/* Partner's Inventory */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <span style={{ fontSize: 14, fontWeight: 600 }}>Partner's Inventory</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <span style={{ fontSize: 12 }}>Category:</span>
-                  <select
-                    value={theirInvCategory}
-                    onChange={(e) => { setTheirInvCategory(e.target.value); setTheirInvPage(1); }}
-                    style={{ fontSize: 12, padding: '2px 4px', border: '1px solid #bbb' }}
-                  >
-                    <option>All</option>
-                    <option>Hats</option>
-                    <option>Gear</option>
-                    <option>Faces</option>
-                    <option>Packages</option>
-                  </select>
-                </div>
-              </div>
-              <input
-                type="text" placeholder="Search"
-                value={theirInvSearch}
-                onChange={(e) => { setTheirInvSearch(e.target.value); setTheirInvPage(1); }}
-                style={{ width: '100%', padding: '4px 8px', fontSize: 12, border: '1px solid #bbb', marginBottom: 8, boxSizing: 'border-box' }}
-              />
-
-              {/* Item grid */}
-              <div style={{ border: '1px solid #ddd', minHeight: 240 }}>
-                {theirPageItems.length === 0 ? (
-                  <div style={{ padding: 24, textAlign: 'center', color: '#999', fontSize: 13 }}>No items found</div>
-                ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                    {theirPageItems.map((item) => {
-                      const selected = selectedTheirItems.includes(item.id);
-                      return (
-                        <div
-                          key={item.id}
-                          onClick={() => toggleTheirItem(item.id)}
-                          style={{
-                            border: `1px solid ${selected ? '#28a428' : '#ddd'}`,
-                            cursor: 'pointer',
-                            background: selected ? '#deffde' : '#fff',
-                            display: 'flex', flexDirection: 'column', alignItems: 'center',
-                            padding: '3px 2px',
-                          }}
-                          title={item.catalog_items.name}
-                        >
-                          <span style={{ fontSize: 9, color: '#0055b3', textAlign: 'center', lineHeight: 1.2, marginBottom: 1, width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {item.catalog_items.name}
-                          </span>
-                          <img
-                            src={item.catalog_items.image_url}
-                            alt={item.catalog_items.name}
-                            style={{ width: '100%', aspectRatio: '1', objectFit: 'contain' }}
-                          />
-                          <span style={{ fontSize: 9, color: '#0055b3', marginTop: 1 }}>R$0</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Pagination */}
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 6 }}>
-                <button
-                  onClick={() => setTheirInvPage(p => Math.max(1, p - 1))}
-                  disabled={theirInvPage === 1}
-                  style={{ background: '#e0e0e0', border: '1px solid #bbb', padding: '2px 8px', cursor: theirInvPage === 1 ? 'not-allowed' : 'pointer', opacity: theirInvPage === 1 ? 0.5 : 1 }}
-                >◄</button>
-                <span style={{ fontSize: 13 }}>Page {theirInvPage}</span>
-                <button
-                  onClick={() => setTheirInvPage(p => Math.min(theirTotalPages, p + 1))}
-                  disabled={theirInvPage === theirTotalPages}
-                  style={{ background: '#e0e0e0', border: '1px solid #bbb', padding: '2px 8px', cursor: theirInvPage === theirTotalPages ? 'not-allowed' : 'pointer', opacity: theirInvPage === theirTotalPages ? 0.5 : 1 }}
-                >►</button>
-              </div>
-            </div>
-
-          </div>
+          ))}
         </div>
+
+        {/* Send Trade */}
+        {activeTab === 'send' && (
+          <div>
+            {!selectedUser ? (
+              <div className="rbx16-panel">
+                <div className="rbx16-panel-header">Find a User</div>
+                <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input type="text" placeholder="Search by username or ID..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && searchUsers()} style={{ flex: 1, padding: '6px 10px' }} />
+                    <button className="rbx16-btn-continue" onClick={searchUsers} disabled={searching}>Search</button>
+                  </div>
+                  {searchResults.length > 0 && searchResults.map((result) => (
+                    <div key={result.user_id} onClick={() => selectUser(result)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', border: '1px solid #e8e8e8', cursor: 'pointer', background: '#fafafa' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <UserAvatar userId={result.user_id} size="md" />
+                        <div>
+                          <span style={{ fontWeight: 600, fontSize: 13, color: '#0055b3' }}>{result.username}</span>
+                          <span style={{ fontSize: 11, color: '#999', marginLeft: 6 }}>#{result.numeric_id}</span>
+                        </div>
+                      </div>
+                      <button className="rbx16-btn-continue" style={{ fontSize: 11, padding: '2px 8px' }}>Select</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="rbx16-panel" style={{ marginBottom: 12 }}>
+                  <div className="rbx16-panel-body" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 13, color: '#666' }}>Trading with:</span>
+                      <UserAvatar userId={selectedUser.user_id} size="sm" />
+                      <span style={{ fontWeight: 700, fontSize: 14 }}>{selectedUser.username}</span>
+                    </div>
+                    <button className="rbx16-btn-cancel" style={{ fontSize: 12, padding: '3px 10px' }} onClick={() => setSelectedUser(null)}>Cancel</button>
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  {/* Your Offer */}
+                  <div className="rbx16-panel">
+                    <div className="rbx16-panel-header" style={{ background: '#e8f4ff' }}>You are offering</div>
+                    <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 12, color: '#666' }}>💎</span>
+                        <input type="number" min={0} max={profile?.emeralds || 0} value={myEmeralds} onChange={(e) => setMyEmeralds(Math.min(parseInt(e.target.value) || 0, profile?.emeralds || 0))} style={{ width: 80, padding: '4px 6px', fontSize: 12 }} />
+                        <span style={{ fontSize: 11, color: '#999' }}>/ {profile?.emeralds.toLocaleString()}</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: '#666', fontWeight: 600 }}>Your limited items:</div>
+                      {myInventory.length === 0 ? <p style={{ fontSize: 12, color: '#999' }}>No limited items</p> : (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, maxHeight: 200, overflowY: 'auto' }}>
+                          {myInventory.map((item) => (
+                            <div key={item.id} onClick={() => toggleMyItem(item.id)} style={{ border: selectedMyItems.includes(item.id) ? '2px solid #02b757' : '1px solid #e8e8e8', cursor: 'pointer', background: selectedMyItems.includes(item.id) ? '#efffef' : '#fff' }}>
+                              <img src={item.catalog_items.image_url} alt={item.catalog_items.name} style={{ width: '100%', aspectRatio: '1', objectFit: 'contain', padding: 2 }} />
+                              <div style={{ fontSize: 9, padding: '1px 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#0055b3' }}>{item.catalog_items.name}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Their Offer */}
+                  <div className="rbx16-panel">
+                    <div className="rbx16-panel-header" style={{ background: '#fff8e1' }}>You are requesting</div>
+                    <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 12, color: '#666' }}>💎</span>
+                        <input type="number" min={0} value={theirEmeralds} onChange={(e) => setTheirEmeralds(parseInt(e.target.value) || 0)} style={{ width: 80, padding: '4px 6px', fontSize: 12 }} />
+                      </div>
+                      <div style={{ fontSize: 12, color: '#666', fontWeight: 600 }}>Their limited items:</div>
+                      {theirInventory.length === 0 ? <p style={{ fontSize: 12, color: '#999' }}>No limited items</p> : (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, maxHeight: 200, overflowY: 'auto' }}>
+                          {theirInventory.map((item) => (
+                            <div key={item.id} onClick={() => toggleTheirItem(item.id)} style={{ border: selectedTheirItems.includes(item.id) ? '2px solid #0074BD' : '1px solid #e8e8e8', cursor: 'pointer', background: selectedTheirItems.includes(item.id) ? '#e8f4ff' : '#fff' }}>
+                              <img src={item.catalog_items.image_url} alt={item.catalog_items.name} style={{ width: '100%', aspectRatio: '1', objectFit: 'contain', padding: 2 }} />
+                              <div style={{ fontSize: 9, padding: '1px 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#0055b3' }}>{item.catalog_items.name}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center', marginTop: 12 }}>
+                  <button className="rbx16-btn-buy" onClick={sendTrade} disabled={sendingTrade || (selectedMyItems.length === 0 && selectedTheirItems.length === 0 && myEmeralds === 0 && theirEmeralds === 0)} style={{ fontSize: 14, padding: '8px 32px', opacity: sendingTrade ? 0.5 : 1 }}>
+                    {sendingTrade ? 'Sending...' : 'Send Trade Request'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Pending */}
+        {activeTab === 'pending' && (
+          <div>
+            {pendingTrades.length === 0 ? (
+              <div className="rbx16-panel"><div className="rbx16-panel-body" style={{ textAlign: 'center', padding: 40, color: '#999', fontSize: 13 }}>No pending trades</div></div>
+            ) : pendingTrades.map((trade) => (
+              <TradeCard key={trade.id} trade={trade} currentUserId={user.id} onAction={handleTrade} />
+            ))}
+          </div>
+        )}
+
+        {/* History */}
+        {activeTab === 'history' && (
+          <div>
+            {tradeHistory.length === 0 ? (
+              <div className="rbx16-panel"><div className="rbx16-panel-body" style={{ textAlign: 'center', padding: 40, color: '#999', fontSize: 13 }}>No trade history</div></div>
+            ) : tradeHistory.map((trade) => (
+              <TradeCard key={trade.id} trade={trade} currentUserId={user.id} isHistory />
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -758,15 +529,27 @@ const Trading = () => {
 
       {/* Tabs */}
       <div className="flex justify-center gap-2">
-        <Button variant={activeTab === 'pending' ? 'default' : 'outline'} onClick={() => setActiveTab('pending')} className="gap-2">
+        <Button
+          variant={activeTab === 'pending' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('pending')}
+          className="gap-2"
+        >
           <Clock className="w-4 h-4" />
           Pending ({pendingTrades.length})
         </Button>
-        <Button variant={activeTab === 'send' ? 'neon' : 'outline'} onClick={() => setActiveTab('send')} className="gap-2">
+        <Button
+          variant={activeTab === 'send' ? 'neon' : 'outline'}
+          onClick={() => setActiveTab('send')}
+          className="gap-2"
+        >
           <Send className="w-4 h-4" />
           Send Trade
         </Button>
-        <Button variant={activeTab === 'history' ? 'default' : 'outline'} onClick={() => setActiveTab('history')} className="gap-2">
+        <Button
+          variant={activeTab === 'history' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('history')}
+          className="gap-2"
+        >
           <Package className="w-4 h-4" />
           History
         </Button>
@@ -804,7 +587,11 @@ const Trading = () => {
                           <div className="flex items-center gap-2">
                             <span className="font-bold">{result.username}</span>
                             {result.is_verified && (
-                              <img src="/images/verified-badge.png" alt="Verified" className="w-4 h-4" />
+                              <img 
+                                src="/images/verified-badge.png"
+                                alt="Verified" 
+                                className="w-4 h-4"
+                              />
                             )}
                           </div>
                           <span className="text-sm text-muted-foreground">#{result.numeric_id}</span>
@@ -818,6 +605,7 @@ const Trading = () => {
             </div>
           ) : (
             <div className="space-y-6">
+              {/* Trade Header */}
               <div className="cyber-card p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="text-muted-foreground">Trading with:</span>
@@ -825,7 +613,11 @@ const Trading = () => {
                     <UserAvatar userId={selectedUser.user_id} size="sm" />
                     <span className="font-bold">{selectedUser.username}</span>
                     {selectedUser.is_verified && (
-                      <img src="/images/verified-badge.png" alt="Verified" className="w-4 h-4" />
+                      <img 
+                        src="/images/verified-badge.png"
+                        alt="Verified" 
+                        className="w-4 h-4"
+                      />
                     )}
                   </div>
                 </div>
@@ -835,15 +627,27 @@ const Trading = () => {
                 </Button>
               </div>
 
+              {/* Trade Editor */}
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Your Offer */}
                 <div className="cyber-card p-6 space-y-4">
                   <h3 className="font-display font-bold text-lg text-accent">You are offering</h3>
+                  
+                  {/* Your Emeralds */}
                   <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
                     <Gem className="w-5 h-5 text-accent" />
-                    <Input type="number" min={0} max={profile?.emeralds || 0} value={myEmeralds} onChange={(e) => setMyEmeralds(Math.min(parseInt(e.target.value) || 0, profile?.emeralds || 0))} className="w-24 h-8" />
+                    <Input
+                      type="number"
+                      min={0}
+                      max={profile?.emeralds || 0}
+                      value={myEmeralds}
+                      onChange={(e) => setMyEmeralds(Math.min(parseInt(e.target.value) || 0, profile?.emeralds || 0))}
+                      className="w-24 h-8"
+                    />
                     <span className="text-sm text-muted-foreground">/ {profile?.emeralds.toLocaleString()}</span>
                   </div>
+
+                  {/* Your Items */}
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">Your limited items:</p>
                     {myInventory.length === 0 ? (
@@ -854,9 +658,17 @@ const Trading = () => {
                           <div
                             key={item.id}
                             onClick={() => toggleMyItem(item.id)}
-                            className={`p-2 rounded-lg border-2 cursor-pointer transition-all ${selectedMyItems.includes(item.id) ? 'border-accent bg-accent/10' : 'border-border hover:border-accent/50'}`}
+                            className={`p-2 rounded-lg border-2 cursor-pointer transition-all ${
+                              selectedMyItems.includes(item.id)
+                                ? 'border-accent bg-accent/10'
+                                : 'border-border hover:border-accent/50'
+                            }`}
                           >
-                            <img src={item.catalog_items.image_url} alt={item.catalog_items.name} className="w-full aspect-square object-contain rounded" />
+                            <img
+                              src={item.catalog_items.image_url}
+                              alt={item.catalog_items.name}
+                              className="w-full aspect-square object-contain rounded"
+                            />
                             <p className="text-xs text-center truncate mt-1">{item.catalog_items.name}</p>
                           </div>
                         ))}
@@ -865,14 +677,25 @@ const Trading = () => {
                   </div>
                 </div>
 
-                {/* Their Offer */}
+                {/* Their Offer (Request) */}
                 <div className="cyber-card p-6 space-y-4">
                   <h3 className="font-display font-bold text-lg text-primary">You are requesting</h3>
+                  
+                  {/* Their Emeralds */}
                   <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
                     <Gem className="w-5 h-5 text-accent" />
-                    <Input type="number" min={0} max={selectedUser.emeralds} value={theirEmeralds} onChange={(e) => setTheirEmeralds(Math.min(parseInt(e.target.value) || 0, selectedUser.emeralds))} className="w-24 h-8" />
+                    <Input
+                      type="number"
+                      min={0}
+                      max={selectedUser.emeralds}
+                      value={theirEmeralds}
+                      onChange={(e) => setTheirEmeralds(Math.min(parseInt(e.target.value) || 0, selectedUser.emeralds))}
+                      className="w-24 h-8"
+                    />
                     <span className="text-sm text-muted-foreground">/ {selectedUser.emeralds.toLocaleString()}</span>
                   </div>
+
+                  {/* Their Items */}
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">Their limited items:</p>
                     {theirInventory.length === 0 ? (
@@ -883,9 +706,17 @@ const Trading = () => {
                           <div
                             key={item.id}
                             onClick={() => toggleTheirItem(item.id)}
-                            className={`p-2 rounded-lg border-2 cursor-pointer transition-all ${selectedTheirItems.includes(item.id) ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'}`}
+                            className={`p-2 rounded-lg border-2 cursor-pointer transition-all ${
+                              selectedTheirItems.includes(item.id)
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border hover:border-primary/50'
+                            }`}
                           >
-                            <img src={item.catalog_items.image_url} alt={item.catalog_items.name} className="w-full aspect-square object-contain rounded" />
+                            <img
+                              src={item.catalog_items.image_url}
+                              alt={item.catalog_items.name}
+                              className="w-full aspect-square object-contain rounded"
+                            />
                             <p className="text-xs text-center truncate mt-1">{item.catalog_items.name}</p>
                           </div>
                         ))}
@@ -895,8 +726,14 @@ const Trading = () => {
                 </div>
               </div>
 
+              {/* Send Button */}
               <div className="flex justify-center">
-                <Button variant="neon" size="lg" onClick={sendTrade} disabled={sendingTrade || (selectedMyItems.length === 0 && selectedTheirItems.length === 0 && myEmeralds === 0 && theirEmeralds === 0)}>
+                <Button
+                  variant="neon"
+                  size="lg"
+                  onClick={sendTrade}
+                  disabled={sendingTrade || (selectedMyItems.length === 0 && selectedTheirItems.length === 0 && myEmeralds === 0 && theirEmeralds === 0)}
+                >
                   {sendingTrade ? (
                     <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                   ) : (
@@ -922,7 +759,12 @@ const Trading = () => {
             </div>
           ) : (
             pendingTrades.map((trade) => (
-              <TradeCard key={trade.id} trade={trade} currentUserId={user.id} onAction={handleTrade} />
+              <TradeCard 
+                key={trade.id} 
+                trade={trade} 
+                currentUserId={user.id} 
+                onAction={handleTrade}
+              />
             ))
           )}
         </div>
@@ -938,7 +780,12 @@ const Trading = () => {
             </div>
           ) : (
             tradeHistory.map((trade) => (
-              <TradeCard key={trade.id} trade={trade} currentUserId={user.id} isHistory />
+              <TradeCard 
+                key={trade.id} 
+                trade={trade} 
+                currentUserId={user.id}
+                isHistory
+              />
             ))
           )}
         </div>
@@ -948,13 +795,13 @@ const Trading = () => {
 };
 
 // Trade Card Component
-const TradeCard = ({
-  trade,
-  currentUserId,
+const TradeCard = ({ 
+  trade, 
+  currentUserId, 
   onAction,
-  isHistory = false
-}: {
-  trade: Trade;
+  isHistory = false 
+}: { 
+  trade: Trade; 
   currentUserId: string;
   onAction?: (id: string, action: 'accept' | 'decline' | 'cancel') => void;
   isHistory?: boolean;
@@ -973,12 +820,20 @@ const TradeCard = ({
 
     const { data } = await supabase
       .from('user_inventory')
-      .select(`id, catalog_items (name, image_url)`)
+      .select(`
+        id,
+        catalog_items (
+          name,
+          image_url
+        )
+      `)
       .in('id', allItemIds);
 
     if (data) {
       const details: Record<string, any> = {};
-      data.forEach((item: any) => { details[item.id] = item.catalog_items; });
+      data.forEach((item: any) => {
+        details[item.id] = item.catalog_items;
+      });
       setItemDetails(details);
     }
   };
@@ -994,20 +849,29 @@ const TradeCard = ({
 
   return (
     <div className="cyber-card p-6 space-y-4">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-muted-foreground">{isSender ? 'Trade to:' : 'Trade from:'}</span>
           <Link to={`/profile/${otherUser?.user_id}`} className="flex items-center gap-2 hover:text-primary">
             <span className="font-bold">{otherUser?.username}</span>
             {otherUser?.is_verified && (
-              <img src="/images/verified-badge.png" alt="Verified" className="w-4 h-4" />
+              <img 
+                src="/images/verified-badge.png" 
+                alt="Verified" 
+                className="w-4 h-4"
+              />
             )}
           </Link>
         </div>
-        <span className={`text-sm font-medium uppercase ${getStatusColor()}`}>{trade.status}</span>
+        <span className={`text-sm font-medium uppercase ${getStatusColor()}`}>
+          {trade.status}
+        </span>
       </div>
 
+      {/* Trade Contents */}
       <div className="grid md:grid-cols-2 gap-4">
+        {/* Sender Offer */}
         <div className="p-4 bg-muted/20 rounded-lg">
           <p className="text-sm text-muted-foreground mb-2">
             {isSender ? 'You offered:' : `${trade.sender_profile?.username} offered:`}
@@ -1022,13 +886,18 @@ const TradeCard = ({
             {trade.sender_items.map((itemId) => (
               <div key={itemId} className="w-12 h-12 bg-muted/30 rounded-lg overflow-hidden">
                 {itemDetails[itemId] && (
-                  <img src={itemDetails[itemId].image_url} alt={itemDetails[itemId].name} className="w-full h-full object-contain" />
+                  <img 
+                    src={itemDetails[itemId].image_url} 
+                    alt={itemDetails[itemId].name}
+                    className="w-full h-full object-contain"
+                  />
                 )}
               </div>
             ))}
           </div>
         </div>
 
+        {/* Receiver Offer */}
         <div className="p-4 bg-muted/20 rounded-lg">
           <p className="text-sm text-muted-foreground mb-2">
             {!isSender ? 'You offered:' : `${trade.receiver_profile?.username} offered:`}
@@ -1043,7 +912,11 @@ const TradeCard = ({
             {trade.receiver_items.map((itemId) => (
               <div key={itemId} className="w-12 h-12 bg-muted/30 rounded-lg overflow-hidden">
                 {itemDetails[itemId] && (
-                  <img src={itemDetails[itemId].image_url} alt={itemDetails[itemId].name} className="w-full h-full object-contain" />
+                  <img 
+                    src={itemDetails[itemId].image_url} 
+                    alt={itemDetails[itemId].name}
+                    className="w-full h-full object-contain"
+                  />
                 )}
               </div>
             ))}
@@ -1051,6 +924,7 @@ const TradeCard = ({
         </div>
       </div>
 
+      {/* Actions */}
       {!isHistory && trade.status === 'pending' && onAction && (
         <div className="flex justify-end gap-2">
           {isSender ? (
@@ -1076,3 +950,4 @@ const TradeCard = ({
   );
 };
 
+export default Trading;
