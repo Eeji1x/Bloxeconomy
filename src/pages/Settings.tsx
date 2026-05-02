@@ -284,6 +284,34 @@ const Settings = () => {
             </div>
           </div>
         )}
+
+        {/* RCC Mode (only if user has games beta access) */}
+        {activeSection === 'rcc' && hasGamesBeta && (
+          <div className="rbx16-panel">
+            <div className="rbx16-panel-header">RCC Mode (Beta)</div>
+            <div className="rbx16-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <p className="rbx16-text-muted">
+                <strong>RCC Mode</strong> enables high-fidelity rendering in the Games client:
+                real-time shadows, ACES tone mapping, atmospheric fog, and a sharper higher-DPI render.
+                Costs more performance — recommended for desktops with a discrete GPU.
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: '#f8f8f8', border: '1px solid #e0e0e0' }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 14 }}>Status</div>
+                  <div style={{ fontSize: 12, color: rccOn ? '#02b757' : '#999' }}>
+                    {rccOn ? '● Enabled — high fidelity' : '○ Disabled — standard rendering'}
+                  </div>
+                </div>
+                <button className={rccOn ? 'rbx16-btn-cancel' : 'rbx16-btn-buy'} onClick={toggleRcc}>
+                  {rccOn ? 'Turn Off' : 'Turn On'}
+                </button>
+              </div>
+              <p style={{ fontSize: 11, color: '#999' }}>
+                Saved locally to this device. Changes take effect next time you join a game.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
