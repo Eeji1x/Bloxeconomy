@@ -18,10 +18,13 @@ import AdminPlayers from '@/pages/AdminPlayers';
 import AltDetectionPanel from '@/components/admin/AltDetectionPanel';
 import ApplicationsPanel from '@/components/admin/ApplicationsPanel';
 import BetaKeysPanel from '@/components/admin/BetaKeysPanel';
+import ChatModeratorPanel from '@/components/admin/ChatModeratorPanel';
+import AssetModeratorPanel from '@/components/admin/AssetModeratorPanel';
 import {
   Shield, Users, ShoppingBag, Gift, Megaphone, Gem, Ban, UserCheck,
   Plus, Trash2, Save, BadgeCheck, RefreshCw, RotateCcw, Edit,
-  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye, FileText, Upload, Key
+  AlertTriangle, Wrench, Trophy, Mail, Clock, Terminal, Eye, FileText, Upload, Key,
+  MessageSquare, Image as ImageIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { forceDeleteItem } from '@/lib/forceDeleteItem';
@@ -47,6 +50,8 @@ const tabs: Tab[] = [
   { id: 'alt-detection', label: 'Alt Detection', icon: <Eye className="w-4 h-4" /> },
   { id: 'applications', label: 'Applications', icon: <FileText className="w-4 h-4" /> },
   { id: 'beta-keys', label: 'Beta Keys', icon: <Key className="w-4 h-4" /> },
+  { id: 'chat-mod', label: 'Chat Moderator', icon: <MessageSquare className="w-4 h-4" /> },
+  { id: 'asset-mod', label: 'Asset Moderator', icon: <ImageIcon className="w-4 h-4" /> },
   { id: 'wipe', label: 'Database Wipe', icon: <AlertTriangle className="w-4 h-4" /> },
 ];
 
@@ -129,6 +134,8 @@ const Admin = () => {
         {activeTab === 'alt-detection' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AltDetectionPanel /></div>}
         {activeTab === 'applications' && (isAdmin || isOwner) && <div className="cyber-card p-6"><ApplicationsPanel /></div>}
         {activeTab === 'beta-keys' && (isAdmin || isOwner) && <div className="cyber-card p-6"><BetaKeysPanel /></div>}
+        {activeTab === 'chat-mod' && (isAdmin || isOwner) && <div className="cyber-card p-6"><ChatModeratorPanel /></div>}
+        {activeTab === 'asset-mod' && (isAdmin || isOwner) && <div className="cyber-card p-6"><AssetModeratorPanel /></div>}
         {activeTab === 'wipe' && (isAdmin || isOwner) && <div className="cyber-card p-6"><DatabaseWipePanel /></div>}
       </div>
     </div>
