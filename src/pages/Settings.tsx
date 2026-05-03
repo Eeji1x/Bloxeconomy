@@ -6,29 +6,44 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-  Settings as SettingsIcon, 
-  User, 
-  Lock, 
+import {
+  Settings as SettingsIcon,
+  User,
+  Lock,
   Gem,
   Save,
   AlertCircle,
   Check,
-  Palette,
+  Crown,
   Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useTheme, THEMES, ThemeId } from '@/contexts/ThemeContext';
+import { useTheme, THEMES } from '@/contexts/ThemeContext';
 import { isRccModeEnabled, setRccMode } from '@/pages/Games';
 
-type SettingsSection = 'username' | 'password' | 'themes' | 'rcc';
+type SettingsSection = 'username' | 'password' | 'builders_club' | 'themes' | 'rcc';
+
+type BcTier = 'classic' | 'turbo' | 'outrageous';
+interface BcSubscription {
+  tier: BcTier;
+  active: boolean;
+  expires_at: string | null;
+}
+
+const BC_TIERS: { id: BcTier; name: string; daily: number; cost: number; color: string }[] = [
+  { id: 'classic', name: 'Builders Club', daily: 130, cost: 1500, color: '#22ff88' },
+  { id: 'turbo', name: 'Turbo Builders Club', daily: 200, cost: 2500, color: '#ff9d2e' },
+  { id: 'outrageous', name: 'Outrageous Builders Club', daily: 300, cost: 4000, color: '#ff35d6' },
+];
 
 const Settings = () => {
-  const { user, profile, isLoading, refreshProfile } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { user, profile, isLoading, refreshProfile, signOut } = useAuth();
+  const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState<SettingsSection>('username');
   const [hasGamesBeta, setHasGamesBeta] = useState(false);
   const [rccOn, setRccOn] = useState<boolean>(isRccModeEnabled());
+  const [bc, setBc] = useState<BcSubscription | null>(null);
+  const [bcLoading, setBcLoading] = useState<BcTier | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -39,7 +54,52 @@ const Settings = () => {
       .eq('feature', 'games')
       .maybeSingle()
       .then(({ data }) => setHasGamesBeta(!!data));
+
+    // Load Builders Club subscription
+    (supabase as any)
+      .from('builders_club_subscriptions')
+      .select('tier, active, expires_at')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }: { data: BcSubscription | null }) => setBc(data));
   }, [user]);
+
+  const refreshBc = async () => {
+    if (!user) return;
+    const { data } = await (supabase as any)
+      .from('builders_club_subscriptions')
+      .select('tier, active, expires_at')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    setBc(data);
+  };
+
+  const handleActivateBc = async (tier: BcTier) => {
+    if (!profile) return;
+    const tierInfo = BC_TIERS.find(t => t.id === tier)!;
+    if (profile.emeralds < tierInfo.cost) {
+      toast.error(`Need ${tierInfo.cost} emeralds to activate ${tierInfo.name}`);
+      return;
+    }
+    setBcLoading(tier);
+    try {
+      const { data, error } = await supabase.rpc('activate_builders_club', { p_tier: tier });
+      if (error) throw error;
+      const result = data as { success: boolean; message?: string };
+      if (!result?.success) {
+        toast.error(result?.message || 'Activation failed');
+        return;
+      }
+      toast.success(`${tierInfo.name} activated! +${tierInfo.daily} emeralds/day for 30 days.`);
+      await refreshProfile();
+      await refreshBc();
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to activate Builders Club');
+    } finally {
+      setBcLoading(null);
+    }
+  };
 
   const toggleRcc = () => {
     const next = !rccOn;
@@ -59,15 +119,14 @@ const Settings = () => {
   const [passwordError, setPasswordError] = useState('');
 
   const USERNAME_CHANGE_COST = 1000;
-  const is2016 = theme === 'roblox2016';
-  const is2015 = theme === 'roblox2015';
-  const is2012 = theme === 'roblox2012';
-  const isClassic = is2016 || is2015 || is2012;
+  // Theme is forced to 'sodablox' (futuristic) — classic layouts are dead code.
+  const isClassic = false;
+  void theme;
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className={isClassic ? (is2015 ? "rbx15-spinner" : "rbx16-spinner") : "w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"} />
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -90,13 +149,31 @@ const Settings = () => {
       const validationResponse = await supabase.functions.invoke('validate-username', { body: { username: newUsername } });
       if (validationResponse.error || !validationResponse.data?.valid) { setUsernameError(validationResponse.data?.message || 'Username is not allowed'); setUsernameLoading(false); return; }
       if (validationResponse.data?.replaced) { setUsernameError('Username contains inappropriate content and is not allowed'); setUsernameLoading(false); return; }
-      const { error } = await supabase.from('profiles').update({ username: newUsername, emeralds: profile.emeralds - USERNAME_CHANGE_COST }).eq('user_id', user.id);
-      if (error) throw error;
+
+      // Use the change_username RPC (bypasses the restrict_profile_self_update trigger).
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('change_username', { p_new_username: newUsername });
+      if (rpcError) throw rpcError;
+      const result = rpcResult as { success: boolean; message?: string };
+      if (!result?.success) {
+        setUsernameError(result?.message || 'Failed to change username.');
+        setUsernameLoading(false);
+        return;
+      }
+
+      // Update the auth email so subsequent logins use the new username-derived email.
       const newEmail = `${newUsername.toLowerCase()}@sodablox.local`;
       await supabase.auth.updateUser({ email: newEmail });
-      toast.success('Username changed successfully!');
+
+      toast.success('Username changed! You will be signed out — log back in with your new username.');
       setNewUsername('');
       await refreshProfile();
+
+      // Force re-login with the new username on the web client.
+      setTimeout(async () => {
+        try { localStorage.removeItem('force_logout_version'); } catch { /* ignore */ }
+        await signOut();
+        window.location.href = '/login';
+      }, 1500);
     } catch (error) {
       console.error('Error changing username:', error);
       setUsernameError('Failed to change username. Please try again.');
@@ -128,10 +205,8 @@ const Settings = () => {
     }
   };
 
-  const handleSelectTheme = (id: ThemeId) => {
-    setTheme(id);
-    toast.success(`Theme changed to ${THEMES.find(t => t.id === id)?.name}`);
-  };
+  // Theme switching is permanently disabled.
+  void THEMES;
 
   /* ═══════════════════════════════════════════
      ROBLOX 2016 SETTINGS LAYOUT
@@ -338,6 +413,9 @@ const Settings = () => {
         <Button variant={activeSection === 'password' ? 'default' : 'ghost'} onClick={() => setActiveSection('password')} className="gap-2">
           <Lock className="w-4 h-4" /> Password
         </Button>
+        <Button variant={activeSection === 'builders_club' ? 'default' : 'ghost'} onClick={() => setActiveSection('builders_club')} className="gap-2">
+          <Crown className="w-4 h-4" /> Builders Club
+        </Button>
         {/* Theme switching temporarily disabled (bugged) */}
         {hasGamesBeta && (
           <Button variant={activeSection === 'rcc' ? 'default' : 'ghost'} onClick={() => setActiveSection('rcc')} className="gap-2">
@@ -396,6 +474,94 @@ const Settings = () => {
             Theme switching is temporarily disabled while we fix layout issues across era replicas.
             The futuristic default theme is the only available option for now.
           </p>
+        </div>
+      )}
+
+      {/* Builders Club */}
+      {activeSection === 'builders_club' && (
+        <div className="space-y-4">
+          <div className="cyber-card p-6 space-y-3">
+            <h2 className="text-xl font-display font-bold flex items-center gap-2">
+              <Crown className="w-6 h-6 text-amber-400" /> Builders Club
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Builders Club replaces the old flat 100/day grant. Activate a tier to receive
+              your daily emerald payout. Subscriptions last <strong>30 days</strong>.
+            </p>
+            {bc && bc.active && bc.expires_at && new Date(bc.expires_at) > new Date() ? (
+              <div
+                className="p-3 rounded-lg flex items-center gap-3 border"
+                style={{
+                  borderColor: BC_TIERS.find(t => t.id === bc.tier)?.color,
+                  background: `${BC_TIERS.find(t => t.id === bc.tier)?.color}15`,
+                }}
+              >
+                <Crown className="w-5 h-5" style={{ color: BC_TIERS.find(t => t.id === bc.tier)?.color }} />
+                <div className="flex-1">
+                  <div className="font-bold">
+                    Active: {BC_TIERS.find(t => t.id === bc.tier)?.name}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Expires {new Date(bc.expires_at).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-muted-foreground">Daily payout</div>
+                  <div className="font-bold text-green-400">
+                    +{BC_TIERS.find(t => t.id === bc.tier)?.daily}/day
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="p-3 rounded-lg bg-muted/20 border border-border text-sm text-muted-foreground">
+                You are not currently a Builders Club member. Pick a tier below to activate.
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {BC_TIERS.map(tier => {
+              const isActive = bc?.tier === tier.id && bc?.active;
+              const canAfford = profile.emeralds >= tier.cost;
+              return (
+                <div
+                  key={tier.id}
+                  className="cyber-card p-5 flex flex-col gap-3 transition-all"
+                  style={{
+                    borderColor: isActive ? tier.color : undefined,
+                    boxShadow: isActive ? `0 0 24px ${tier.color}55` : undefined,
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <Crown className="w-5 h-5" style={{ color: tier.color }} />
+                    <h3 className="font-bold" style={{ color: tier.color }}>{tier.name}</h3>
+                  </div>
+                  <div className="text-3xl font-bold">
+                    +{tier.daily} <Gem className="w-5 h-5 inline-block text-primary" />
+                  </div>
+                  <div className="text-xs text-muted-foreground -mt-2">per day</div>
+                  <div className="text-sm flex items-center gap-1.5">
+                    <Gem className="w-4 h-4 text-primary" />
+                    {tier.cost.toLocaleString()} for 30 days
+                  </div>
+                  <Button
+                    onClick={() => handleActivateBc(tier.id)}
+                    disabled={bcLoading === tier.id || !canAfford}
+                    className="w-full mt-auto"
+                    style={{ background: tier.color, color: '#0a0a1a' }}
+                  >
+                    {bcLoading === tier.id
+                      ? 'Activating...'
+                      : isActive
+                      ? 'Extend +30 Days'
+                      : canAfford
+                      ? 'Activate'
+                      : 'Not enough emeralds'}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
