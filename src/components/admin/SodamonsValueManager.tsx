@@ -19,6 +19,7 @@ const SodamonsValueManager = () => {
   const [currentValues, setCurrentValues] = useState<any>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [value, setValue] = useState('');
+  const [rap, setRap] = useState('');
   const [demand, setDemand] = useState('Normal');
   const [trend, setTrend] = useState('Stable');
   const [loading, setLoading] = useState(false);
@@ -53,10 +54,12 @@ const SodamonsValueManager = () => {
 
     if (valuesRes.data) {
       setValue(valuesRes.data.value.toString());
+      setRap((valuesRes.data.rap ?? 0).toString());
       setDemand(valuesRes.data.demand);
       setTrend(valuesRes.data.trend);
     } else {
       setValue(itemRes.data.price.toString());
+      setRap(itemRes.data.price.toString());
       setDemand('Normal');
       setTrend('Stable');
     }
@@ -66,6 +69,7 @@ const SodamonsValueManager = () => {
   const handleSave = async () => {
     if (!item || !user) return;
     const newValue = parseInt(value) || 0;
+    const newRap = parseInt(rap) || 0;
 
     // Save value history
     await supabase.from('value_history').insert({
@@ -79,10 +83,11 @@ const SodamonsValueManager = () => {
       changed_by: user.id,
     });
 
-    // Upsert item values
+    // Upsert item values (includes RAP override)
     if (currentValues) {
       await supabase.from('item_values').update({
         value: newValue,
+        rap: newRap,
         demand,
         trend,
         updated_at: new Date().toISOString(),
@@ -92,14 +97,15 @@ const SodamonsValueManager = () => {
       await supabase.from('item_values').insert({
         item_id: item.id,
         value: newValue,
+        rap: newRap,
         demand,
         trend,
         updated_by: user.id,
       });
     }
 
-    setCurrentValues({ value: newValue, demand, trend });
-    toast.success('Value updated!');
+    setCurrentValues({ value: newValue, rap: newRap, demand, trend });
+    toast.success('Value & RAP updated!');
   };
 
   const toggleTag = async (tag: string) => {
@@ -149,10 +155,15 @@ const SodamonsValueManager = () => {
             </Button>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label>Value</Label>
               <Input type="number" value={value} onChange={(e) => setValue(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>RAP (override)</Label>
+              <Input type="number" value={rap} onChange={(e) => setRap(e.target.value)} />
+              <p className="text-[10px] text-muted-foreground">Manually set Recent Average Price.</p>
             </div>
             <div className="space-y-2">
               <Label>Demand</Label>
