@@ -65,11 +65,16 @@ export const useAuth = () => {
   return context;
 };
 
+  // Daily emeralds are now Builders Club only (130/day for classic, 200 for
+  // turbo, 300 for outrageous). Non-BC users no longer receive a daily grant.
+  // The server-side RPC enforces this; non-BC calls are a no-op so we just
+  // attempt the claim opportunistically on login.
   const autoGrantDailyEmeralds = async () => {
     try {
       await supabase.rpc('claim_daily_emeralds');
     } catch (error) {
-      console.error('Error granting daily emeralds:', error);
+      // Non-BC users will get a 'Builders Club required' message — that's expected.
+      console.debug('Daily emerald claim skipped:', error);
     }
   };
 

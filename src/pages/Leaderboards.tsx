@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { Trophy, Gem, Package, Swords } from 'lucide-react';
 
 interface LeaderboardUser {
   user_id: string;
@@ -12,15 +13,45 @@ interface LeaderboardUser {
   limited_count?: number;
 }
 
+interface SwordFightRow {
+  user_id: string;
+  username: string;
+  kills: number;
+  deaths: number;
+}
+
+type Tab = 'emeralds' | 'limiteds' | 'sword_fight';
+
 const Leaderboards = () => {
-  const [activeTab, setActiveTab] = useState<'emeralds' | 'limiteds'>('emeralds');
+  const [activeTab, setActiveTab] = useState<Tab>('emeralds');
   const [emeraldLeaders, setEmeraldLeaders] = useState<LeaderboardUser[]>([]);
   const [limitedLeaders, setLimitedLeaders] = useState<LeaderboardUser[]>([]);
+  const [swordLeaders, setSwordLeaders] = useState<SwordFightRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchLeaderboards();
+
+    // Live updates for sword fight kills
+    const channel = supabase
+      .channel('sword_fight_lb')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sword_fight_kills' }, () => {
+        fetchSwordLeaders();
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
+
+  const fetchSwordLeaders = async () => {
+    const { data } = await (supabase as any)
+      .from('sword_fight_kills')
+      .select('user_id, username, kills, deaths')
+      .order('kills', { ascending: false })
+      .limit(50);
+    if (data) setSwordLeaders(data as SwordFightRow[]);
+  };
 
   const fetchLeaderboards = async () => {
     setLoading(true);
@@ -30,10 +61,7 @@ const Leaderboards = () => {
       .select('user_id, username, numeric_id, emeralds, is_verified, is_online')
       .order('emeralds', { ascending: false })
       .limit(50);
-
-    if (emeraldData) {
-      setEmeraldLeaders(emeraldData);
-    }
+    if (emeraldData) setEmeraldLeaders(emeraldData);
 
     const { data: profiles } = await (supabase as any)
       .from('public_profiles')
@@ -44,7 +72,6 @@ const Leaderboards = () => {
         .from('catalog_items')
         .select('id')
         .eq('item_type', 'limited');
-
       const limitedItemIds = limitedItems?.map(i => i.id) || [];
 
       const { data: inventory } = await supabase
@@ -67,16 +94,8 @@ const Leaderboards = () => {
       setLimitedLeaders(withLimitedCounts);
     }
 
+    await fetchSwordLeaders();
     setLoading(false);
-  };
-
-  const currentLeaders = activeTab === 'emeralds' ? emeraldLeaders : limitedLeaders;
-
-  const getRankStyle = (index: number): React.CSSProperties => {
-    if (index === 0) return { background: '#fff9e6', fontWeight: 700 };
-    if (index === 1) return { background: '#f5f5f5', fontWeight: 700 };
-    if (index === 2) return { background: '#fef3e8', fontWeight: 700 };
-    return {};
   };
 
   const getRankLabel = (index: number) => {
@@ -86,96 +105,188 @@ const Leaderboards = () => {
     return `${index + 1}`;
   };
 
-  return (
-    <div style={{ maxWidth: 940, margin: '0 auto' }}>
-      <h1 className="rbx16-page-title">Leaderboards</h1>
-      <div className="rbx16-panel">
-        <div className="rbx16-panel-header">
-          <span className="rbx16-panel-header-text">Leaderboards</span>
-        </div>
-        <div className="rbx16-panel-body" style={{ padding: 0 }}>
-          {/* Tabs */}
-          <div style={{ display: 'flex', borderBottom: '1px solid #e3e3e3' }}>
-            <button
-              onClick={() => setActiveTab('emeralds')}
-              style={{
-                padding: '10px 20px',
-                fontSize: 14,
-                fontWeight: activeTab === 'emeralds' ? 700 : 400,
-                color: activeTab === 'emeralds' ? '#0074BD' : '#666',
-                background: activeTab === 'emeralds' ? '#fff' : '#f8f8f8',
-                border: 'none',
-                borderBottom: activeTab === 'emeralds' ? '2px solid #0074BD' : '2px solid transparent',
-                cursor: 'pointer',
-              }}
-            >
-              💎 Most Emeralds
-            </button>
-            <button
-              onClick={() => setActiveTab('limiteds')}
-              style={{
-                padding: '10px 20px',
-                fontSize: 14,
-                fontWeight: activeTab === 'limiteds' ? 700 : 400,
-                color: activeTab === 'limiteds' ? '#0074BD' : '#666',
-                background: activeTab === 'limiteds' ? '#fff' : '#f8f8f8',
-                border: 'none',
-                borderBottom: activeTab === 'limiteds' ? '2px solid #0074BD' : '2px solid transparent',
-                cursor: 'pointer',
-              }}
-            >
-              📦 Most Limiteds
-            </button>
-          </div>
+  const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
+    { id: 'emeralds', label: 'Most Emeralds', icon: <Gem className="w-4 h-4" /> },
+    { id: 'limiteds', label: 'Most Limiteds', icon: <Package className="w-4 h-4" /> },
+    { id: 'sword_fight', label: 'Sword Fight Kills', icon: <Swords className="w-4 h-4" /> },
+  ];
 
-          {/* Table */}
-          {loading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
-              <div className="rbx16-spinner" />
-            </div>
-          ) : currentLeaders.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: '#999', fontSize: 14 }}>
-              No data available yet
-            </div>
-          ) : (
-            <table style={{ width: '100%', fontSize: 14, borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ background: '#f2f2f2', borderBottom: '1px solid #e3e3e3' }}>
-                  <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: '#666', width: 60 }}>Rank</th>
-                  <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: '#666' }}>Player</th>
-                  <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: '#666', width: 130 }}>
-                    {activeTab === 'emeralds' ? 'Emeralds' : 'Limiteds'}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentLeaders.map((u, index) => (
-                  <tr key={u.user_id} style={{ ...getRankStyle(index), borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '8px 12px', textAlign: 'center', fontSize: index < 3 ? 18 : 14 }}>
-                      {getRankLabel(index)}
-                    </td>
-                    <td style={{ padding: '8px 12px' }}>
-                      <Link to={`/profile/${u.user_id}`} className="rbx16-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                        {u.username}
-                        {u.is_verified && <img src="/images/verified-badge.png" alt="Verified" style={{ width: 14, height: 14 }} />}
-                        {u.is_online && <span style={{ fontSize: 10, color: '#00b06f' }}>●</span>}
-                      </Link>
-                      <span style={{ fontSize: 12, color: '#999', marginLeft: 6 }}>#{u.numeric_id}</span>
-                    </td>
-                    <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 700, color: '#393b3d' }}>
-                      {activeTab === 'emeralds'
-                        ? `💎 ${u.emeralds.toLocaleString()}`
-                        : `📦 ${u.limited_count}`
-                      }
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+  return (
+    <div className="max-w-[940px] mx-auto">
+      <h1
+        className="text-3xl font-bold mb-5 flex items-center gap-3"
+        style={{
+          fontFamily: 'Orbitron, sans-serif',
+          color: 'hsl(180 100% 95%)',
+          textShadow: '0 0 16px hsl(180 100% 50% / 0.5)',
+          letterSpacing: '0.04em',
+        }}
+      >
+        <Trophy className="w-7 h-7 text-primary" />
+        Leaderboards
+      </h1>
+
+      <div
+        className="rounded-xl border border-primary/30 overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, hsl(260 40% 10%) 0%, hsl(260 35% 6%) 100%)',
+          boxShadow: '0 0 30px hsl(180 100% 50% / 0.1)',
+        }}
+      >
+        {/* Tabs */}
+        <div className="flex border-b border-primary/20 overflow-x-auto">
+          {tabs.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className="flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+              style={{
+                color: activeTab === t.id ? 'hsl(180 100% 60%)' : 'hsl(180 40% 70%)',
+                background: activeTab === t.id ? 'hsl(260 40% 12%)' : 'transparent',
+                borderBottom: activeTab === t.id ? '2px solid hsl(180 100% 50%)' : '2px solid transparent',
+                boxShadow: activeTab === t.id ? 'inset 0 -1px 16px hsl(180 100% 50% / 0.2)' : 'none',
+              }}
+            >
+              {t.icon}
+              {t.label}
+            </button>
+          ))}
         </div>
+
+        {/* Body */}
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+          </div>
+        ) : activeTab === 'sword_fight' ? (
+          <SwordFightTable rows={swordLeaders} getRankLabel={getRankLabel} />
+        ) : (
+          <UserTable
+            rows={activeTab === 'emeralds' ? emeraldLeaders : limitedLeaders}
+            mode={activeTab}
+            getRankLabel={getRankLabel}
+          />
+        )}
       </div>
     </div>
+  );
+};
+
+// ─── Sub-components ──────────────────────────────────────────────────────────
+
+const rankRowStyle = (index: number): React.CSSProperties => {
+  if (index === 0) return { background: 'linear-gradient(90deg, hsl(50 100% 50% / 0.12), transparent)' };
+  if (index === 1) return { background: 'linear-gradient(90deg, hsl(0 0% 70% / 0.08), transparent)' };
+  if (index === 2) return { background: 'linear-gradient(90deg, hsl(30 80% 50% / 0.12), transparent)' };
+  return {};
+};
+
+const UserTable = ({
+  rows,
+  mode,
+  getRankLabel,
+}: {
+  rows: LeaderboardUser[];
+  mode: 'emeralds' | 'limiteds';
+  getRankLabel: (i: number) => string;
+}) => {
+  if (rows.length === 0) {
+    return <div className="text-center py-10 text-sm text-muted-foreground">No data available yet</div>;
+  }
+  return (
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr style={{ background: 'hsl(260 40% 14%)', color: 'hsl(180 60% 80%)' }}>
+          <th className="py-2 px-3 text-left text-xs uppercase tracking-wider w-16">Rank</th>
+          <th className="py-2 px-3 text-left text-xs uppercase tracking-wider">Player</th>
+          <th className="py-2 px-3 text-right text-xs uppercase tracking-wider w-32">
+            {mode === 'emeralds' ? 'Emeralds' : 'Limiteds'}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((u, index) => (
+          <tr
+            key={u.user_id}
+            className="border-b border-primary/10 hover:bg-primary/5 transition-colors"
+            style={rankRowStyle(index)}
+          >
+            <td className="py-2 px-3 text-center" style={{ fontSize: index < 3 ? 18 : 14 }}>
+              {getRankLabel(index)}
+            </td>
+            <td className="py-2 px-3">
+              <Link to={`/profile/${u.user_id}`} className="text-primary hover:underline inline-flex items-center gap-1.5">
+                {u.username}
+                {u.is_verified && <img src="/images/verified-badge.png" alt="Verified" className="w-3.5 h-3.5" />}
+                {u.is_online && <span className="text-[10px]" style={{ color: 'hsl(150 100% 60%)' }}>●</span>}
+              </Link>
+              <span className="text-xs text-muted-foreground ml-2">#{u.numeric_id}</span>
+            </td>
+            <td className="py-2 px-3 text-right font-bold" style={{ color: mode === 'emeralds' ? 'hsl(150 100% 65%)' : 'hsl(180 100% 95%)' }}>
+              {mode === 'emeralds'
+                ? <span className="inline-flex items-center gap-1"><Gem className="w-3.5 h-3.5" />{u.emeralds.toLocaleString()}</span>
+                : <span className="inline-flex items-center gap-1"><Package className="w-3.5 h-3.5" />{u.limited_count}</span>}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
+const SwordFightTable = ({
+  rows,
+  getRankLabel,
+}: {
+  rows: SwordFightRow[];
+  getRankLabel: (i: number) => string;
+}) => {
+  if (rows.length === 0) {
+    return (
+      <div className="text-center py-10 px-4">
+        <Swords className="w-10 h-10 text-primary/40 mx-auto mb-2" />
+        <p className="text-sm text-muted-foreground">No sword fights yet — be the first!</p>
+        <Link to="/games" className="text-primary hover:underline text-sm mt-2 inline-block">
+          Join Sword Fight →
+        </Link>
+      </div>
+    );
+  }
+  return (
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr style={{ background: 'hsl(260 40% 14%)', color: 'hsl(180 60% 80%)' }}>
+          <th className="py-2 px-3 text-left text-xs uppercase tracking-wider w-16">Rank</th>
+          <th className="py-2 px-3 text-left text-xs uppercase tracking-wider">Player</th>
+          <th className="py-2 px-3 text-right text-xs uppercase tracking-wider w-24">Kills</th>
+          <th className="py-2 px-3 text-right text-xs uppercase tracking-wider w-24">Deaths</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((u, index) => (
+          <tr
+            key={u.user_id}
+            className="border-b border-primary/10 hover:bg-primary/5 transition-colors"
+            style={rankRowStyle(index)}
+          >
+            <td className="py-2 px-3 text-center" style={{ fontSize: index < 3 ? 18 : 14 }}>
+              {getRankLabel(index)}
+            </td>
+            <td className="py-2 px-3">
+              <Link to={`/profile/${u.user_id}`} className="text-primary hover:underline">
+                {u.username}
+              </Link>
+            </td>
+            <td className="py-2 px-3 text-right font-bold" style={{ color: 'hsl(0 100% 70%)' }}>
+              ⚔ {u.kills}
+            </td>
+            <td className="py-2 px-3 text-right text-muted-foreground">
+              {u.deaths}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };
 

@@ -4,13 +4,28 @@ import { Send } from 'lucide-react';
 
 type ChatRow = { id: string; user_id: string; username: string; message: string; created_at: string };
 
-export const GameChat = ({ userId, username }: { userId: string; username: string }) => {
+interface GameChatProps {
+  userId: string;
+  username: string;
+  /** Display name of the current game (e.g. "Classic Baseplate", "Sword Fight"). */
+  gameName?: string;
+  /**
+   * Channel suffix used to group chat per-game. Different games get isolated chat
+   * histories. Defaults to "lobby" so existing call sites continue to work.
+   */
+  gameId?: string;
+}
+
+export const GameChat = ({ userId, username, gameName, gameId = 'lobby' }: GameChatProps) => {
   const [messages, setMessages] = useState<ChatRow[]>([]);
   const [input, setInput] = useState('');
   const [open, setOpen] = useState(true);
   const [sending, setSending] = useState(false);
+  const [presenceCount, setPresenceCount] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
+  const presenceChannelKey = `game_presence_${gameId}`;
 
+  // ─── Fetch initial chat + subscribe to inserts/deletes ────────────────────
   useEffect(() => {
     let mounted = true;
     supabase
@@ -19,13 +34,19 @@ export const GameChat = ({ userId, username }: { userId: string; username: strin
       .order('created_at', { ascending: false })
       .limit(40)
       .then(({ data }) => {
-        if (mounted && data) setMessages(data.reverse() as ChatRow[]);
+        if (mounted && data) setMessages((data as ChatRow[]).reverse());
       });
 
     const channel = supabase
-      .channel('game_chat_room')
+      .channel(`game_chat_room_${gameId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'game_chat' }, (payload) => {
         setMessages((prev) => [...prev.slice(-99), payload.new as ChatRow]);
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'game_chat' }, (payload) => {
+        const removed = payload.old as { id?: string };
+        if (removed?.id) {
+          setMessages((prev) => prev.filter((m) => m.id !== removed.id));
+        }
       })
       .subscribe();
 
@@ -33,7 +54,48 @@ export const GameChat = ({ userId, username }: { userId: string; username: strin
       mounted = false;
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [gameId]);
+
+  // ─── Presence tracking ────────────────────────────────────────────────────
+  // When the last player leaves the game, wipe the chat history so the next
+  // session starts fresh. We only run the wipe if WE are the last player out.
+  useEffect(() => {
+    const presenceChannel = supabase.channel(presenceChannelKey, {
+      config: { presence: { key: userId } },
+    });
+
+    presenceChannel
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        const count = Object.keys(state).length;
+        setPresenceCount(count);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await presenceChannel.track({ user_id: userId, username, joined_at: Date.now() });
+        }
+      });
+
+    return () => {
+      // Untrack first, then check if we were the last player. If we were,
+      // delete all chat messages so the next session starts empty.
+      (async () => {
+        try {
+          await presenceChannel.untrack();
+          // Brief delay to let presence-sync propagate to the server
+          await new Promise((r) => setTimeout(r, 150));
+          const state = presenceChannel.presenceState();
+          const remaining = Object.keys(state).filter((k) => k !== userId).length;
+          if (remaining === 0) {
+            // SECURITY DEFINER RPC; only authenticated users can call.
+            await supabase.rpc('clear_game_chat');
+          }
+        } finally {
+          supabase.removeChannel(presenceChannel);
+        }
+      })();
+    };
+  }, [presenceChannelKey, userId, username]);
 
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
@@ -79,17 +141,30 @@ export const GameChat = ({ userId, username }: { userId: string; username: strin
       >
         <button
           onClick={() => setOpen(!open)}
-          className="w-full flex items-center justify-between px-3 py-1.5 text-white text-xs font-bold"
+          className="w-full flex items-center justify-between px-3 py-1.5 text-white text-xs font-bold gap-2"
           style={{ background: 'rgba(255,255,255,0.05)' }}
         >
-          <span>Chat</span>
-          <span className="opacity-70">{open ? '▾' : '▸'}</span>
+          <span className="flex items-center gap-1.5 truncate">
+            <span className="text-cyan-300">Chat</span>
+            {gameName && (
+              <>
+                <span className="opacity-50">·</span>
+                <span className="font-normal opacity-80 truncate">{gameName}</span>
+              </>
+            )}
+          </span>
+          <span className="opacity-70 flex items-center gap-2">
+            <span className="text-[10px] font-normal">{presenceCount} online</span>
+            <span>{open ? '▾' : '▸'}</span>
+          </span>
         </button>
         {open && (
           <>
             <div ref={listRef} className="h-48 overflow-y-auto px-3 py-2 space-y-1 text-sm text-white">
               {messages.length === 0 && (
-                <div className="text-white/50 text-xs italic">No messages yet — say hi!</div>
+                <div className="text-white/50 text-xs italic">
+                  {gameName ? `In ${gameName} — say hi!` : 'No messages yet — say hi!'}
+                </div>
               )}
               {messages.map((m) => (
                 <div key={m.id} className="leading-snug">
@@ -104,7 +179,7 @@ export const GameChat = ({ userId, username }: { userId: string; username: strin
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Press / to chat…"
+                placeholder={gameName ? `Chat in ${gameName}…` : 'Press / to chat…'}
                 maxLength={200}
                 className="flex-1 bg-white/10 text-white placeholder-white/40 text-sm px-2 py-1 rounded outline-none focus:bg-white/15"
               />

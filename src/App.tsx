@@ -35,6 +35,9 @@ import SodamonsTop from "./pages/SodamonsTop";
 import Banned from "./pages/Banned";
 import EmeraldShop from "./pages/EmeraldShop";
 import Games from "./pages/Games";
+import SwordFight from "./pages/SwordFight";
+import Groups from "./pages/Groups";
+import GroupDetail from "./pages/GroupDetail";
 import Register from "./pages/Register";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -42,7 +45,7 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 // Force logout key - change this value to force all users to re-login
-const FORCE_LOGOUT_VERSION = "security-patch-2026-03-08";
+const FORCE_LOGOUT_VERSION = "username-bc-2026-05-03";
 
 const ForceLogoutWrapper = ({ children }: { children: React.ReactNode }) => {
   const [ready, setReady] = useState(false);
@@ -119,6 +122,9 @@ const App = () => {
                     <Route path="/sodamons/top" element={<SodamonsTop />} />
                     <Route path="/emeralds" element={<EmeraldShop />} />
                     <Route path="/games" element={<Games />} />
+                    <Route path="/games/sword-fight" element={<SwordFight />} />
+                    <Route path="/groups" element={<Groups />} />
+                    <Route path="/groups/:groupId" element={<GroupDetail />} />
                     <Route path="/banned" element={<Banned />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
