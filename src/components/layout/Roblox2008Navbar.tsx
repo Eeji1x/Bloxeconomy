@@ -66,7 +66,7 @@ export const Roblox2008Navbar = () => {
           {/* Center: Logo */}
           <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
             <Link to="/" style={{ textDecoration: 'none' }}>
-              <span className="rbx08-logo-text">SODABLOX</span>
+              <span className="rbx08-logo-text">BloxEconomy</span>
             </Link>
           </div>
 

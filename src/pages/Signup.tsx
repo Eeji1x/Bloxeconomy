@@ -70,10 +70,10 @@ const Signup = () => {
     return (
       <div className="max-w-[400px] mx-auto py-6">
         <div className="rbx08-panel">
-          <div className="rbx08-panel-header">Create a SODABLOX Account</div>
+          <div className="rbx08-panel-header">Create a BloxEconomy Account</div>
           <div className="rbx08-panel-body">
             <p className="text-[11px] text-[#666] mb-3">
-              SODABLOX is free! Fill out the form below to get started. You need an invite key.
+              BloxEconomy is free! Fill out the form below to get started. You need an invite key.
             </p>
 
             {error && (
@@ -160,7 +160,7 @@ const Signup = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary via-secondary to-accent mb-4">
             <UserPlus className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-display font-bold">Join SODABLOX</h1>
+          <h1 className="text-3xl font-display font-bold">Join BloxEconomy</h1>
           <p className="text-muted-foreground">Create your account with an invite key</p>
         </div>
 

@@ -416,7 +416,7 @@ const AnnouncementsPanel = () => {
       <div className="p-6 bg-muted/30 rounded-lg space-y-4">
         <h3 className="font-display font-bold">Create Announcement</h3>
         <div className="space-y-4">
-          <div className="space-y-2"><Label>Message</Label><Input value={formData.text} onChange={(e) => setFormData({ ...formData, text: e.target.value })} placeholder="Welcome to SODABLOX!" /></div>
+          <div className="space-y-2"><Label>Message</Label><Input value={formData.text} onChange={(e) => setFormData({ ...formData, text: e.target.value })} placeholder="Welcome to BloxEconomy!" /></div>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2"><Label>Link URL</Label><Input value={formData.link_url} onChange={(e) => setFormData({ ...formData, link_url: e.target.value })} placeholder="https://..." /></div>
             <div className="space-y-2"><Label>Link Text</Label><Input value={formData.link_text} onChange={(e) => setFormData({ ...formData, link_text: e.target.value })} placeholder="JOIN DISCORD" /></div>

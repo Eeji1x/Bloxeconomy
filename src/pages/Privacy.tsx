@@ -27,7 +27,7 @@ const Privacy = () => {
           <section className="space-y-2">
             <h2 className="text-lg font-display font-bold">1. Information We Collect</h2>
             <p className="text-muted-foreground">
-              When you create an account on SODABLOX, we collect your chosen username and password. 
+              When you create an account on BloxEconomy, we collect your chosen username and password. 
               We do not collect your real name, email address, or other personally identifiable information. 
               We may collect anonymized IP hashes for security purposes such as alt-account detection.
             </p>
@@ -36,7 +36,7 @@ const Privacy = () => {
           <section className="space-y-2">
             <h2 className="text-lg font-display font-bold">2. How We Use Your Information</h2>
             <p className="text-muted-foreground">
-              Your information is used solely to provide and improve the SODABLOX platform. This includes:
+              Your information is used solely to provide and improve the BloxEconomy platform. This includes:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-1">
               <li>Account authentication and security</li>
@@ -58,7 +58,7 @@ const Privacy = () => {
           <section className="space-y-2">
             <h2 className="text-lg font-display font-bold">4. Virtual Economy</h2>
             <p className="text-muted-foreground">
-              SODABLOX features a virtual economy with "Emeralds" as currency. 
+              BloxEconomy features a virtual economy with "Emeralds" as currency. 
               All virtual items and currency have no real-world monetary value. 
               We reserve the right to modify, reset, or adjust any virtual economy elements at any time.
             </p>
@@ -68,7 +68,7 @@ const Privacy = () => {
             <h2 className="text-lg font-display font-bold">5. Third-Party Sharing</h2>
             <p className="text-muted-foreground">
               We do not sell, trade, or share your personal information with third parties. 
-              Your public profile (username, avatar, online status) is visible to other SODABLOX users.
+              Your public profile (username, avatar, online status) is visible to other BloxEconomy users.
             </p>
           </section>
 
@@ -84,7 +84,7 @@ const Privacy = () => {
             <h2 className="text-lg font-display font-bold">7. Changes to This Policy</h2>
             <p className="text-muted-foreground">
               We may update this privacy policy from time to time. 
-              Continued use of SODABLOX after changes constitutes acceptance of the updated policy.
+              Continued use of BloxEconomy after changes constitutes acceptance of the updated policy.
             </p>
           </section>
         </div>

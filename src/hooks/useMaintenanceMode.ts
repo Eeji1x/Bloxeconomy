@@ -4,9 +4,9 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export const useMaintenanceMode = () => {
   const { profile } = useAuth();
-  // Fail-closed default: assume maintenance until backend confirms otherwise
-  const [isMaintenanceMode, setIsMaintenanceMode] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  // Maintenance mode disabled globally per project decision
+  const [isMaintenanceMode, setIsMaintenanceMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Protected numeric IDs that can bypass maintenance
   const BYPASS_IDS = [1, 5];

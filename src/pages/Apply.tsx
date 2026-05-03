@@ -195,7 +195,7 @@ const Apply = () => {
         <div className="text-center space-y-2">
           <FileText className="w-12 h-12 text-primary mx-auto" />
           <h1 className="text-3xl font-display font-bold">
-            Apply to <span className="gradient-text">SODABLOX</span>
+            Apply to <span className="gradient-text">BloxEconomy</span>
           </h1>
           <p className="text-muted-foreground">
             Fill out this application to request access. An admin will review it.
@@ -220,7 +220,7 @@ const Apply = () => {
             <Textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="Who are you? Why do you want to join SODABLOX? Tell us about yourself... (min 20 characters)"
+              placeholder="Who are you? Why do you want to join BloxEconomy? Tell us about yourself... (min 20 characters)"
               rows={5}
             />
             <p className="text-xs text-muted-foreground">{reason.length}/500 characters</p>

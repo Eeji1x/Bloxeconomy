@@ -33,7 +33,7 @@ const Maintenance = () => {
               letterSpacing: 2,
             }}
           >
-            SODABLOX
+            BloxEconomy
           </span>
         </div>
 
@@ -80,7 +80,7 @@ const Maintenance = () => {
               margin: '0 0 24px',
             }}
           >
-            SODABLOX is currently under maintenance. The site will be back
+            BloxEconomy is currently under maintenance. The site will be back
             online soon.
           </p>
 

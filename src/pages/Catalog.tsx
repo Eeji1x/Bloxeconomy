@@ -313,7 +313,7 @@ const Catalog = () => {
   }
 
   /* ═══════════════════════════════════════════
-     DEFAULT SODABLOX LAYOUT
+     DEFAULT BloxEconomy LAYOUT
      ═══════════════════════════════════════════ */
   return (
     <div className="space-y-8">

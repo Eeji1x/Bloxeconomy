@@ -141,7 +141,7 @@ const AdminUserManagement = () => {
 
   const handleToggleOwner = async () => {
     if (!isSuperOwner) {
-      toast.error('Only SODABLOX (ID #1) can grant/remove the Owner role.');
+      toast.error('Only BloxEconomy (ID #1) can grant/remove the Owner role.');
       return;
     }
     if (await checkProtection()) return;
@@ -578,8 +578,8 @@ const AdminUserManagement = () => {
             )}
           </ActionPanel>
 
-          {/* SODABLOX Actions */}
-          <ActionPanel title="SODABLOX Actions" icon={<Shield className="w-5 h-5" />}>
+          {/* BloxEconomy Actions */}
+          <ActionPanel title="BloxEconomy Actions" icon={<Shield className="w-5 h-5" />}>
             <div className="grid grid-cols-2 gap-2">
               <ConfirmAction
                 trigger={<Button variant="outline" className="gap-2"><RotateCcw className="w-4 h-4" /> Reset Avatar</Button>}

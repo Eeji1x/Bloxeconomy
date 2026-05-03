@@ -71,7 +71,7 @@ const AdminCMD = () => {
 
     const info = [
       '',
-      `  \x1b[36mSite:\x1b[0m        SODABLOX`,
+      `  \x1b[36mSite:\x1b[0m        BloxEconomy`,
       `  \x1b[36mURL:\x1b[0m         sodablx.lovable.app`,
       `  \x1b[36mDate:\x1b[0m        ${dateStr}`,
       `  \x1b[36mTime:\x1b[0m        ${timeStr}`,
@@ -345,7 +345,7 @@ const AdminCMD = () => {
         {/* Welcome message */}
         {lines.length === 0 && (
           <div className="mb-2 text-[#6c7086]">
-            SODABLOX Terminal v1.0 — Type <span className="text-[#56b6c2]">help</span> for commands, <span className="text-[#56b6c2]">neofetch</span> for system info.
+            BloxEconomy Terminal v1.0 — Type <span className="text-[#56b6c2]">help</span> for commands, <span className="text-[#56b6c2]">neofetch</span> for system info.
           </div>
         )}
 

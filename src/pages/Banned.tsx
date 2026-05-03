@@ -36,7 +36,7 @@ const Banned = () => {
               Account Suspended
             </h1>
             <p className="text-muted-foreground">
-              Your account has been banned from SODABLOX
+              Your account has been banned from BloxEconomy
             </p>
           </div>
 
@@ -70,7 +70,7 @@ const Banned = () => {
             <p className="text-sm text-muted-foreground">
               <strong className="text-foreground">Think this was a mistake?</strong>
               <br />
-              If you believe your ban was issued in error, please contact the SODABLOX support team
+              If you believe your ban was issued in error, please contact the BloxEconomy support team
               through our official Discord server or support email. Include your username and 
               any relevant information in your appeal.
             </p>

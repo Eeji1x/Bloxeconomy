@@ -583,7 +583,7 @@ const Games = () => {
           </div>
           <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px solid #c3c3c3', flexWrap: 'wrap', gap: 8 }}>
             <div>
-              <div style={{ fontSize: 12, color: '#666' }}>By SODABLOX</div>
+              <div style={{ fontSize: 12, color: '#666' }}>By BloxEconomy</div>
               <div style={{ fontSize: 11, color: '#999' }}>Max Players: 5 • {rcc ? 'High Fidelity' : 'Standard'}</div>
             </div>
             <button className="rbx16-btn-buy" onClick={() => setInGame(true)} style={{ fontSize: 14, padding: '6px 24px' }}>

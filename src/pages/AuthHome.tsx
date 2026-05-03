@@ -39,7 +39,7 @@ const AuthHome = () => {
       <div style={{ background: '#0074BD', height: 45 }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px' }}>
           <Link to="/auth" style={{ color: '#fff', fontSize: 22, fontWeight: 800, textDecoration: 'none', letterSpacing: 1 }}>
-            SODABLOX
+            BloxEconomy
           </Link>
           {!user && (
             <form onSubmit={handleLogin} style={{ display: 'flex', alignItems: 'center', gap: 6 }} className="hidden sm:flex">
@@ -77,7 +77,7 @@ const AuthHome = () => {
       {/* Hero Banner */}
       <div style={{ background: 'linear-gradient(135deg, #0074BD 0%, #00a2ff 50%, #00c3ff 100%)', padding: '60px 20px', textAlign: 'center' }}>
         <h1 style={{ fontSize: 56, fontWeight: 800, color: '#fff', margin: '0 0 16px', letterSpacing: 2, textShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
-          SODABLOX
+          BloxEconomy
         </h1>
         <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.9)', margin: '0 0 32px', maxWidth: 600, marginLeft: 'auto', marginRight: 'auto' }}>
           A virtual world revival. Collect items, trade limiteds, and build your legacy.
@@ -171,7 +171,7 @@ const AuthHome = () => {
           <Link to="/privacy" style={{ color: '#00a2ff', textDecoration: 'none' }}>Privacy Policy</Link>
           <Link to="/apply" style={{ color: '#00a2ff', textDecoration: 'none' }}>Apply</Link>
         </div>
-        <p>© {new Date().getFullYear()} SODABLOX. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} BloxEconomy. All rights reserved.</p>
       </div>
     </div>
   );

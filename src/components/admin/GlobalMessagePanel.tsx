@@ -73,7 +73,7 @@ const GlobalMessagePanel = () => {
 
       <div className="p-6 bg-muted/30 rounded-lg space-y-4">
         <p className="text-sm text-muted-foreground">
-          Send a message to every user's inbox. It will appear from <strong className="text-secondary">SODABLOX</strong>.
+          Send a message to every user's inbox. It will appear from <strong className="text-secondary">BloxEconomy</strong>.
         </p>
 
         <div className="space-y-2">

@@ -237,7 +237,7 @@ const Settings = () => {
             <div className="rbx16-panel" style={{ marginBottom: 12 }}>
               <div className="rbx16-panel-header">Appearance</div>
               <div className="rbx16-panel-body">
-                <p className="rbx16-text-muted">Choose how SODABLOX looks for you.</p>
+                <p className="rbx16-text-muted">Choose how BloxEconomy looks for you.</p>
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
@@ -254,7 +254,7 @@ const Settings = () => {
                   >
                     <div style={{ height: 100, position: 'relative', background: t.preview.bg }}>
                       <div style={{ height: 28, display: 'flex', alignItems: 'center', padding: '0 8px', gap: 6, background: t.preview.navbar }}>
-                        <span style={{ fontSize: 9, fontWeight: 700, color: '#fff' }}>SODABLOX</span>
+                        <span style={{ fontSize: 9, fontWeight: 700, color: '#fff' }}>BloxEconomy</span>
                       </div>
                       <div style={{ display: 'flex', height: 'calc(100% - 28px)' }}>
                         <div style={{ width: 36, background: t.preview.navbar, padding: '6px 4px' }}>
@@ -317,7 +317,7 @@ const Settings = () => {
   }
 
   /* ═══════════════════════════════════════════
-     DEFAULT SODABLOX LAYOUT
+     DEFAULT BloxEconomy LAYOUT
      ═══════════════════════════════════════════ */
   return (
     <div className="max-w-2xl mx-auto space-y-8">
@@ -395,7 +395,7 @@ const Settings = () => {
         <div className="space-y-6">
           <div className="space-y-2">
             <h2 className="text-xl font-display font-bold">Appearance</h2>
-            <p className="text-sm text-muted-foreground">Choose how SODABLOX looks for you. Your preference is saved to your account.</p>
+            <p className="text-sm text-muted-foreground">Choose how BloxEconomy looks for you. Your preference is saved to your account.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -408,7 +408,7 @@ const Settings = () => {
                 >
                   <div className="h-[120px] relative" style={{ background: t.preview.bg }}>
                     <div className="h-8 flex items-center px-3 gap-2" style={{ background: t.preview.navbar }}>
-                      <span className="text-[10px] font-bold text-white">SODABLOX</span>
+                      <span className="text-[10px] font-bold text-white">BloxEconomy</span>
                       <div className="flex gap-1.5 ml-3">
                         {['Tab 1','Tab 2','Tab 3'].map(tab => (
                           <div key={tab} className="h-2 w-8 rounded" style={{ background: 'rgba(255,255,255,0.25)' }} />

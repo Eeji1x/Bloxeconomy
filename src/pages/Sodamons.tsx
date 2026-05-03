@@ -259,7 +259,7 @@ const Sodamons = () => {
   }
 
   /* ═══════════════════════════════════════════
-     DEFAULT SODABLOX LAYOUT
+     DEFAULT BloxEconomy LAYOUT
      ═══════════════════════════════════════════ */
   const SortHeader = ({ label, sortKeyVal }: { label: string; sortKeyVal: SortKey }) => (
     <th

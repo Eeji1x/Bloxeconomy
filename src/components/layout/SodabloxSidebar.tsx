@@ -128,7 +128,7 @@ export const SodabloxSidebar = () => {
 
       <div className="px-5 py-3 border-t border-border">
         <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-          SODABLOX Platform
+          BloxEconomy Platform
         </span>
       </div>
     </div>
@@ -154,7 +154,7 @@ export const SodabloxSidebar = () => {
             </div>
           </div>
           <span className="font-bold text-lg gradient-text hidden sm:block" style={{ fontFamily: 'Orbitron, sans-serif' }}>
-            SODABLOX
+            BloxEconomy
           </span>
         </Link>
 

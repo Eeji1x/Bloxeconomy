@@ -64,7 +64,7 @@ export const Roblox2008Home = () => {
     <div>
       {/* Welcome panel — like madblox "My ROBLOX" */}
       <div className="rbx08-panel">
-        <div className="rbx08-panel-header">Welcome to SODABLOX</div>
+        <div className="rbx08-panel-header">Welcome to BloxEconomy</div>
         <div className="rbx08-panel-body">
           <div style={{ display: 'flex', gap: 10 }}>
             <div style={{ width: 80, height: 80, border: 'solid 1px #000', background: '#eee', flexShrink: 0 }}>

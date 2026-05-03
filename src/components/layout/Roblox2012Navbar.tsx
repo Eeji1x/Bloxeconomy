@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
  */
 
 const navTabs = [
-  { to: '/', label: 'My SODABLOX', authOnly: true },
+  { to: '/', label: 'My BloxEconomy', authOnly: true },
   { to: '/catalog', label: 'Catalog' },
   { to: '/users', label: 'People' },
   { to: '/trading', label: 'Trade' },
@@ -45,7 +45,7 @@ export const Roblox2012Navbar = () => {
           <div className="rbx12-header-inner">
             {/* Logo */}
             <Link to="/" className="rbx12-logo">
-              SODABLOX
+              BloxEconomy
             </Link>
 
             {/* Right side */}

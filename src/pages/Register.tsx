@@ -101,7 +101,7 @@ const Register = () => {
         <div className="max-w-md w-full text-center space-y-6">
           <CheckCircle className="w-16 h-16 text-accent mx-auto" />
           <h1 className="text-3xl font-display font-bold">Account Created!</h1>
-          <p className="text-muted-foreground">Your SODABLOX account has been created. You can now log in.</p>
+          <p className="text-muted-foreground">Your BloxEconomy account has been created. You can now log in.</p>
           <Link to="/login"><Button variant="neon" className="gap-2"><UserPlus className="w-4 h-4" /> Go to Login</Button></Link>
         </div>
       </div>
