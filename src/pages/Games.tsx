@@ -519,7 +519,12 @@ const Games = () => {
           )}
         </div>
 
-        <GameChat userId={user.id} username={(user.user_metadata?.username as string) || user.email?.split('@')[0] || 'Player'} />
+        <GameChat
+          userId={user.id}
+          username={(user.user_metadata?.username as string) || user.email?.split('@')[0] || 'Player'}
+          gameName="Classic Baseplate"
+          gameId="classic-baseplate"
+        />
 
         {!isMobile && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 text-white/70 text-xs bg-black/50 px-4 py-2 rounded">
@@ -546,13 +551,19 @@ const Games = () => {
 
   // Lobby
   return (
-    <div style={{ maxWidth: 800 }}>
-      <div className="rbx16-panel" style={{ marginBottom: 12 }}>
-        <div className="rbx16-panel-header">Games</div>
-        <div className="rbx16-panel-body">
-          <p style={{ fontSize: 13, color: '#666' }}>Play games in your browser — beta access required</p>
-        </div>
-      </div>
+    <div className="max-w-[940px] mx-auto">
+      <h1
+        className="text-3xl font-bold mb-4"
+        style={{
+          fontFamily: 'Orbitron, sans-serif',
+          color: 'hsl(180 100% 95%)',
+          textShadow: '0 0 16px hsl(180 100% 50% / 0.5)',
+          letterSpacing: '0.04em',
+        }}
+      >
+        Games
+      </h1>
+      <p className="text-sm text-muted-foreground mb-5">Play games in your browser — beta access required.</p>
 
       {hasAccess === null ? (
         <div style={{ textAlign: 'center', padding: 40 }}>
@@ -581,32 +592,92 @@ const Games = () => {
           </div>
         </div>
       ) : (
-        <div className="rbx16-panel">
-          <div style={{ height: 180, background: 'linear-gradient(135deg, #2d5a27 0%, #1a4a6e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-            <div style={{ textAlign: 'center', color: '#fff' }}>
-              <div style={{ fontSize: 24, fontWeight: 700 }}>Classic Baseplate</div>
-              <div style={{ fontSize: 13, opacity: 0.85, marginTop: 4 }}>Bricks, baseplate, and a friendly camera</div>
-            </div>
-            {rcc && (
-              <div style={{ position: 'absolute', top: 8, right: 8, background: '#ffb400', color: '#222', padding: '3px 8px', fontSize: 11, fontWeight: 700, borderRadius: 3 }}>
-                RCC MODE
-              </div>
-            )}
-          </div>
-          <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px solid #c3c3c3', flexWrap: 'wrap', gap: 8 }}>
-            <div>
-              <div style={{ fontSize: 12, color: '#666' }}>By BloxEconomy</div>
-              <div style={{ fontSize: 11, color: '#999' }}>Max Players: 5 • {rcc ? 'High Fidelity' : 'Standard'}</div>
-            </div>
-            <button className="rbx16-btn-buy" onClick={() => setInGame(true)} style={{ fontSize: 14, padding: '6px 24px' }}>
-              ▶ Play
-            </button>
-          </div>
-          <div style={{ padding: '8px 16px', borderTop: '1px solid #e0e0e0', background: '#fafafa', fontSize: 11, color: '#666' }}>
-            Tip: enable <strong>RCC Mode</strong> in <strong>Settings → RCC</strong> for shadows, fog, and better lighting.
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Classic Baseplate */}
+          <GameCard
+            title="Classic Baseplate"
+            tagline="Bricks, baseplate, and a friendly camera"
+            backdrop="linear-gradient(135deg, #2d5a27 0%, #1a4a6e 100%)"
+            badge={rcc ? 'RCC MODE' : null}
+            onPlay={() => setInGame(true)}
+            footer={`Max Players: 5 • ${rcc ? 'High Fidelity' : 'Standard'}`}
+          />
+
+          {/* Sword Fight */}
+          <GameCard
+            title="Sword Fight"
+            tagline="Swing, parry, and dominate the leaderboard"
+            backdrop="linear-gradient(135deg, hsl(0 80% 35%) 0%, hsl(280 80% 30%) 100%)"
+            badge="NEW"
+            href="/games/sword-fight"
+            footer="Max Players: 8 • Kills reset on leave"
+          />
         </div>
       )}
+    </div>
+  );
+};
+
+// ─── Game card (futuristic) ─────────────────────────────────────────────────
+const GameCard = ({
+  title,
+  tagline,
+  backdrop,
+  badge,
+  onPlay,
+  href,
+  footer,
+}: {
+  title: string;
+  tagline: string;
+  backdrop: string;
+  badge?: string | null;
+  onPlay?: () => void;
+  href?: string;
+  footer?: string;
+}) => {
+  return (
+    <div
+      className="rounded-xl border border-primary/30 overflow-hidden flex flex-col"
+      style={{
+        background: 'hsl(260 40% 10%)',
+        boxShadow: '0 0 24px hsl(180 100% 50% / 0.1)',
+      }}
+    >
+      <div
+        className="relative flex items-center justify-center"
+        style={{ height: 180, background: backdrop }}
+      >
+        <div className="text-center text-white">
+          <div className="text-2xl font-bold" style={{ fontFamily: 'Orbitron, sans-serif', textShadow: '0 0 16px rgba(0,0,0,0.6)' }}>{title}</div>
+          <div className="text-sm opacity-90 mt-1">{tagline}</div>
+        </div>
+        {badge && (
+          <div
+            className="absolute top-2 right-2 text-[11px] font-bold px-2 py-1 rounded"
+            style={{
+              background: 'linear-gradient(135deg, hsl(180 100% 50%), hsl(300 100% 60%))',
+              color: '#0a0a1a',
+              boxShadow: '0 0 12px hsl(180 100% 50% / 0.5)',
+            }}
+          >
+            {badge}
+          </div>
+        )}
+      </div>
+      <div className="px-4 py-3 flex items-center justify-between flex-wrap gap-2 border-t border-primary/20">
+        <div className="text-xs text-muted-foreground">
+          By BloxEconomy
+          {footer && <div className="text-[11px] mt-0.5">{footer}</div>}
+        </div>
+        {onPlay ? (
+          <Button onClick={onPlay} className="gap-1">▶ Play</Button>
+        ) : href ? (
+          <Button asChild className="gap-1">
+            <a href={href}>▶ Play</a>
+          </Button>
+        ) : null}
+      </div>
     </div>
   );
 };
