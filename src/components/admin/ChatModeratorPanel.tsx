@@ -48,7 +48,7 @@ const ChatModeratorPanel = () => {
   const handlePurgeAll = async () => {
     if (!confirm('Clear ALL game chat messages?')) return;
     setPurging(true);
-    const { error } = await supabase.rpc('clear_game_chat');
+    const { error } = await supabase.rpc('clear_game_chat', { p_game_id: null });
     setPurging(false);
     if (error) { toast.error('Failed to clear chat'); return; }
     toast.success('All chat messages cleared');

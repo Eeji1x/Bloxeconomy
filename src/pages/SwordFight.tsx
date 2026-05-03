@@ -281,9 +281,9 @@ const SwordFight = () => {
 
   const handleDamage = (amount: number) => {
     setHp((prev) => {
+      if (prev <= 0) return prev; // already dead — ignore further hits during respawn window
       const next = Math.max(0, prev - amount);
       if (next === 0) {
-        // Death
         try { void supabase.rpc('record_sword_fight_death'); } catch { /* */ }
         setTimeout(() => setHp(PLAYER_MAX_HP), 1500);
       }

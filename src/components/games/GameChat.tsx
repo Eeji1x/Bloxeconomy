@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Send } from 'lucide-react';
 
-type ChatRow = { id: string; user_id: string; username: string; message: string; created_at: string };
+type ChatRow = { id: string; user_id: string; username: string; message: string; created_at: string; game_id?: string };
 
 interface GameChatProps {
   userId: string;
@@ -31,6 +31,7 @@ export const GameChat = ({ userId, username, gameName, gameId = 'lobby' }: GameC
     supabase
       .from('game_chat')
       .select('*')
+      .eq('game_id', gameId)
       .order('created_at', { ascending: false })
       .limit(40)
       .then(({ data }) => {
@@ -39,12 +40,18 @@ export const GameChat = ({ userId, username, gameName, gameId = 'lobby' }: GameC
 
     const channel = supabase
       .channel(`game_chat_room_${gameId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'game_chat' }, (payload) => {
-        setMessages((prev) => [...prev.slice(-99), payload.new as ChatRow]);
-      })
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'game_chat', filter: `game_id=eq.${gameId}` },
+        (payload) => {
+          setMessages((prev) => [...prev.slice(-99), payload.new as ChatRow]);
+        },
+      )
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'game_chat' }, (payload) => {
-        const removed = payload.old as { id?: string };
-        if (removed?.id) {
+        // DELETE payloads from REPLICA IDENTITY FULL include the old row. Only
+        // act on rows from this game so other rooms aren't filtered out locally.
+        const removed = payload.old as { id?: string; game_id?: string };
+        if (removed?.id && (!removed.game_id || removed.game_id === gameId)) {
           setMessages((prev) => prev.filter((m) => m.id !== removed.id));
         }
       })
@@ -88,7 +95,7 @@ export const GameChat = ({ userId, username, gameName, gameId = 'lobby' }: GameC
           const remaining = Object.keys(state).filter((k) => k !== userId).length;
           if (remaining === 0) {
             // SECURITY DEFINER RPC; only authenticated users can call.
-            await supabase.rpc('clear_game_chat');
+            await supabase.rpc('clear_game_chat', { p_game_id: gameId });
           }
         } finally {
           supabase.removeChannel(presenceChannel);
@@ -121,7 +128,9 @@ export const GameChat = ({ userId, username, gameName, gameId = 'lobby' }: GameC
     const text = input.trim().slice(0, 200);
     if (!text || sending) return;
     setSending(true);
-    const { error } = await supabase.from('game_chat').insert({ user_id: userId, username, message: text });
+    const { error } = await supabase
+      .from('game_chat')
+      .insert({ user_id: userId, username, message: text, game_id: gameId });
     setSending(false);
     if (!error) setInput('');
   };

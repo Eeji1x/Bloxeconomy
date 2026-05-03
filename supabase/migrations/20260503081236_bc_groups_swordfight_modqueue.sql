@@ -448,7 +448,7 @@ BEGIN
   END IF;
 
   INSERT INTO public.sword_fight_kills (user_id, username, deaths, last_kill_at)
-  VALUES (v_user_id, COALESCE((SELECT username FROM public.profiles WHERE user_id = v_user_id), 'Player'), 0, now())
+  VALUES (v_user_id, COALESCE((SELECT username FROM public.profiles WHERE user_id = v_user_id), 'Player'), 1, now())
   ON CONFLICT (user_id) DO UPDATE
     SET deaths = public.sword_fight_kills.deaths + 1,
         last_kill_at = now()
@@ -647,12 +647,19 @@ BEGIN
 END;
 $$;
 
+-- ─── PER-GAME CHAT ISOLATION ────────────────────────────────────────────────
+-- Tag every chat row with the game it belongs to so different games keep
+-- separate histories and presence-based wipes only clear that game's chat.
+ALTER TABLE public.game_chat ADD COLUMN IF NOT EXISTS game_id text NOT NULL DEFAULT 'lobby';
+CREATE INDEX IF NOT EXISTS idx_game_chat_game_id ON public.game_chat (game_id, created_at DESC);
+
 -- ─── CLEAR GAME CHAT (presence-based reset) ─────────────────────────────────
 -- Called by the client when the last player leaves the lobby. RLS only allows
 -- admins to delete from game_chat directly, so this RPC bypasses that via
 -- SECURITY DEFINER. Open to any authenticated user; the client only invokes
 -- this when its presence channel reports zero remaining participants.
-CREATE OR REPLACE FUNCTION public.clear_game_chat()
+-- When p_game_id is NULL the entire table is wiped (admin "purge all" path).
+CREATE OR REPLACE FUNCTION public.clear_game_chat(p_game_id text DEFAULT NULL)
 RETURNS json
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -666,10 +673,22 @@ BEGIN
     RETURN json_build_object('success', false, 'message', 'Not authenticated');
   END IF;
 
-  WITH deleted AS (
-    DELETE FROM public.game_chat RETURNING 1
-  )
-  SELECT count(*) INTO v_count FROM deleted;
+  IF p_game_id IS NULL THEN
+    -- Global purge: only admins/owners may wipe every game's history.
+    IF NOT (public.has_role(v_user_id, 'admin') OR public.has_role(v_user_id, 'owner')) THEN
+      RETURN json_build_object('success', false, 'message', 'Forbidden');
+    END IF;
+
+    WITH deleted AS (
+      DELETE FROM public.game_chat RETURNING 1
+    )
+    SELECT count(*) INTO v_count FROM deleted;
+  ELSE
+    WITH deleted AS (
+      DELETE FROM public.game_chat WHERE game_id = p_game_id RETURNING 1
+    )
+    SELECT count(*) INTO v_count FROM deleted;
+  END IF;
 
   RETURN json_build_object('success', true, 'cleared', v_count);
 END;
