@@ -237,7 +237,7 @@ const Settings = () => {
             <div className="rbx16-panel" style={{ marginBottom: 12 }}>
               <div className="rbx16-panel-header">Appearance</div>
               <div className="rbx16-panel-body">
-                <p className="rbx16-text-muted">Choose how SODABLOX looks for you.</p>
+                <p className="rbx16-text-muted">Choose how BloxEconomy looks for you.</p>
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
@@ -254,7 +254,7 @@ const Settings = () => {
                   >
                     <div style={{ height: 100, position: 'relative', background: t.preview.bg }}>
                       <div style={{ height: 28, display: 'flex', alignItems: 'center', padding: '0 8px', gap: 6, background: t.preview.navbar }}>
-                        <span style={{ fontSize: 9, fontWeight: 700, color: '#fff' }}>SODABLOX</span>
+                        <span style={{ fontSize: 9, fontWeight: 700, color: '#fff' }}>BloxEconomy</span>
                       </div>
                       <div style={{ display: 'flex', height: 'calc(100% - 28px)' }}>
                         <div style={{ width: 36, background: t.preview.navbar, padding: '6px 4px' }}>
@@ -317,7 +317,7 @@ const Settings = () => {
   }
 
   /* ═══════════════════════════════════════════
-     DEFAULT SODABLOX LAYOUT
+     DEFAULT BloxEconomy LAYOUT
      ═══════════════════════════════════════════ */
   return (
     <div className="max-w-2xl mx-auto space-y-8">
@@ -338,9 +338,7 @@ const Settings = () => {
         <Button variant={activeSection === 'password' ? 'default' : 'ghost'} onClick={() => setActiveSection('password')} className="gap-2">
           <Lock className="w-4 h-4" /> Password
         </Button>
-        <Button variant={activeSection === 'themes' ? 'default' : 'ghost'} onClick={() => setActiveSection('themes')} className="gap-2">
-          <Palette className="w-4 h-4" /> Themes
-        </Button>
+        {/* Theme switching temporarily disabled (bugged) */}
         {hasGamesBeta && (
           <Button variant={activeSection === 'rcc' ? 'default' : 'ghost'} onClick={() => setActiveSection('rcc')} className="gap-2">
             <Zap className="w-4 h-4" /> RCC
@@ -390,70 +388,14 @@ const Settings = () => {
         </div>
       )}
 
-      {/* Themes */}
+      {/* Themes section disabled */}
       {activeSection === 'themes' && (
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-xl font-display font-bold">Appearance</h2>
-            <p className="text-sm text-muted-foreground">Choose how SODABLOX looks for you. Your preference is saved to your account.</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {THEMES.map((t) => {
-              const isActive = theme === t.id;
-              return (
-                <div
-                  key={t.id}
-                  className={`cyber-card p-0 overflow-hidden transition-all ${isActive ? 'ring-2 ring-primary' : ''}`}
-                >
-                  <div className="h-[120px] relative" style={{ background: t.preview.bg }}>
-                    <div className="h-8 flex items-center px-3 gap-2" style={{ background: t.preview.navbar }}>
-                      <span className="text-[10px] font-bold text-white">SODABLOX</span>
-                      <div className="flex gap-1.5 ml-3">
-                        {['Tab 1','Tab 2','Tab 3'].map(tab => (
-                          <div key={tab} className="h-2 w-8 rounded" style={{ background: 'rgba(255,255,255,0.25)' }} />
-                        ))}
-                      </div>
-                      <div className="ml-auto h-2.5 w-16 rounded" style={{ background: 'rgba(255,255,255,0.15)' }} />
-                    </div>
-                    <div className="flex h-[calc(100%-32px)]">
-                      <div className="w-12 shrink-0 pt-2 flex flex-col gap-1.5 px-1.5" style={{ background: t.preview.navbar }}>
-                        {[1,2,3,4].map(i => (
-                          <div key={i} className="h-1.5 w-full rounded" style={{ background: i === 1 ? t.preview.accent : 'rgba(255,255,255,0.15)' }} />
-                        ))}
-                      </div>
-                      <div className="flex-1 p-2 flex gap-1.5">
-                        <div className="flex-1 rounded p-1.5" style={{ background: t.preview.card, border: '1px solid rgba(0,0,0,0.06)' }}>
-                          <div className="h-1.5 w-10 rounded mb-1" style={{ background: t.preview.text, opacity: 0.4 }} />
-                          <div className="h-1.5 w-14 rounded" style={{ background: t.preview.text, opacity: 0.15 }} />
-                        </div>
-                        <div className="flex-1 rounded p-1.5" style={{ background: t.preview.card, border: '1px solid rgba(0,0,0,0.06)' }}>
-                          <div className="h-1.5 w-8 rounded mb-1" style={{ background: t.preview.accent }} />
-                          <div className="h-1.5 w-12 rounded" style={{ background: t.preview.text, opacity: 0.15 }} />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 space-y-3">
-                    <div>
-                      <h3 className="font-display font-bold text-sm">{t.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">{t.description}</p>
-                    </div>
-                    <Button
-                      variant={isActive ? 'default' : 'outline'}
-                      size="sm"
-                      className="w-full gap-2"
-                      onClick={() => handleSelectTheme(t.id)}
-                      disabled={isActive}
-                    >
-                      {isActive ? <><Check className="w-4 h-4" />Selected</> : 'Select'}
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        <div className="cyber-card p-6">
+          <h2 className="text-xl font-display font-bold mb-2">Themes</h2>
+          <p className="text-sm text-muted-foreground">
+            Theme switching is temporarily disabled while we fix layout issues across era replicas.
+            The futuristic default theme is the only available option for now.
+          </p>
         </div>
       )}
 

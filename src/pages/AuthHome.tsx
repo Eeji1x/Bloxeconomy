@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Zap, ShoppingBag, ArrowLeftRight, Users, Gem, Crown, Trophy, Gamepad2 } from 'lucide-react';
 
 const AuthHome = () => {
   const { user } = useAuth();
@@ -21,11 +24,8 @@ const AuthHome = () => {
     try {
       const email = `${username.toLowerCase()}@sodablox.local`;
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        toast.error('Invalid username or password');
-      } else {
-        navigate('/');
-      }
+      if (error) toast.error('Invalid username or password');
+      else navigate('/');
     } catch {
       toast.error('Login failed');
     } finally {
@@ -34,145 +34,131 @@ const AuthHome = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'Source Sans Pro', Arial, sans-serif" }}>
-      {/* Top bar */}
-      <div style={{ background: '#0074BD', height: 45 }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px' }}>
-          <Link to="/auth" style={{ color: '#fff', fontSize: 22, fontWeight: 800, textDecoration: 'none', letterSpacing: 1 }}>
-            SODABLOX
-          </Link>
-          {!user && (
-            <form onSubmit={handleLogin} style={{ display: 'flex', alignItems: 'center', gap: 6 }} className="hidden sm:flex">
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                style={{ height: 30, padding: '0 8px', fontSize: 13, border: '1px solid #005a94', borderRadius: 2, width: 130, background: 'rgba(255,255,255,0.9)', color: '#1e1e1f' }}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ height: 30, padding: '0 8px', fontSize: 13, border: '1px solid #005a94', borderRadius: 2, width: 130, background: 'rgba(255,255,255,0.9)', color: '#1e1e1f' }}
-              />
-              <button
-                type="submit"
-                disabled={isLoggingIn}
-                style={{ height: 30, padding: '0 16px', fontSize: 13, fontWeight: 700, background: '#00a2ff', color: '#fff', border: 'none', borderRadius: 2, cursor: 'pointer' }}
-              >
-                {isLoggingIn ? '...' : 'Login'}
-              </button>
-            </form>
-          )}
-          {user && (
-            <Link to="/" style={{ color: '#fff', fontSize: 14, fontWeight: 600, textDecoration: 'none', background: '#00a2ff', padding: '6px 16px', borderRadius: 2 }}>
-              Go to Home
-            </Link>
-          )}
-        </div>
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[140px] animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-secondary/20 rounded-full blur-[140px] animate-pulse" style={{ animationDelay: '1s' }} />
       </div>
 
-      {/* Hero Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #0074BD 0%, #00a2ff 50%, #00c3ff 100%)', padding: '60px 20px', textAlign: 'center' }}>
-        <h1 style={{ fontSize: 56, fontWeight: 800, color: '#fff', margin: '0 0 16px', letterSpacing: 2, textShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
-          SODABLOX
-        </h1>
-        <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.9)', margin: '0 0 32px', maxWidth: 600, marginLeft: 'auto', marginRight: 'auto' }}>
-          A virtual world revival. Collect items, trade limiteds, and build your legacy.
-        </p>
-        {!user ? (
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/signup" style={{ display: 'inline-block', padding: '12px 36px', fontSize: 16, fontWeight: 700, background: '#3bc95f', color: '#fff', borderRadius: 4, textDecoration: 'none', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>
-              Sign Up
-            </Link>
-            <Link to="/apply" style={{ display: 'inline-block', padding: '12px 36px', fontSize: 16, fontWeight: 700, background: 'rgba(255,255,255,0.2)', color: '#fff', borderRadius: 4, textDecoration: 'none', border: '2px solid rgba(255,255,255,0.4)' }}>
-              Apply to Join
-            </Link>
-          </div>
-        ) : (
-          <Link to="/" style={{ display: 'inline-block', padding: '12px 36px', fontSize: 16, fontWeight: 700, background: '#3bc95f', color: '#fff', borderRadius: 4, textDecoration: 'none' }}>
-            Go to Dashboard
+      {/* Top bar */}
+      <header className="border-b border-border/40 backdrop-blur-md bg-background/60 sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+          <Link to="/auth" className="flex items-center gap-2 group">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-secondary grid place-items-center shadow-lg shadow-primary/30">
+              <Zap className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <span className="font-display font-bold text-xl tracking-wide gradient-text">BloxEconomy</span>
           </Link>
-        )}
-      </div>
+          {!user ? (
+            <form onSubmit={handleLogin} className="hidden md:flex items-center gap-2">
+              <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" className="h-9 w-36 bg-muted/40" />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="h-9 w-36 bg-muted/40" />
+              <Button type="submit" disabled={isLoggingIn} size="sm" className="h-9">
+                {isLoggingIn ? '...' : 'Login'}
+              </Button>
+            </form>
+          ) : (
+            <Button asChild size="sm"><Link to="/">Go to Home</Link></Button>
+          )}
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="max-w-6xl mx-auto px-5 pt-20 pb-24 text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-medium mb-6">
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          Now in beta — invite-only access
+        </div>
+        <h1 className="text-5xl sm:text-7xl font-display font-extrabold tracking-tight mb-6 leading-[1.05]">
+          The next-gen <span className="gradient-text">virtual economy</span>
+        </h1>
+        <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
+          Trade limiteds, build collections, climb the leaderboards.
+          A futuristic revival built for collectors and traders.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {!user ? (
+            <>
+              <Button asChild size="lg" className="h-12 px-8 text-base shadow-lg shadow-primary/30">
+                <Link to="/signup">Create Account</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="h-12 px-8 text-base">
+                <Link to="/apply">Apply to Join</Link>
+              </Button>
+            </>
+          ) : (
+            <Button asChild size="lg" className="h-12 px-8"><Link to="/">Open Dashboard</Link></Button>
+          )}
+        </div>
+      </section>
 
       {/* Mobile login */}
       {!user && (
-        <div className="sm:hidden" style={{ padding: 20 }}>
-          <div style={{ border: '1px solid #c3c3c3', borderRadius: 4, padding: 16, background: '#f8f8f8' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#393b3d', marginBottom: 12 }}>Login</h3>
-            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                style={{ height: 36, padding: '0 10px', fontSize: 14, border: '1px solid #c3c3c3', borderRadius: 2 }}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ height: 36, padding: '0 10px', fontSize: 14, border: '1px solid #c3c3c3', borderRadius: 2 }}
-              />
-              <button
-                type="submit"
-                disabled={isLoggingIn}
-                style={{ height: 36, fontSize: 14, fontWeight: 700, background: '#0074BD', color: '#fff', border: 'none', borderRadius: 2, cursor: 'pointer' }}
-              >
-                {isLoggingIn ? 'Logging in...' : 'Login'}
-              </button>
+        <section className="md:hidden max-w-md mx-auto px-5 pb-10">
+          <div className="cyber-card p-5">
+            <h3 className="font-display font-bold mb-3">Login</h3>
+            <form onSubmit={handleLogin} className="space-y-2">
+              <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+              <Button type="submit" disabled={isLoggingIn} className="w-full">{isLoggingIn ? '...' : 'Login'}</Button>
             </form>
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Features grid */}
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '40px 20px' }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, color: '#393b3d', textAlign: 'center', marginBottom: 32 }}>Features</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
+      {/* Features */}
+      <section className="max-w-6xl mx-auto px-5 pb-24">
+        <h2 className="text-3xl font-display font-bold text-center mb-12">What's inside</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {[
-            { icon: '🛒', title: 'Catalog', desc: 'Browse and purchase items. Find rare limiteds and exclusive gear.' },
-            { icon: '🔄', title: 'Trading', desc: 'Trade limited items with other players. Grow your collection.' },
-            { icon: '👥', title: 'Community', desc: 'Connect with players, send messages, and add friends.' },
-            { icon: '💎', title: 'Free Emeralds', desc: 'Every new player receives 100 free emeralds to start.' },
-            { icon: '⭐', title: 'Limited Items', desc: 'Collect rare limited items with serial numbers.' },
-            { icon: '🏆', title: 'Leaderboards', desc: 'Compete with other players and climb the rankings.' },
-          ].map((f) => (
-            <div key={f.title} style={{ border: '1px solid #c3c3c3', borderRadius: 4, padding: 20, background: '#fff' }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>{f.icon}</div>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#393b3d', marginBottom: 6 }}>{f.title}</h3>
-              <p style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>{f.desc}</p>
+            { Icon: ShoppingBag, title: 'Catalog', desc: 'Browse, buy, and discover limiteds with permanent global serials.' },
+            { Icon: ArrowLeftRight, title: 'Trading', desc: 'Atomic server-side trades. Send items + emeralds in a single deal.' },
+            { Icon: Users, title: 'Community', desc: 'Friends, private inbox, public profiles — all built-in.' },
+            { Icon: Gem, title: 'Daily Emeralds', desc: 'Claim 100 emeralds every 24 hours. Every account starts with 100.' },
+            { Icon: Trophy, title: 'Leaderboards', desc: 'Most emeralds, most limiteds — compete for the top spot.' },
+            { Icon: Gamepad2, title: '3D Web Client', desc: 'Beta: jump into a 3D scene with your equipped avatar.' },
+          ].map(({ Icon, title, desc }) => (
+            <div key={title} className="cyber-card p-6 hover:border-primary/40 transition-all group">
+              <div className="w-11 h-11 rounded-lg bg-primary/10 grid place-items-center mb-4 group-hover:bg-primary/20 transition-colors">
+                <Icon className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="font-display font-bold text-lg mb-1.5">{title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* CTA */}
       {!user && (
-        <div style={{ background: '#f2f2f2', padding: '40px 20px', textAlign: 'center', borderTop: '1px solid #e3e3e3' }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: '#393b3d', marginBottom: 12 }}>Ready to join?</h2>
-          <p style={{ fontSize: 14, color: '#666', marginBottom: 20, maxWidth: 500, margin: '0 auto 20px' }}>
-            Create your account now and receive 100 free emeralds to start your journey.
-          </p>
-          <Link to="/signup" style={{ display: 'inline-block', padding: '12px 36px', fontSize: 16, fontWeight: 700, background: '#0074BD', color: '#fff', borderRadius: 4, textDecoration: 'none' }}>
-            Create Account
-          </Link>
-        </div>
+        <section className="max-w-3xl mx-auto px-5 pb-20 text-center">
+          <div className="cyber-card p-10 bg-gradient-to-br from-primary/10 via-card to-secondary/10 border-primary/30">
+            <Crown className="w-10 h-10 text-primary mx-auto mb-4" />
+            <h2 className="text-2xl font-display font-bold mb-3">Ready to join the economy?</h2>
+            <p className="text-muted-foreground mb-6">
+              Sign up with an invite key, or apply for one if you don't have one yet.
+            </p>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Button asChild size="lg"><Link to="/signup">Create Account</Link></Button>
+              <Button asChild variant="outline" size="lg"><Link to="/apply">Apply for Invite</Link></Button>
+            </div>
+          </div>
+        </section>
       )}
 
       {/* Footer */}
-      <div style={{ borderTop: '1px solid #e3e3e3', padding: '16px 20px', textAlign: 'center', fontSize: 12, color: '#999' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 8 }}>
-          <Link to="/terms" style={{ color: '#00a2ff', textDecoration: 'none' }}>Terms of Service</Link>
-          <Link to="/privacy" style={{ color: '#00a2ff', textDecoration: 'none' }}>Privacy Policy</Link>
-          <Link to="/apply" style={{ color: '#00a2ff', textDecoration: 'none' }}>Apply</Link>
+      <footer className="border-t border-border/40 py-8">
+        <div className="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} BloxEconomy. All rights reserved.</p>
+          <div className="flex gap-5">
+            <Link to="/terms" className="hover:text-primary transition-colors">Terms</Link>
+            <Link to="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
+            <Link to="/apply" className="hover:text-primary transition-colors">Apply</Link>
+          </div>
         </div>
-        <p>© {new Date().getFullYear()} SODABLOX. All rights reserved.</p>
-      </div>
+      </footer>
     </div>
   );
 };

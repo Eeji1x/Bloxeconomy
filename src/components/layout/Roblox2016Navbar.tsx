@@ -130,7 +130,7 @@ export const Roblox2016Navbar = () => {
 
           {/* Logo — ECS: 118x30 desktop, 30x30 mobile "R" */}
           <Link to="/" className="rbx16-logo">
-            <span className="rbx16-logo-text hidden min-[1301px]:block">SODABLOX</span>
+            <span className="rbx16-logo-text hidden min-[1301px]:block">BloxEconomy</span>
             <span className="rbx16-logo-text block min-[1301px]:hidden" style={{ fontSize: '20px' }}>S</span>
           </Link>
 

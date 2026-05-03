@@ -340,7 +340,7 @@ const LotteryPanel = () => {
         await supabase.from('messages').insert({
           sender_id: user.id,
           receiver_id: w.userId,
-          message: `🎉 You have won a limited item from the SODABLOX lottery!\n\nItem: ${w.itemName}${serialText}\n\nCongratulations!`,
+          message: `🎉 You have won a limited item from the BloxEconomy lottery!\n\nItem: ${w.itemName}${serialText}\n\nCongratulations!`,
           is_system: true,
         });
       }

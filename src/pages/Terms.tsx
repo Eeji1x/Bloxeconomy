@@ -27,21 +27,21 @@ const Terms = () => {
           <section className="space-y-2">
             <h2 className="text-lg font-display font-bold">1. Acceptance of Terms</h2>
             <p className="text-muted-foreground">
-              By accessing or using SODABLOX, you agree to be bound by these Terms of Service. If you do not agree to these terms, you may not use the platform.
+              By accessing or using BloxEconomy, you agree to be bound by these Terms of Service. If you do not agree to these terms, you may not use the platform.
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-lg font-display font-bold">2. Account Registration</h2>
             <p className="text-muted-foreground">
-              You must register an account to use SODABLOX. You are responsible for maintaining the confidentiality of your account credentials. You must not share your account with others or create multiple accounts.
+              You must register an account to use BloxEconomy. You are responsible for maintaining the confidentiality of your account credentials. You must not share your account with others or create multiple accounts.
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-lg font-display font-bold">3. Virtual Currency & Items</h2>
             <p className="text-muted-foreground">
-              Emeralds and all virtual items on SODABLOX have no real-world monetary value. They are digital assets that exist solely within the platform. You may not sell, trade, or exchange virtual items or currency for real money or goods outside the platform.
+              Emeralds and all virtual items on BloxEconomy have no real-world monetary value. They are digital assets that exist solely within the platform. You may not sell, trade, or exchange virtual items or currency for real money or goods outside the platform.
             </p>
           </section>
 
@@ -55,21 +55,21 @@ const Terms = () => {
           <section className="space-y-2">
             <h2 className="text-lg font-display font-bold">5. Trading</h2>
             <p className="text-muted-foreground">
-              All trades conducted on SODABLOX are final once accepted by both parties. SODABLOX is not responsible for trades you consider unfair. Scamming or manipulating trades is prohibited and may result in a ban.
+              All trades conducted on BloxEconomy are final once accepted by both parties. BloxEconomy is not responsible for trades you consider unfair. Scamming or manipulating trades is prohibited and may result in a ban.
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-lg font-display font-bold">6. Moderation & Bans</h2>
             <p className="text-muted-foreground">
-              SODABLOX staff reserve the right to moderate content, restrict access, or ban accounts at their discretion. Bans may be issued for violating these terms or for any behavior deemed harmful to the community.
+              BloxEconomy staff reserve the right to moderate content, restrict access, or ban accounts at their discretion. Bans may be issued for violating these terms or for any behavior deemed harmful to the community.
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-lg font-display font-bold">7. Content Ownership</h2>
             <p className="text-muted-foreground">
-              All content, code, assets, and intellectual property on SODABLOX belong to SODABLOX and its creators. You retain no ownership rights over virtual items, currency, or account data.
+              All content, code, assets, and intellectual property on BloxEconomy belong to BloxEconomy and its creators. You retain no ownership rights over virtual items, currency, or account data.
             </p>
           </section>
 
@@ -83,7 +83,7 @@ const Terms = () => {
           <section className="space-y-2">
             <h2 className="text-lg font-display font-bold">9. Disclaimer</h2>
             <p className="text-muted-foreground">
-              SODABLOX is provided "as is" without warranties of any kind. We do not guarantee uptime, data preservation, or uninterrupted service. Use the platform at your own risk.
+              BloxEconomy is provided "as is" without warranties of any kind. We do not guarantee uptime, data preservation, or uninterrupted service. Use the platform at your own risk.
             </p>
           </section>
 
@@ -96,7 +96,7 @@ const Terms = () => {
         </div>
 
         <div className="text-center text-xs text-muted-foreground pb-8">
-          <p>© {new Date().getFullYear()} SODABLOX. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} BloxEconomy. All rights reserved.</p>
           <div className="flex justify-center gap-4 mt-2">
             <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
           </div>

@@ -66,7 +66,7 @@ export const Roblox2012Home = () => {
       <div className="rbx12-home-left">
         {/* User info panel */}
         <div className="rbx12-panel">
-          <div className="rbx12-panel-header">My SODABLOX</div>
+          <div className="rbx12-panel-header">My BloxEconomy</div>
           <div className="rbx12-panel-body">
             <div style={{ display: 'flex', gap: 12 }}>
               <div className="rbx12-avatar-frame">
@@ -123,10 +123,10 @@ export const Roblox2012Home = () => {
 
       {/* Right column */}
       <div className="rbx12-home-right">
-        {/* SODABLOX News */}
+        {/* BloxEconomy News */}
         {announcements.length > 0 && (
           <div className="rbx12-panel">
-            <div className="rbx12-panel-header">SODABLOX News</div>
+            <div className="rbx12-panel-header">BloxEconomy News</div>
             <div className="rbx12-panel-body">
               {announcements.map((a) => (
                 <div key={a.id} className="rbx12-news-item">
@@ -150,14 +150,14 @@ export const Roblox2012Home = () => {
 
         {/* Featured content area */}
         <div className="rbx12-panel">
-          <div className="rbx12-panel-header">Welcome to SODABLOX</div>
+          <div className="rbx12-panel-header">Welcome to BloxEconomy</div>
           <div className="rbx12-panel-body">
             <div className="rbx12-welcome-banner">
               <h2 style={{ fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 8 }}>
                 Welcome, {profile.username}!
               </h2>
               <p style={{ color: '#666', marginBottom: 12 }}>
-                Collect items, trade limiteds, and build your legacy on SODABLOX.
+                Collect items, trade limiteds, and build your legacy on BloxEconomy.
               </p>
               <div style={{ display: 'flex', gap: 8 }}>
                 <Link to="/catalog" className="rbx12-btn-green">Browse Catalog</Link>

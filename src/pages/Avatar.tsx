@@ -157,7 +157,7 @@ const Avatar = () => {
   }
 
   /* ═══════════════════════════════════════════
-     DEFAULT SODABLOX LAYOUT
+     DEFAULT BloxEconomy LAYOUT
      ═══════════════════════════════════════════ */
   return (
     <div className="max-w-6xl mx-auto space-y-8">

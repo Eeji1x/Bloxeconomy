@@ -19,7 +19,7 @@ interface Announcement {
 }
 
 /* ═══════════════════════════════════════════════════
-   SODABLOX 2015 Home — Dark charcoal topbar era
+   BloxEconomy 2015 Home — Dark charcoal topbar era
    White panels, #e6e6e6 background, Bootstrap-like grid
    ═══════════════════════════════════════════════════ */
 

@@ -1,4 +1,4 @@
-// System constants for SODABLOX
+// System constants for BloxEconomy
 
 // Default avatar URL - THE ONLY default avatar image
 export const DEFAULT_AVATAR_URL = '/images/default-avatar.webp';
@@ -10,11 +10,11 @@ export const VERIFIED_BADGE_URL = '/images/verified-badge.png';
 // HARD-SET to User ID #5 - cannot be changed
 export const BAD_DECISIONS_NUMERIC_ID = 5;
 
-// Super Owner - User ID #1 (SODABLOX) - only account that can manage protected users
+// Super Owner - User ID #1 (BloxEconomy) - only account that can manage protected users
 export const SUPER_OWNER_NUMERIC_ID = 1;
 
 // Protected user IDs that cannot be banned (except by Super Owner)
-export const PROTECTED_USER_IDS = [1, 5]; // ID #1 (SODABLOX/Owner), ID #5 (BadDecisions)
+export const PROTECTED_USER_IDS = [1, 5]; // ID #1 (BloxEconomy/Owner), ID #5 (BadDecisions)
 
 // Username prefix for banned users
-export const BANNED_USERNAME_PREFIX = 'SODABLOX_User_';
+export const BANNED_USERNAME_PREFIX = 'BloxEconomy_User_';

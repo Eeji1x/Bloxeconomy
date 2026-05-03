@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 /* ═══════════════════════════════════════════════════
-   SODABLOX 2015 Theme — Dark charcoal topbar (#393B3D)
+   BloxEconomy 2015 Theme — Dark charcoal topbar (#393B3D)
    Sidebar: #f2f2f2 175px, same icon sprite as 2016
    Mixed from multiple 2015 Roblox source recreations
    ═══════════════════════════════════════════════════ */
@@ -108,7 +108,7 @@ export const Roblox2015Navbar = () => {
 
           {/* Logo — Red ROBLOX-style text (2015 signature) */}
           <Link to="/" className="rbx15-logo">
-            <span className="rbx15-logo-text">SODABLOX</span>
+            <span className="rbx15-logo-text">BloxEconomy</span>
           </Link>
 
           {/* Nav links */}

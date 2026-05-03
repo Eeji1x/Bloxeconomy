@@ -8,7 +8,7 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* SODABLOX - Futuristic Cyberpunk Design System */
+/* BloxEconomy - Futuristic Cyberpunk Design System */
 
 @layer base {
   :root {
@@ -60,7 +60,7 @@
     --sidebar-border: 260 50% 20%;
     --sidebar-ring: 180 100% 50%;
     
-    /* Custom SODABLOX tokens */
+    /* Custom BloxEconomy tokens */
     --neon-cyan: 180 100% 50%;
     --neon-pink: 300 100% 60%;
     --neon-green: 150 100% 50%;
@@ -104,7 +104,7 @@
   }
 
   /* ═══════════════════════════════════════════════════
-     SODABLOX 2016 THEME — 1:1 ECS economy-simulator replica
+     BloxEconomy 2016 THEME — 1:1 ECS economy-simulator replica
      Topbar: #0074BD blue, Sidebar: #f2f2f2 (175px)
      BG: #e8e8e8, Accent: #01a2fd, Text: #1e1e1f
      Font: Source Sans Pro, container: 970px

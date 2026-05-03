@@ -21,7 +21,7 @@ interface ThemeOption {
 export const THEMES: ThemeOption[] = [
   {
     id: 'sodablox',
-    name: 'SODABLOX Default',
+    name: 'BloxEconomy Default',
     description: 'Dark cyberpunk theme with neon glow effects',
     preview: {
       bg: '#0a0a1a',
@@ -33,7 +33,7 @@ export const THEMES: ThemeOption[] = [
   },
   {
     id: 'roblox2016',
-    name: 'SODABLOX 2016',
+    name: 'BloxEconomy 2016',
     description: 'Classic 2016 style — blue navbar, light sidebar, white panels',
     preview: {
       bg: '#E8E8E8',
@@ -45,7 +45,7 @@ export const THEMES: ThemeOption[] = [
   },
   {
     id: 'roblox2015',
-    name: 'SODABLOX 2015',
+    name: 'BloxEconomy 2015',
     description: 'Classic 2015 style — dark charcoal navbar, red logo accent, light panels',
     preview: {
       bg: '#E6E6E6',
@@ -57,7 +57,7 @@ export const THEMES: ThemeOption[] = [
   },
   {
     id: 'roblox2012',
-    name: 'SODABLOX 2012',
+    name: 'BloxEconomy 2012',
     description: 'Classic 2012 style — dark blue header, gray tab navigation',
     preview: {
       bg: '#E1E1E1',
@@ -95,11 +95,9 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export const useTheme = () => useContext(ThemeContext);
 
-function sanitizeTheme(val: unknown): ThemeId {
-  if (typeof val === 'string' && VALID_THEMES.includes(val as ThemeId)) {
-    return val as ThemeId;
-  }
-  return 'roblox2016';
+function sanitizeTheme(_val: unknown): ThemeId {
+  // Theme switching is temporarily disabled — always use the default futuristic theme.
+  return 'sodablox';
 }
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {

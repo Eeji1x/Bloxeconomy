@@ -58,7 +58,7 @@ export const Navbar = () => {
               <div className="absolute -inset-1 rounded-lg bg-gradient-to-br from-primary via-secondary to-accent opacity-30 blur-sm group-hover:opacity-50 transition-opacity -z-10" />
             </div>
             <span className="font-display font-bold text-xl gradient-text hidden sm:block">
-              SODABLOX
+              BloxEconomy
             </span>
           </Link>
 

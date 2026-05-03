@@ -27,7 +27,7 @@ interface ConversationPreview {
   unreadCount: number;
 }
 
-const SYSTEM_SENDER_NAME = 'SODABLOX';
+const SYSTEM_SENDER_NAME = 'BloxEconomy';
 
 const Inbox = () => {
   const { user, profile, isLoading } = useAuth();
@@ -237,7 +237,7 @@ const Inbox = () => {
   }
 
   /* ═══════════════════════════════════════════
-     DEFAULT SODABLOX LAYOUT
+     DEFAULT BloxEconomy LAYOUT
      ═══════════════════════════════════════════ */
   return (
     <div className="space-y-4">

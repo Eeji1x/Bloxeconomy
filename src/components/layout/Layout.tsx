@@ -51,7 +51,7 @@ export const Layout = ({ children }: LayoutProps) => {
         </div>
         <div className="rbx08-container">
           <div className="rbx08-footer" style={{ padding: '10px 0' }}>
-            © {new Date().getFullYear()} SODABLOX Corporation. All rights reserved.
+            © {new Date().getFullYear()} BloxEconomy Corporation. All rights reserved.
           </div>
         </div>
       </div>
@@ -73,14 +73,14 @@ export const Layout = ({ children }: LayoutProps) => {
         </div>
         <div className="rbx12-container">
           <div className="rbx12-footer">
-            © {new Date().getFullYear()} SODABLOX Corporation. All rights reserved.
+            © {new Date().getFullYear()} BloxEconomy Corporation. All rights reserved.
           </div>
         </div>
       </div>
     );
   }
 
-  // SODABLOX 2016 layout (based on ECS economy-simulator)
+  // BloxEconomy 2016 layout (based on ECS economy-simulator)
   if (theme === 'roblox2016') {
     return (
       <div className="min-h-screen" style={{ background: '#e3e3e3' }}>
@@ -97,7 +97,7 @@ export const Layout = ({ children }: LayoutProps) => {
     );
   }
 
-  // SODABLOX 2015 layout — dark charcoal topbar, red accents
+  // BloxEconomy 2015 layout — dark charcoal topbar, red accents
   if (theme === 'roblox2015') {
     return (
       <div className="min-h-screen" style={{ background: '#e6e6e6' }}>
@@ -115,7 +115,7 @@ export const Layout = ({ children }: LayoutProps) => {
   }
 
 
-  // Default SODABLOX layout
+  // Default BloxEconomy layout
   return (
     <div className="min-h-screen bg-background">
       <AnnouncementBar />

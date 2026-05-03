@@ -10,6 +10,7 @@ import { LogOut, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DEFAULT_AVATAR_URL } from '@/lib/constants';
+import { GameChat } from '@/components/games/GameChat';
 
 // ════════════════════════════════════════════════════════════════
 // RCC MODE: client-side toggle persisted in localStorage.
@@ -493,10 +494,19 @@ const Games = () => {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  // In-game fullscreen
+  // In-game fullscreen — no topbar, custom Roblox cursor, realtime chat
   if (inGame && hasAccess) {
     return (
-      <div className="fixed inset-0 z-50 bg-black">
+      <div
+        className="fixed inset-0 z-[100] bg-black"
+        style={{ cursor: 'url(/images/cursor-roblox.svg) 3 2, auto' }}
+      >
+        {/* Hide layout topbar/sidebar by overlaying full screen */}
+        <style>{`
+          body { overflow: hidden; }
+          .rbx16-main-with-sidebar, header, nav, .rbx16-navbar, .rbx15-navbar { display: none !important; }
+        `}</style>
+
         {/* HUD */}
         <div className="absolute top-4 left-4 z-50 flex gap-2">
           <Button variant="destructive" size="sm" onClick={() => setInGame(false)} className="gap-2 shadow-lg">
@@ -509,9 +519,11 @@ const Games = () => {
           )}
         </div>
 
+        <GameChat userId={user.id} username={(user.user_metadata?.username as string) || user.email?.split('@')[0] || 'Player'} />
+
         {!isMobile && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 text-white/70 text-xs bg-black/50 px-4 py-2 rounded">
-            WASD move • Space jump • Drag mouse to look • Scroll to zoom
+            WASD move • Space jump • Drag mouse to look • Scroll to zoom • / to chat
           </div>
         )}
 
@@ -520,7 +532,7 @@ const Games = () => {
           camera={{ position: [0, 6, 12], fov: 65, near: 0.1, far: 500 }}
           dpr={rcc ? [1, 2] : 1}
           gl={{ antialias: true, toneMapping: rcc ? THREE.ACESFilmicToneMapping : THREE.NoToneMapping }}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: '100%', height: '100%', cursor: 'url(/images/cursor-roblox.svg) 3 2, grab' }}
         >
           <Suspense fallback={null}>
             <GameScene equippedItems={equippedItems} cam={camRef} rcc={rcc} />
@@ -583,7 +595,7 @@ const Games = () => {
           </div>
           <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px solid #c3c3c3', flexWrap: 'wrap', gap: 8 }}>
             <div>
-              <div style={{ fontSize: 12, color: '#666' }}>By SODABLOX</div>
+              <div style={{ fontSize: 12, color: '#666' }}>By BloxEconomy</div>
               <div style={{ fontSize: 11, color: '#999' }}>Max Players: 5 • {rcc ? 'High Fidelity' : 'Standard'}</div>
             </div>
             <button className="rbx16-btn-buy" onClick={() => setInGame(true)} style={{ fontSize: 14, padding: '6px 24px' }}>
