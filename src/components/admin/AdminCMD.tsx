@@ -353,7 +353,7 @@ const AdminCMD = () => {
 
         {/* Input line */}
         <div className="flex items-center whitespace-pre">
-          <span className="text-[#a6e3a1]">root@sodablox</span>
+          <span className="text-[#a6e3a1]">root@bloxeconomy</span>
           <span className="text-[#cdd6f4]">:</span>
           <span className="text-[#89b4fa]">~</span>
           <span className="text-[#cdd6f4]">$ </span>
