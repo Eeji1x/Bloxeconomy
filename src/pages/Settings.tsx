@@ -121,6 +121,8 @@ const Settings = () => {
   const USERNAME_CHANGE_COST = 1000;
   // Theme is forced to 'sodablox' (futuristic) — classic layouts are dead code.
   const isClassic = false;
+  const is2015 = false;
+  const handleSelectTheme = (_id: string) => { /* theme switching disabled */ };
   void theme;
 
   if (isLoading) {
