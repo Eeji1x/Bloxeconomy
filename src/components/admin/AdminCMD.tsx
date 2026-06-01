@@ -103,7 +103,7 @@ const AdminCMD = () => {
 
   const processCommand = async (cmd: string) => {
     const trimmed = cmd.trim().toLowerCase();
-    const newLines = [...lines, `\x1b[32mroot@sodablox\x1b[0m:\x1b[34m~\x1b[0m$ ${cmd}`];
+    const newLines = [...lines, `\x1b[32mroot@bloxeconomy\x1b[0m:\x1b[34m~\x1b[0m$ ${cmd}`];
 
     if (!trimmed) {
       setLines(newLines);
