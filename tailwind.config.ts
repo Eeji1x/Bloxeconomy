@@ -62,7 +62,7 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Custom SODABLOX neon colors
+        // Custom BloxEconomy neon colors
         neon: {
           cyan: "hsl(var(--neon-cyan))",
           pink: "hsl(var(--neon-pink))",

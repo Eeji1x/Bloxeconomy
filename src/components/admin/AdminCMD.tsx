@@ -103,7 +103,7 @@ const AdminCMD = () => {
 
   const processCommand = async (cmd: string) => {
     const trimmed = cmd.trim().toLowerCase();
-    const newLines = [...lines, `\x1b[32mroot@sodablox\x1b[0m:\x1b[34m~\x1b[0m$ ${cmd}`];
+    const newLines = [...lines, `\x1b[32mroot@bloxeconomy\x1b[0m:\x1b[34m~\x1b[0m$ ${cmd}`];
 
     if (!trimmed) {
       setLines(newLines);
@@ -333,7 +333,7 @@ const AdminCMD = () => {
           <div className="w-3 h-3 rounded-full bg-[#f9e2af]" />
           <div className="w-3 h-3 rounded-full bg-[#a6e3a1]" />
         </div>
-        <span className="text-[#cdd6f4] text-xs ml-2">root@sodablox: ~</span>
+        <span className="text-[#cdd6f4] text-xs ml-2">root@bloxeconomy: ~</span>
       </div>
 
       {/* Terminal body */}
@@ -353,7 +353,7 @@ const AdminCMD = () => {
 
         {/* Input line */}
         <div className="flex items-center whitespace-pre">
-          <span className="text-[#a6e3a1]">root@sodablox</span>
+          <span className="text-[#a6e3a1]">root@bloxeconomy</span>
           <span className="text-[#cdd6f4]">:</span>
           <span className="text-[#89b4fa]">~</span>
           <span className="text-[#cdd6f4]">$ </span>
