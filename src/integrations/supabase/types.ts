@@ -104,6 +104,51 @@ export type Database = {
         }
         Relationships: []
       }
+      asset_moderation_queue: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          image_url: string
+          item_type: string
+          name: string
+          reject_reason: string | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          status: string
+          submitted_by: string
+          suggested_price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_url: string
+          item_type?: string
+          name: string
+          reject_reason?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          status?: string
+          submitted_by: string
+          suggested_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string
+          item_type?: string
+          name?: string
+          reject_reason?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          status?: string
+          submitted_by?: string
+          suggested_price?: number
+        }
+        Relationships: []
+      }
       beta_access: {
         Row: {
           beta_key_id: string | null
@@ -169,6 +214,39 @@ export type Database = {
           key_prefix?: string
           used_at?: string | null
           used_by?: string | null
+        }
+        Relationships: []
+      }
+      builders_club_subscriptions: {
+        Row: {
+          activated_at: string
+          active: boolean
+          created_at: string
+          expires_at: string
+          id: string
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string
+          active?: boolean
+          created_at?: string
+          expires_at: string
+          id?: string
+          tier: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string
+          active?: boolean
+          created_at?: string
+          expires_at?: string
+          id?: string
+          tier?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -270,6 +348,7 @@ export type Database = {
       game_chat: {
         Row: {
           created_at: string
+          game_id: string
           id: string
           message: string
           user_id: string
@@ -277,6 +356,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          game_id?: string
           id?: string
           message: string
           user_id: string
@@ -284,10 +364,82 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          game_id?: string
           id?: string
           message?: string
           user_id?: string
           username?: string
+        }
+        Relationships: []
+      }
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          created_at: string
+          description: string
+          icon_url: string | null
+          id: string
+          is_locked: boolean
+          is_verified: boolean
+          member_count: number
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          icon_url?: string | null
+          id?: string
+          is_locked?: boolean
+          is_verified?: boolean
+          member_count?: number
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon_url?: string | null
+          id?: string
+          is_locked?: boolean
+          is_verified?: boolean
+          member_count?: number
+          name?: string
+          owner_id?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -815,6 +967,33 @@ export type Database = {
         }
         Relationships: []
       }
+      sword_fight_kills: {
+        Row: {
+          deaths: number
+          id: string
+          kills: number
+          last_kill_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          deaths?: number
+          id?: string
+          kills?: number
+          last_kill_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          deaths?: number
+          id?: string
+          kills?: number
+          last_kill_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
       trades: {
         Row: {
           created_at: string
@@ -1000,11 +1179,29 @@ export type Database = {
       }
     }
     Functions: {
+      activate_builders_club: { Args: { p_tier: string }; Returns: Json }
       adjust_emeralds: {
         Args: { p_amount: number; p_user_id: string }
         Returns: undefined
       }
+      admin_reset_group: { Args: { p_group_id: string }; Returns: Json }
+      admin_update_group_flags: {
+        Args: {
+          p_group_id: string
+          p_is_locked: boolean
+          p_is_verified: boolean
+        }
+        Returns: Json
+      }
+      approve_asset: { Args: { p_id: string }; Returns: Json }
+      change_username: { Args: { p_new_username: string }; Returns: Json }
       claim_daily_emeralds: { Args: never; Returns: Json }
+      clear_game_chat: { Args: { p_game_id?: string }; Returns: Json }
+      clear_sword_fight_score: { Args: never; Returns: Json }
+      create_group: {
+        Args: { p_description: string; p_icon_url: string; p_name: string }
+        Returns: Json
+      }
       get_next_serial: { Args: { p_item_id: string }; Returns: number }
       has_role: {
         Args: {
@@ -1017,9 +1214,23 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_economy_manager: { Args: { _user_id: string }; Returns: boolean }
       is_owner: { Args: { _user_id: string }; Returns: boolean }
+      join_group: { Args: { p_group_id: string }; Returns: Json }
+      leave_group: { Args: { p_group_id: string }; Returns: Json }
       next_profile_numeric_id: { Args: never; Returns: number }
       purchase_item: { Args: { p_item_id: string }; Returns: Json }
+      record_sword_fight_death: { Args: never; Returns: Json }
+      record_sword_fight_kill: { Args: { p_username: string }; Returns: Json }
+      reject_asset: { Args: { p_id: string; p_reason?: string }; Returns: Json }
       reset_profiles_numeric_id_seq: { Args: never; Returns: undefined }
+      update_group: {
+        Args: {
+          p_description: string
+          p_group_id: string
+          p_icon_url?: string
+          p_name: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "user" | "economy_manager" | "owner"
