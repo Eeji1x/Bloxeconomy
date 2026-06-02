@@ -1185,6 +1185,17 @@ export type Database = {
         Returns: undefined
       }
       admin_reset_group: { Args: { p_group_id: string }; Returns: Json }
+      admin_update_group: {
+        Args: {
+          p_description: string
+          p_group_id: string
+          p_icon_url: string
+          p_is_locked: boolean
+          p_is_verified: boolean
+          p_name: string
+        }
+        Returns: Json
+      }
       admin_update_group_flags: {
         Args: {
           p_group_id: string
