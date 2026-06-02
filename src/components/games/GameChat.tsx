@@ -64,8 +64,6 @@ export const GameChat = ({ userId, username, gameName, gameId = 'lobby' }: GameC
   }, [gameId]);
 
   // ─── Presence tracking ────────────────────────────────────────────────────
-  // When the last player leaves the game, wipe the chat history so the next
-  // session starts fresh. We only run the wipe if WE are the last player out.
   useEffect(() => {
     const presenceChannel = supabase.channel(presenceChannelKey, {
       config: { presence: { key: userId } },
@@ -84,23 +82,8 @@ export const GameChat = ({ userId, username, gameName, gameId = 'lobby' }: GameC
       });
 
     return () => {
-      // Untrack first, then check if we were the last player. If we were,
-      // delete all chat messages so the next session starts empty.
-      (async () => {
-        try {
-          await presenceChannel.untrack();
-          // Brief delay to let presence-sync propagate to the server
-          await new Promise((r) => setTimeout(r, 150));
-          const state = presenceChannel.presenceState();
-          const remaining = Object.keys(state).filter((k) => k !== userId).length;
-          if (remaining === 0) {
-            // SECURITY DEFINER RPC; only authenticated users can call.
-            await supabase.rpc('clear_game_chat', { p_game_id: gameId });
-          }
-        } finally {
-          supabase.removeChannel(presenceChannel);
-        }
-      })();
+      void presenceChannel.untrack();
+      supabase.removeChannel(presenceChannel);
     };
   }, [presenceChannelKey, userId, username]);
 
@@ -137,7 +120,7 @@ export const GameChat = ({ userId, username, gameName, gameId = 'lobby' }: GameC
 
   return (
     <div
-      className="fixed top-4 right-4 w-[320px] max-w-[80vw] z-40 select-text"
+      className="fixed top-3 right-3 w-[320px] max-w-[calc(100vw-1.5rem)] z-40 select-text sm:top-4 sm:right-4"
       style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
     >
       <div
@@ -169,7 +152,7 @@ export const GameChat = ({ userId, username, gameName, gameId = 'lobby' }: GameC
         </button>
         {open && (
           <>
-            <div ref={listRef} className="h-48 overflow-y-auto px-3 py-2 space-y-1 text-sm text-white">
+            <div ref={listRef} className="h-36 sm:h-48 overflow-y-auto px-3 py-2 space-y-1 text-sm text-white">
               {messages.length === 0 && (
                 <div className="text-white/50 text-xs italic">
                   {gameName ? `In ${gameName} — say hi!` : 'No messages yet — say hi!'}
