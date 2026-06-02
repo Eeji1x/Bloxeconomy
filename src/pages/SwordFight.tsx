@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Sky, PointerLockControls } from '@react-three/drei';
+import { Sky } from '@react-three/drei';
 import * as THREE from 'three';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, Link } from 'react-router-dom';
@@ -23,6 +23,7 @@ interface PresenceUser {
   user_id: string;
   username: string;
   pos: [number, number, number];
+  hp?: number;
 }
 
 const ARENA_RADIUS = 30;
@@ -30,6 +31,8 @@ const SWORD_RANGE = 4.5;
 const SWORD_DAMAGE = 50;
 const PLAYER_MAX_HP = 100;
 const RESPAWN_MS = 3500;
+
+type Keys = { w: boolean; a: boolean; s: boolean; d: boolean; space: boolean };
 
 // ─── Player avatar (cube with sword) ────────────────────────────────────────
 const PlayerCharacter = ({ position, swinging }: { position: THREE.Vector3; swinging: boolean }) => {
@@ -116,23 +119,46 @@ const Arena = () => {
   );
 };
 
-// ─── Game scene + first-person controller ──────────────────────────────────
+const RemotePlayer = ({ player }: { player: PresenceUser }) => (
+  <group position={player.pos}>
+    <mesh castShadow position={[0, 0.5, 0]}>
+      <boxGeometry args={[0.8, 1.6, 0.5]} />
+      <meshStandardMaterial color="#7dd3fc" emissive="#075985" emissiveIntensity={0.2} />
+    </mesh>
+    <mesh position={[0.5, 0.8, 0]} rotation={[0, 0, Math.PI / 4]}>
+      <boxGeometry args={[0.08, 1.2, 0.08]} />
+      <meshStandardMaterial color="#d1d5db" metalness={0.8} roughness={0.25} />
+    </mesh>
+  </group>
+);
+
+// ─── Game scene + third-person controller ──────────────────────────────────
 const GameScene = ({
   onKill,
   onDamageTaken,
   myUsername,
+  presence,
+  onPosition,
+  onSwingAtPlayer,
 }: {
   onKill: (botName: string) => void;
   onDamageTaken: (amount: number) => void;
   myUsername: string;
+  presence: PresenceUser[];
+  onPosition: (pos: [number, number, number]) => void;
+  onSwingAtPlayer: (targetUserId: string) => void;
 }) => {
   const { camera } = useThree();
   const playerPos = useRef(new THREE.Vector3(0, 0, 5));
+  const playerYaw = useRef(0);
+  const cameraYaw = useRef(0);
+  const cameraPitch = useRef(0.35);
   const playerVelY = useRef(0);
   const onGround = useRef(true);
-  const keys = useRef<Record<string, boolean>>({});
+  const keys = useRef<Keys>({ w: false, a: false, s: false, d: false, space: false });
   const swinging = useRef(false);
   const swingAt = useRef(0);
+  const lastTrackAt = useRef(0);
 
   const [, setTick] = useState(0);
   const bots = useRef<Bot[]>(
@@ -150,23 +176,28 @@ const GameScene = ({
   useEffect(() => {
     void myUsername;
     const onDown = (e: KeyboardEvent) => {
-      keys.current[e.code.toLowerCase()] = true;
-      if (e.code === 'Space' && onGround.current) {
+      const map: Record<string, keyof Keys> = { KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', Space: 'space' };
+      const key = map[e.code];
+      if (!key) return;
+      if (key === 'space') e.preventDefault();
+      keys.current[key] = true;
+      if (key === 'space' && onGround.current) {
         playerVelY.current = 6;
         onGround.current = false;
       }
     };
-    const onUp = (e: KeyboardEvent) => { keys.current[e.code.toLowerCase()] = false; };
-    const onClick = () => {
+    const onUp = (e: KeyboardEvent) => {
+      const map: Record<string, keyof Keys> = { KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', Space: 'space' };
+      const key = map[e.code];
+      if (key) keys.current[key] = false;
+    };
+    const swing = () => {
       if (Date.now() - swingAt.current < 350) return;
       swinging.current = true;
       swingAt.current = Date.now();
       setTimeout(() => { swinging.current = false; }, 250);
       // Damage check
-      const forward = new THREE.Vector3();
-      camera.getWorldDirection(forward);
-      forward.y = 0;
-      forward.normalize();
+      const forward = new THREE.Vector3(Math.sin(playerYaw.current), 0, Math.cos(playerYaw.current));
       bots.current.forEach((bot) => {
         if (!bot.alive) return;
         const toBot = bot.pos.clone().sub(playerPos.current);
@@ -183,36 +214,72 @@ const GameScene = ({
           }
         }
       });
+      presence.forEach((player) => {
+        if (player.user_id && player.user_id !== 'self') {
+          const target = new THREE.Vector3(...player.pos);
+          const toPlayer = target.sub(playerPos.current);
+          if (toPlayer.length() < SWORD_RANGE && forward.dot(toPlayer.normalize()) > 0.35) {
+            onSwingAtPlayer(player.user_id);
+          }
+        }
+      });
       setTick((x) => x + 1);
     };
 
+    (window as unknown as { __swordFightSetKeys?: (next: Partial<Keys>) => void; __swordFightSwing?: () => void }).__swordFightSetKeys = (next) => {
+      keys.current = { ...keys.current, ...next };
+    };
+    (window as unknown as { __swordFightSwing?: () => void }).__swordFightSwing = swing;
+
     window.addEventListener('keydown', onDown);
     window.addEventListener('keyup', onUp);
-    window.addEventListener('mousedown', onClick);
+    window.addEventListener('mousedown', swing);
     return () => {
+      delete (window as unknown as { __swordFightSetKeys?: unknown }).__swordFightSetKeys;
+      delete (window as unknown as { __swordFightSwing?: unknown }).__swordFightSwing;
       window.removeEventListener('keydown', onDown);
       window.removeEventListener('keyup', onUp);
-      window.removeEventListener('mousedown', onClick);
+      window.removeEventListener('mousedown', swing);
     };
-  }, [camera, onKill, myUsername]);
+  }, [onKill, myUsername, onSwingAtPlayer, presence]);
+
+  useEffect(() => {
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    const down = (e: PointerEvent) => { dragging = true; lastX = e.clientX; lastY = e.clientY; };
+    const up = () => { dragging = false; };
+    const move = (e: PointerEvent) => {
+      if (!dragging) return;
+      cameraYaw.current -= (e.clientX - lastX) * 0.006;
+      cameraPitch.current = Math.max(-0.25, Math.min(0.9, cameraPitch.current - (e.clientY - lastY) * 0.004));
+      lastX = e.clientX; lastY = e.clientY;
+    };
+    window.addEventListener('pointerdown', down);
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointermove', move);
+    return () => {
+      window.removeEventListener('pointerdown', down);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointermove', move);
+    };
+  }, []);
 
   useFrame((_, dt) => {
     // Player movement
     const speed = 6;
-    const forward = new THREE.Vector3();
-    camera.getWorldDirection(forward);
-    forward.y = 0;
-    forward.normalize();
-    const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0));
+    const forward = new THREE.Vector3(Math.sin(cameraYaw.current), 0, Math.cos(cameraYaw.current));
+    const right = new THREE.Vector3(Math.cos(cameraYaw.current), 0, -Math.sin(cameraYaw.current));
 
     const move = new THREE.Vector3();
-    if (keys.current['keyw']) move.add(forward);
-    if (keys.current['keys']) move.sub(forward);
-    if (keys.current['keya']) move.sub(right);
-    if (keys.current['keyd']) move.add(right);
+    if (keys.current.w) move.add(forward);
+    if (keys.current.s) move.sub(forward);
+    if (keys.current.a) move.sub(right);
+    if (keys.current.d) move.add(right);
     if (move.lengthSq() > 0) {
       move.normalize().multiplyScalar(speed * dt);
       playerPos.current.add(move);
+      playerYaw.current = Math.atan2(move.x, move.z);
     }
     // Clamp to arena
     const horiz = playerPos.current.clone(); horiz.y = 0;
@@ -227,8 +294,20 @@ const GameScene = ({
     playerPos.current.y += playerVelY.current * dt;
     if (playerPos.current.y <= 0) { playerPos.current.y = 0; playerVelY.current = 0; onGround.current = true; }
 
-    // Camera tracks player at eye height
-    camera.position.set(playerPos.current.x, playerPos.current.y + 1.6, playerPos.current.z);
+    const camDistance = 9;
+    const camTarget = playerPos.current.clone().add(new THREE.Vector3(0, 1.4, 0));
+    const camOffset = new THREE.Vector3(
+      -Math.sin(cameraYaw.current) * Math.cos(cameraPitch.current) * camDistance,
+      3 + Math.sin(cameraPitch.current) * camDistance,
+      -Math.cos(cameraYaw.current) * Math.cos(cameraPitch.current) * camDistance,
+    );
+    camera.position.lerp(camTarget.clone().add(camOffset), 0.18);
+    camera.lookAt(camTarget);
+
+    if (Date.now() - lastTrackAt.current > 120) {
+      lastTrackAt.current = Date.now();
+      onPosition([playerPos.current.x, playerPos.current.y, playerPos.current.z]);
+    }
 
     // Bot AI: chase + attack
     bots.current.forEach((bot) => {
@@ -257,8 +336,9 @@ const GameScene = ({
   return (
     <>
       <Arena />
+      <PlayerCharacter position={playerPos.current} swinging={swinging.current} />
+      {presence.map((player) => <RemotePlayer key={player.user_id} player={player} />)}
       {bots.current.map((bot) => <BotCharacter key={bot.id} bot={bot} />)}
-      {/* Self avatar isn't rendered (we are first-person) but a sword in hand */}
     </>
   );
 };
