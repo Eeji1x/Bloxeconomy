@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase';
 import { GameChat } from '@/components/games/GameChat';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Swords } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Bot {
   id: string;
