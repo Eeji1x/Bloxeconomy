@@ -117,57 +117,10 @@ const Catalog = () => {
     setBuyingItem(item.id);
 
     try {
-      const { data: freshItem, error: fetchError } = await supabase
-        .from('catalog_items')
-        .select('stock, is_on_sale, sale_start_time, sale_end_time')
-        .eq('id', item.id)
-        .single();
-
-      if (fetchError || !freshItem) throw new Error('Failed to verify item availability');
-
-      const now = Date.now();
-      if (!freshItem.is_on_sale) {
-        toast.error('This item is no longer for sale');
-        await fetchItems();
-        return;
-      }
-      if (freshItem.sale_start_time && new Date(freshItem.sale_start_time).getTime() > now) {
-        toast.error('This item is not yet on sale');
-        await fetchItems();
-        return;
-      }
-      if (freshItem.sale_end_time && new Date(freshItem.sale_end_time).getTime() < now) {
-        toast.error('This item sale has ended');
-        await fetchItems();
-        return;
-      }
-      if (freshItem.stock !== null && freshItem.stock <= 0) {
-        toast.error('This item is now out of stock');
-        await fetchItems();
-        return;
-      }
-
-      const { error: emeraldError } = await supabase
-        .from('profiles')
-        .update({ emeralds: profile.emeralds - item.price })
-        .eq('user_id', user.id);
-      if (emeraldError) throw emeraldError;
-
-      const { error: inventoryError } = await supabase
-        .from('user_inventory')
-        .insert({ user_id: user.id, item_id: item.id, quantity: 1 });
-      if (inventoryError) throw inventoryError;
-
-      if (freshItem.stock !== null) {
-        const newStock = freshItem.stock - 1;
-        const updates: { stock: number; is_on_sale?: boolean } = { stock: newStock };
-        if (newStock <= 0) {
-          updates.is_on_sale = false;
-        }
-        await supabase
-          .from('catalog_items')
-          .update(updates)
-          .eq('id', item.id);
+      const { data, error } = await supabase.rpc('purchase_item', { p_item_id: item.id });
+      const result = data as { success?: boolean; error?: string } | null;
+      if (error || result?.error || !result?.success) {
+        throw new Error(result?.error || error?.message || 'Failed to purchase item');
       }
 
       await refreshProfile();
