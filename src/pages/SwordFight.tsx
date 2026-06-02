@@ -343,12 +343,43 @@ const GameScene = ({
   );
 };
 
+const MobileSwordControls = () => {
+  const setKeys = (next: Partial<Keys>) => {
+    (window as unknown as { __swordFightSetKeys?: (next: Partial<Keys>) => void }).__swordFightSetKeys?.(next);
+  };
+
+  const keyButton = (label: string, keyName: keyof Keys) => (
+    <button
+      className="w-14 h-14 rounded-xl bg-white/15 border border-white/25 text-white font-bold active:bg-white/30 select-none touch-none"
+      onTouchStart={(e) => { e.preventDefault(); setKeys({ [keyName]: true }); }}
+      onTouchEnd={(e) => { e.preventDefault(); setKeys({ [keyName]: false }); }}
+      onMouseDown={() => setKeys({ [keyName]: true })}
+      onMouseUp={() => setKeys({ [keyName]: false })}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <div className="fixed bottom-4 left-4 right-4 z-50 flex justify-between items-end pointer-events-none sm:hidden">
+      <div className="pointer-events-auto flex flex-col items-center gap-1">
+        {keyButton('▲', 'w')}
+        <div className="flex gap-1">{keyButton('◀', 'a')}{keyButton('▼', 's')}{keyButton('▶', 'd')}</div>
+      </div>
+      <div className="pointer-events-auto flex gap-2">
+        <button className="w-16 h-16 rounded-full bg-white/15 border border-white/25 text-white text-xs font-bold active:bg-white/30" onClick={() => (window as unknown as { __swordFightSwing?: () => void }).__swordFightSwing?.()}>SWING</button>
+        <button className="w-16 h-16 rounded-full bg-white/15 border border-white/25 text-white text-xs font-bold active:bg-white/30" onTouchStart={(e) => { e.preventDefault(); setKeys({ space: true }); }} onTouchEnd={(e) => { e.preventDefault(); setKeys({ space: false }); }}>JUMP</button>
+      </div>
+    </div>
+  );
+};
+
 const SwordFight = () => {
   const { user, profile } = useAuth();
   const [hp, setHp] = useState(PLAYER_MAX_HP);
   const [kills, setKills] = useState(0);
-  const [isPointerLocked, setIsPointerLocked] = useState(false);
   const [presence, setPresence] = useState<PresenceUser[]>([]);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   const myUsername = (profile?.username as string) || user?.email?.split('@')[0] || 'Player';
 
@@ -382,31 +413,25 @@ const SwordFight = () => {
   useEffect(() => {
     if (!user) return;
     const channel = supabase.channel('sword_fight_room', { config: { presence: { key: user.id } } });
+    channelRef.current = channel;
     channel
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
         const users: PresenceUser[] = [];
         Object.values(state).forEach((entries) => {
-          (entries as Array<{ user_id?: string; username?: string }>).forEach((e) => {
-            if (e.user_id && e.username) users.push({ user_id: e.user_id, username: e.username, pos: [0, 0, 0] });
+          (entries as Array<{ user_id?: string; username?: string; pos?: [number, number, number]; hp?: number }>).forEach((e) => {
+            if (e.user_id && e.username && e.user_id !== user.id) users.push({ user_id: e.user_id, username: e.username, pos: e.pos || [0, 0, 0], hp: e.hp });
           });
         });
         setPresence(users);
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
-          await channel.track({ user_id: user.id, username: myUsername });
+          await channel.track({ user_id: user.id, username: myUsername, pos: [0, 0, 5], hp });
         }
       });
-    return () => { supabase.removeChannel(channel); };
-  }, [user, myUsername]);
-
-  // Lock pointer on click into canvas
-  useEffect(() => {
-    const onLock = () => setIsPointerLocked(document.pointerLockElement !== null);
-    document.addEventListener('pointerlockchange', onLock);
-    return () => document.removeEventListener('pointerlockchange', onLock);
-  }, []);
+    return () => { channelRef.current = null; supabase.removeChannel(channel); };
+  }, [user, myUsername, hp]);
 
   if (!user) return <Navigate to="/login" replace />;
 
@@ -424,8 +449,14 @@ const SwordFight = () => {
         <Sky distance={450} sunPosition={[100, 50, 100]} inclination={0.4} azimuth={0.25} />
         <ambientLight intensity={0.5} />
         <directionalLight castShadow position={[10, 20, 10]} intensity={1} shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
-        <PointerLockControls />
-        <GameScene onKill={handleKill} onDamageTaken={handleDamage} myUsername={myUsername} />
+        <GameScene
+          onKill={handleKill}
+          onDamageTaken={handleDamage}
+          myUsername={myUsername}
+          presence={presence}
+          onPosition={(pos) => { void channelRef.current?.track({ user_id: user.id, username: myUsername, pos, hp }); }}
+          onSwingAtPlayer={() => { toast.success('Player hit registered'); }}
+        />
       </Canvas>
 
       {/* HUD */}
@@ -457,21 +488,8 @@ const SwordFight = () => {
         </div>
       </div>
 
-      {/* Crosshair */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
-        <div className="w-2 h-2 rounded-full border border-white/80" />
-      </div>
-
-      {/* Controls hint */}
-      {!isPointerLocked && (
-        <div className="absolute inset-0 flex items-center justify-center z-40 bg-black/60 pointer-events-none">
-          <div className="text-center text-white">
-            <div className="text-2xl font-bold mb-2" style={{ fontFamily: 'Orbitron, sans-serif' }}>Sword Fight</div>
-            <div className="text-sm mb-1">Click anywhere to lock cursor and play.</div>
-            <div className="text-xs text-white/70">WASD move • Space jump • Click swing • Esc to release cursor</div>
-          </div>
-        </div>
-      )}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 hidden sm:block text-white/70 text-xs bg-black/55 px-3 py-1.5 rounded">WASD move • Space jump • Drag to look • Click swing</div>
+      <MobileSwordControls />
 
       <GameChat
         userId={user.id}
