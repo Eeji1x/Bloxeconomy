@@ -24,6 +24,7 @@ const sidebarLinks = [
   { to: '/leaderboards', label: 'Leaderboards', icon: 'icon-nav-forum', hoverClass: '' },
   { to: '/promocodes', label: 'Promo Codes', icon: 'icon-nav-shop', hoverClass: '' },
   { to: '/games', label: 'Games', icon: 'icon-nav-home', hoverClass: '' },
+  { to: '/download', label: 'Download', icon: 'icon-nav-shop', hoverClass: '' },
 ];
 
 export const Roblox2016Navbar = () => {
