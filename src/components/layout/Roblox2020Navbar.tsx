@@ -124,6 +124,7 @@ const sidebarLinks2 = [
   { to: '/users', label: 'Players', Icon: RbxProfile },
   { to: '/leaderboards', label: 'Leaderboards', Icon: RbxLeaderboard },
   { to: '/promocodes', label: 'Promo Codes', Icon: RbxCodes },
+  { to: '/download', label: 'Download', Icon: RbxCodes },
   { to: '/settings', label: 'Settings', Icon: RbxSettings },
 ];
 
