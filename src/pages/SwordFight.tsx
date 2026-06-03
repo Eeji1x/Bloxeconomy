@@ -376,7 +376,7 @@ const MobileSwordControls = () => {
 };
 
 const SwordFight = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, isLoading } = useAuth();
   const [hp, setHp] = useState(PLAYER_MAX_HP);
   const [kills, setKills] = useState(0);
   const [presence, setPresence] = useState<PresenceUser[]>([]);
@@ -384,7 +384,6 @@ const SwordFight = () => {
 
   const myUsername = (profile?.username as string) || user?.email?.split('@')[0] || 'Player';
 
-  // Persist kill to Supabase
   const handleKill = async (_botName: string) => {
     setKills((k) => k + 1);
     try { await supabase.rpc('record_sword_fight_kill', { p_username: myUsername }); }
@@ -393,7 +392,7 @@ const SwordFight = () => {
 
   const handleDamage = (amount: number) => {
     setHp((prev) => {
-      if (prev <= 0) return prev; // already dead — ignore further hits during respawn window
+      if (prev <= 0) return prev;
       const next = Math.max(0, prev - amount);
       if (next === 0) {
         try { void supabase.rpc('record_sword_fight_death'); } catch { /* */ }
@@ -403,14 +402,12 @@ const SwordFight = () => {
     });
   };
 
-  // Clear our score when leaving the page
   useEffect(() => {
     return () => {
       try { void supabase.rpc('clear_sword_fight_score'); } catch { /* */ }
     };
   }, []);
 
-  // Presence (per sword-fight room)
   useEffect(() => {
     if (!user) return;
     const channel = supabase.channel('sword_fight_room', { config: { presence: { key: user.id } } });
@@ -434,9 +431,20 @@ const SwordFight = () => {
     return () => { channelRef.current = null; supabase.removeChannel(channel); };
   }, [user, myUsername, hp]);
 
-  if (!user) return <Navigate to="/login" replace />;
-
+  // All hooks MUST run before any early return — moving useMemo up fixes a
+  // hook-count mismatch that unmounted the canvas and bounced the user back.
   const cameraConfig = useMemo(() => ({ fov: 75, position: [0, 1.6, 5] as [number, number, number] }), []);
+
+  // Wait for auth to hydrate; otherwise the brief `user === null` window
+  // during initial load redirects players to /login as soon as they click Play.
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
+  if (!user) return <Navigate to="/auth" replace />;
 
   return (
     <div className="fixed inset-0 z-50 bg-black">

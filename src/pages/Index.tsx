@@ -47,7 +47,7 @@ const SectionHeader = ({ title, seeAllTo }: { title: string; seeAllTo?: string }
 );
 
 const Index = () => {
-  const { user, profile, isAdmin } = useAuth();
+  const { user, profile, isAdmin, isLoading } = useAuth();
   const { theme } = useTheme();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -112,6 +112,13 @@ const Index = () => {
     setLoading(false);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
   if (!user) return <Navigate to="/auth" replace />;
   if (theme === 'roblox2008') return <Roblox2008Home />;
   if (theme === 'roblox2012') return <Roblox2012Home />;
