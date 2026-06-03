@@ -632,14 +632,12 @@ const Games = () => {
                   onClick={() => {
                     // Custom protocol: bloxeconomy://game/sword-fight?u=<userId>
                     // If the desktop client (.exe) is installed it registers this
-                    // protocol and opens directly into the arena. If not, the
-                    // browser silently does nothing — we surface a hint.
+                    // protocol and opens directly into the arena. If not, redirect to /download.
                     const url = `bloxeconomy://game/sword-fight?u=${encodeURIComponent(user.id)}`;
                     const fallback = setTimeout(() => {
-                      toast.message('Desktop client not detected', {
-                        description: 'Download BloxEconomy.exe to use the desktop client.',
-                      });
-                    }, 1500);
+                      // Protocol didn't open the client — send them to download page
+                      window.location.href = '/download';
+                    }, 1200);
                     window.addEventListener('blur', () => clearTimeout(fallback), { once: true });
                     window.location.href = url;
                   }}
