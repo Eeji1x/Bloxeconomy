@@ -1,0 +1,7 @@
+{
+  "name": "bloxeconomy-client",
+  "version": "1.0.0",
+  "main": "main.cjs",
+  "description": "BloxEconomy Desktop Client",
+  "author": "BloxEconomy"
+}

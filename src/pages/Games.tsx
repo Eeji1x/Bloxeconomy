@@ -603,15 +603,52 @@ const Games = () => {
             footer={`Max Players: 5 • ${rcc ? 'High Fidelity' : 'Standard'}`}
           />
 
-          {/* Sword Fight */}
-          <GameCard
-            title="Sword Fight"
-            tagline="Swing, parry, and dominate the leaderboard"
-            backdrop="linear-gradient(135deg, hsl(0 80% 35%) 0%, hsl(280 80% 30%) 100%)"
-            badge="NEW"
-            href="/games/sword-fight"
-            footer="Max Players: 8 • Kills reset on leave"
-          />
+          {/* Sword Fight — choice of Web Client or Desktop Client */}
+          <div
+            className="rounded-xl border border-primary/30 overflow-hidden flex flex-col"
+            style={{ background: 'hsl(260 40% 10%)', boxShadow: '0 0 24px hsl(180 100% 50% / 0.1)' }}
+          >
+            <div className="relative flex items-center justify-center" style={{ height: 180, background: 'linear-gradient(135deg, hsl(0 80% 35%) 0%, hsl(280 80% 30%) 100%)' }}>
+              <div className="text-center text-white">
+                <div className="text-2xl font-bold" style={{ fontFamily: 'Orbitron, sans-serif', textShadow: '0 0 16px rgba(0,0,0,0.6)' }}>Sword Fight</div>
+                <div className="text-sm opacity-90 mt-1">Swing, parry, and dominate the leaderboard</div>
+              </div>
+              <div className="absolute top-2 right-2 text-[11px] font-bold px-2 py-1 rounded"
+                style={{ background: 'linear-gradient(135deg, hsl(180 100% 50%), hsl(300 100% 60%))', color: '#0a0a1a', boxShadow: '0 0 12px hsl(180 100% 50% / 0.5)' }}>
+                NEW
+              </div>
+            </div>
+            <div className="px-4 py-3 flex items-center justify-between flex-wrap gap-2 border-t border-primary/20">
+              <div className="text-xs text-muted-foreground">
+                By BloxEconomy
+                <div className="text-[11px] mt-0.5">Max Players: 8 • Choose Web or Desktop</div>
+              </div>
+              <div className="flex gap-2">
+                <Button asChild variant="outline" className="gap-1">
+                  <a href="/games/sword-fight">🌐 Web Client</a>
+                </Button>
+                <Button
+                  className="gap-1"
+                  onClick={() => {
+                    // Custom protocol: bloxeconomy://game/sword-fight?u=<userId>
+                    // If the desktop client (.exe) is installed it registers this
+                    // protocol and opens directly into the arena. If not, the
+                    // browser silently does nothing — we surface a hint.
+                    const url = `bloxeconomy://game/sword-fight?u=${encodeURIComponent(user.id)}`;
+                    const fallback = setTimeout(() => {
+                      toast.message('Desktop client not detected', {
+                        description: 'Download BloxEconomy.exe to use the desktop client.',
+                      });
+                    }, 1500);
+                    window.addEventListener('blur', () => clearTimeout(fallback), { once: true });
+                    window.location.href = url;
+                  }}
+                >
+                  💻 Join with Client
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

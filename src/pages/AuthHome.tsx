@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Zap, ShoppingBag, ArrowLeftRight, Users, Gem, Crown, Trophy, Gamepad2 } from 'lucide-react';
 
 const AuthHome = () => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -32,6 +32,11 @@ const AuthHome = () => {
       setIsLoggingIn(false);
     }
   };
+
+  // If the user is already authenticated, skip the marketing page entirely.
+  // Previously this page kept showing while AuthContext finished hydrating,
+  // which caused a flicker loop with Index for users like ID 1.
+  if (!isLoading && user) return <Navigate to="/" replace />;
 
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
