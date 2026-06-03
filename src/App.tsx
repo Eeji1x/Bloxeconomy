@@ -35,6 +35,7 @@ import SodamonsTop from "./pages/SodamonsTop";
 import Banned from "./pages/Banned";
 import EmeraldShop from "./pages/EmeraldShop";
 import Games from "./pages/Games";
+import Download from "./pages/Download";
 import SwordFight from "./pages/SwordFight";
 import Groups from "./pages/Groups";
 import GroupDetail from "./pages/GroupDetail";
@@ -123,6 +124,7 @@ const App = () => {
                     <Route path="/emeralds" element={<EmeraldShop />} />
                     <Route path="/games" element={<Games />} />
                     <Route path="/games/sword-fight" element={<SwordFight />} />
+                    <Route path="/download" element={<Download />} />
                     <Route path="/groups" element={<Groups />} />
                     <Route path="/groups/:groupId" element={<GroupDetail />} />
                     <Route path="/banned" element={<Banned />} />

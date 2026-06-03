@@ -21,6 +21,7 @@ const navTabs = [
   { to: '/avatar', label: 'Character', authOnly: true },
   { to: '/promocodes', label: 'Promo Codes' },
   { to: '/sodamons', label: 'Sodamons' },
+  { to: '/download', label: 'Download' },
   { to: '/settings', label: 'Settings', authOnly: true },
 ];
 

@@ -21,6 +21,7 @@ const allNavLinks = [
   { to: '/promocodes', label: 'Promo Codes' },
   { to: '/settings', label: 'Settings', authOnly: true },
   { to: '/sodamons', label: 'Sodamons' },
+  { to: '/download', label: 'Download' },
 ];
 
 export const Roblox2008Navbar = () => {
