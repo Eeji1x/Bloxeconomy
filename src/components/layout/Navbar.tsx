@@ -16,7 +16,8 @@ import {
   LogIn,
   Trophy,
   Settings,
-  Mail
+  Mail,
+  Download
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ const navLinks = [
   { to: '/users', label: 'Users', icon: Users },
   { to: '/leaderboards', label: 'Top', icon: Trophy },
   { to: '/sodamons', label: 'Sodamons', icon: Trophy },
+  { to: '/download', label: 'Client', icon: Download },
 ];
 
 export const Navbar = () => {
